@@ -1,0 +1,5 @@
+outs:
+- md5: 4e72e70d8af0f7059bffd4cf82da0362
+  size: 1216
+  hash: md5
+  path: 006_public_species.sql

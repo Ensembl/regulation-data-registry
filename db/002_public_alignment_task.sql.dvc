@@ -1,0 +1,5 @@
+outs:
+- md5: 49823e2b5c3119aed5cb89c4ba59daaa
+  size: 716
+  hash: md5
+  path: 002_public_alignment_task.sql

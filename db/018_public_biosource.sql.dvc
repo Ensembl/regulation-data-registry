@@ -1,0 +1,5 @@
+outs:
+- md5: 3c7ea23f1e6f19357b104b6f9df1bbba
+  size: 88538
+  hash: md5
+  path: 018_public_biosource.sql

@@ -1,0 +1,5 @@
+outs:
+- md5: a40eb5376950ecff76c524b2c92cba48
+  size: 2163172
+  hash: md5
+  path: 030_public_public_url.sql

@@ -1,0 +1,5 @@
+outs:
+- md5: a70226bdd28d7a7b0558c7fb42819dbb
+  size: 2197138
+  hash: md5
+  path: 013_public_analysis_file.sql

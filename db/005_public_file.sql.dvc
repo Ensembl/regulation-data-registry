@@ -1,0 +1,5 @@
+outs:
+- md5: 59a1e61ccbbb0e775c5effcdfec48865
+  size: 6044389
+  hash: md5
+  path: 005_public_file.sql

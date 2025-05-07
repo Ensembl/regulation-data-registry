@@ -1,0 +1,5 @@
+outs:
+- md5: d5bda2f3726b3ecfe27a8a8636b31d96
+  size: 1337
+  hash: md5
+  path: 003_public_archive.sql
