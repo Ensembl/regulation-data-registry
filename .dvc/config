@@ -4,3 +4,4 @@
 ['remote "regulation-s3"']
     url = s3://regulation-prod-wfs/dvcstore
     endpointurl = https://uk1s3.embassy.ebi.ac.uk
+    acl = public-read
