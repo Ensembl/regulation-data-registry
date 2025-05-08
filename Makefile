@@ -50,6 +50,14 @@ db-data-pull:
 	dvc \
 	pull
 
+schemapy-docs:
+	docker compose \
+	-p rdr \
+	run \
+	--remove-orphans \
+	--build \
+	schemapy-docs
+
 db-dump-and-exit: db-dump db-down
 
 db-schema-dump-and-exit: db-schema-dump db-down
