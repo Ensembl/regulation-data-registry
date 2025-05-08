@@ -41,6 +41,15 @@ db-data-dump:
 	--build \
 	db-dump --data
 
+db-data-push:
+	dvc \
+	push \
+	-r regulation-s3
+
+db-data-pull:
+	dvc \
+	pull
+
 db-dump-and-exit: db-dump db-down
 
 db-schema-dump-and-exit: db-schema-dump db-down
