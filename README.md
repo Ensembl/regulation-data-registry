@@ -1,5 +1,12 @@
 [![pipeline status](https://gitlab.ebi.ac.uk/ensreg/rdr/badges/main/pipeline.svg)](https://gitlab.ebi.ac.uk/ensreg/rdr/-/commits/main)
 
+# Schema Documentation
+- [Docs](docs/schemaspy/index.html)
+- [Relationships](docs/schemaspy/relationships.html)
+
+
+Generated with [SchemaSpy](https://schemaspy.org/).
+
 # Regulation Data Registry
 
 Ensembl Regulation Data Registry (RDR). The purpose of this database is to structure experiment metadata from external
