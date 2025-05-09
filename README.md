@@ -105,3 +105,7 @@ To spin up a local database instance pointiong to a specific commit, check
 the [Local development section](#local-development) for instructions.
 
 ### Production (TODO)
+
+## License
+
+This project is licensed under the Apache License 2.0 – see the [LICENSE](./LICENSE) file for details.
