@@ -78,6 +78,45 @@ To stop the database instance, run the following command:
 make test-db-down
 ```
 
+### Managing data with DVC
+
+DVC runs in a container using Docker Compose v2 and a POSIX shell (WSL on Windows).
+No local DVC installation or running database is needed. The image builds on first use.
+
+```bash
+make db-data-pull          # Download the current dumps
+./scripts/dvc.sh status    # Run any DVC command through the container
+```
+
+To push, add your bucket write credentials to Git-ignored `.dvc/config.local`:
+
+```ini
+['remote "ensreg-git-lfs"']
+    access_key_id = <your-access-key>
+    secret_access_key = <your-secret-key>
+```
+
+```bash
+chmod 600 .dvc/config.local
+```
+
+After regenerating the dumps, update their pointers and upload the data:
+
+```bash
+./scripts/dvc.sh add db/*_public_*.sql
+make db-data-push
+```
+
+Commit the schema, `.dvc` pointers and `db/.gitignore` together. Remove obsolete
+pointers and dumps if tables are removed or renumbered.
+
+Pulls use the public HTTP remote; pushes use `ensreg-git-lfs` on
+`https://livingobjects.ebi.ac.uk`. For authenticated pulls, use
+`./scripts/dvc.sh pull -r ensreg-git-lfs`.
+
+Run `make dvc-build` to rebuild with base-image security updates. DVC dependencies
+are managed in `tools/dvc/pyproject.toml` and `tools/dvc/uv.lock`.
+
 ### Pre-built container image
 
 #### Requirements

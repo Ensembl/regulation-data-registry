@@ -1,0 +1,25 @@
+services:
+  dvc:
+    init: true
+    build:
+      context: ./tools/dvc
+      dockerfile: Dockerfile
+      target: runtime
+    working_dir: /workspace
+    environment:
+      DVC_UID: "${DVC_UID:-1000}"
+      DVC_GID: "${DVC_GID:-1000}"
+      HOME: /tmp
+      DVC_SITE_CACHE_DIR: /workspace/.dvc/tmp/container-site-cache
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: false
+        bind:
+          create_host_path: false
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          mode: 01777
+          size: 268435456

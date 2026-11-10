@@ -1,0 +1,9 @@
+[project]
+name = "rdr-dvc"
+version = "0.1.0"
+description = "Container environment for the Regulation Data Registry's DVC CLI"
+requires-python = ">=3.12,<3.13"
+dependencies = ["dvc[s3]==3.67.1"]
+
+[tool.uv]
+package = false
