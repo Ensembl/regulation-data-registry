@@ -1,0 +1,5 @@
+outs:
+- md5: f802210513b5d3a0e0dae145aa581863
+  size: 14487
+  hash: md5
+  path: 007_public_ontology.sql

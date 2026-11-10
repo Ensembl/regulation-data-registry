@@ -1,0 +1,5 @@
+outs:
+- md5: d968f098961b3feb6c096153dfd3447a
+  size: 16172
+  hash: md5
+  path: 039_public_dnase_seq.sql

@@ -16,6 +16,7 @@
 -- PostgreSQL database dump
 --
 
+
 -- Dumped from database version 14.3 (Debian 14.3-1.pgdg110+1)
 -- Dumped by pg_dump version 14.3 (Debian 14.3-1.pgdg110+1)
 
@@ -260,8 +261,10 @@ ALTER TYPE public.run_order_type OWNER TO regulation_usr;
 --
 
 CREATE TYPE public.run_type AS ENUM (
+    'PE',
+    'PE+B',
     'SE',
-    'PE'
+    'SE+B'
 );
 
 
@@ -521,6 +524,23 @@ CREATE TYPE public.time_post_fertilisation_unit_type AS ENUM (
 
 ALTER TYPE public.time_post_fertilisation_unit_type OWNER TO regulation_usr;
 
+--
+-- Name: unnest_2d_1d(anyarray); Type: FUNCTION; Schema: public; Owner: regulation_usr
+--
+
+CREATE FUNCTION public.unnest_2d_1d(anyarray, OUT a anyarray) RETURNS SETOF anyarray
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+BEGIN
+    FOREACH a SLICE 1 IN ARRAY $1 LOOP
+            RETURN NEXT;
+        END LOOP;
+END
+$_$;
+
+
+ALTER FUNCTION public.unnest_2d_1d(anyarray, OUT a anyarray) OWNER TO regulation_usr;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -600,7 +620,8 @@ ALTER TABLE public.assembly OWNER TO regulation_usr;
 
 CREATE TABLE public.atac_seq (
     experiment_id uuid NOT NULL,
-    replicate_set_id uuid NOT NULL
+    replicate_set_id uuid NOT NULL,
+    library_preparation character varying
 );
 
 
@@ -616,7 +637,8 @@ CREATE TABLE public.chip_seq (
     signal uuid NOT NULL,
     target_type public.target_type NOT NULL,
     histone_target_id uuid,
-    tf_target_id uuid
+    tf_target_id uuid,
+    library_preparation character varying
 );
 
 
@@ -657,8 +679,8 @@ ALTER TABLE public.dnase_seq OWNER TO regulation_usr;
 --
 
 CREATE TABLE public.epigenome (
-    name text NOT NULL,
-    description text NOT NULL,
+    name text,
+    description text,
     epigenome_id uuid DEFAULT gen_random_uuid() NOT NULL,
     epigenome_group_id uuid NOT NULL,
     species_id uuid NOT NULL,
@@ -705,7 +727,7 @@ ALTER TABLE public.epigenome_group OWNER TO regulation_usr;
 --
 
 CREATE TABLE public.experiment (
-    name text NOT NULL,
+    name text,
     experiment_type public.experiment_type NOT NULL,
     epigenome_id uuid NOT NULL,
     experiment_id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -1090,6 +1112,20 @@ CREATE TABLE public.archive (
 ALTER TABLE public.archive OWNER TO regulation_usr;
 
 --
+-- Name: barcode_file; Type: TABLE; Schema: public; Owner: regulation_usr
+--
+
+CREATE TABLE public.barcode_file (
+    barcode_file_id uuid DEFAULT gen_random_uuid() NOT NULL,
+    run_id uuid NOT NULL,
+    file_id uuid NOT NULL,
+    data_source_id uuid
+);
+
+
+ALTER TABLE public.barcode_file OWNER TO regulation_usr;
+
+--
 -- Name: biosample; Type: TABLE; Schema: public; Owner: regulation_usr
 --
 
@@ -1262,32 +1298,6 @@ CREATE VIEW public.biosource_data_source AS
 ALTER TABLE public.biosource_data_source OWNER TO regulation_usr;
 
 --
--- Name: bucket; Type: TABLE; Schema: public; Owner: regulation_usr
---
-
-CREATE TABLE public.bucket (
-    name text NOT NULL,
-    endpoint text NOT NULL,
-    bucket_id uuid DEFAULT gen_random_uuid() NOT NULL
-);
-
-
-ALTER TABLE public.bucket OWNER TO regulation_usr;
-
---
--- Name: epigenome_group_assembly; Type: TABLE; Schema: public; Owner: regulation_usr
---
-
-CREATE TABLE public.epigenome_group_assembly (
-    assembly_id uuid NOT NULL,
-    epigenome_group_id uuid NOT NULL,
-    epigenome_group_assembly_id uuid DEFAULT gen_random_uuid() NOT NULL
-);
-
-
-ALTER TABLE public.epigenome_group_assembly OWNER TO regulation_usr;
-
---
 -- Name: experiment_data_source; Type: VIEW; Schema: public; Owner: regulation_usr
 --
 
@@ -1456,8 +1466,11 @@ CREATE VIEW public.experiment_metadata AS
     biosource_data_source.biosource_alternative_accession,
     biosource_data_source.age,
     biosource_data_source.age_unit,
-    biosource_data_source.sex
-   FROM (((((((((((public.species
+    biosource_data_source.sex,
+    assembly.ensembl_accession AS assembly_name,
+    assembly.assembly_id
+   FROM ((((((((((((public.species
+     JOIN public.assembly ON ((species.species_id = assembly.species_id)))
      JOIN public.epigenome_data_source ON ((species.species_id = epigenome_data_source.species_id)))
      JOIN public.epigenome_group ON ((epigenome_data_source.epigenome_group_id = epigenome_group.epigenome_group_id)))
      JOIN public.experiment_data_source ON ((epigenome_data_source.epigenome_id = experiment_data_source.epigenome_id)))
@@ -1472,6 +1485,843 @@ CREATE VIEW public.experiment_metadata AS
 
 
 ALTER TABLE public.experiment_metadata OWNER TO regulation_usr;
+
+--
+-- Name: curated_experiment_metadata; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.curated_experiment_metadata AS
+ SELECT DISTINCT experiment_metadata.species_name,
+    experiment_metadata.epigenome_name,
+    experiment_metadata.name,
+    COALESCE(experiment_metadata.accession, experiment_metadata.biosample_accession) AS biosample_accession,
+    initcap(replace((experiment_metadata.biomaterial_type)::text, '_'::text, ' '::text)) AS material,
+        CASE
+            WHEN (experiment_metadata.biosample_term = ANY (ARRAY['Thymus'::text, 'Uterus'::text])) THEN lower(experiment_metadata.biosample_term)
+            ELSE experiment_metadata.biosample_term
+        END AS term,
+    concat(experiment_metadata.ontology_type, '_', experiment_metadata.curie) AS term_ontology,
+    experiment_metadata.organ_slims,
+    experiment_metadata.system_slims,
+        CASE
+            WHEN (experiment_metadata.experiment_type = 'atac_seq'::public.experiment_type) THEN 'ATAC-seq'::text
+            WHEN (experiment_metadata.experiment_type = 'dnase_seq'::public.experiment_type) THEN 'DNase-seq'::text
+            WHEN (experiment_metadata.experiment_type = 'chip_seq'::public.experiment_type) THEN 'ChIP-seq'::text
+            ELSE NULL::text
+        END AS experiment_type,
+        CASE
+            WHEN (experiment_metadata.experiment_target_type = 'atac_seq'::text) THEN 'open chromatin'::text
+            WHEN (experiment_metadata.experiment_target_type = 'dnase_seq'::text) THEN 'open chromatin'::text
+            WHEN (experiment_metadata.experiment_target_type = 'tf'::text) THEN 'transcription factor'::text
+            WHEN (experiment_metadata.experiment_target_type = 'histone'::text) THEN 'histone'::text
+            ELSE NULL::text
+        END AS experiment_target_type,
+        CASE
+            WHEN ((experiment_metadata.experiment_target = 'atac_seq'::text) OR (experiment_metadata.experiment_target = 'dnase_seq'::text)) THEN 'open chromatin'::text
+            ELSE experiment_metadata.experiment_target
+        END AS experiment_target,
+    experiment_metadata.sex,
+    COALESCE(experiment_metadata.life_stage_term, 'unknown'::text) AS life_stage,
+        CASE
+            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN (round(experiment_metadata.thermal_time, 2))::text
+            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) = upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))::text
+            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) <> upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN concat(lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)), '-', upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))
+            ELSE 'unknown'::text
+        END AS age,
+        CASE
+            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN 'thermal time'::text
+            ELSE (COALESCE(experiment_metadata.age_at_collection_unit, experiment_metadata.age_unit))::text
+        END AS age_unit,
+    COALESCE(experiment_metadata.replicate_set_accession, experiment_metadata.replicate_accession) AS data_source,
+    experiment_metadata.assembly_name,
+    experiment_metadata.experiment_id,
+    experiment_metadata.epigenome_id,
+    experiment_metadata.epigenome_description,
+    experiment_metadata.cell_slims,
+    experiment_metadata.species_id,
+    experiment_metadata.assembly_id
+   FROM (public.experiment_metadata
+     JOIN public.analysis_file ON (((experiment_metadata.experiment_id = analysis_file.experiment_id) AND (analysis_file.assembly_id = experiment_metadata.assembly_id))))
+  WHERE ((analysis_file.handover = true) AND (experiment_metadata.replicate_set_type = 'signal'::text) AND (analysis_file.analysis_type = ANY (ARRAY['chip_seq_broad_peaks'::public.analysis_type, 'chip_seq_gapped_peaks'::public.analysis_type, 'chip_seq_narrow_peaks'::public.analysis_type, 'dnase_seq_peaks'::public.analysis_type, 'atac_seq_peaks'::public.analysis_type])) AND (experiment_metadata.biomaterial_type IS NOT NULL));
+
+
+ALTER TABLE public.curated_experiment_metadata OWNER TO regulation_usr;
+
+--
+-- Name: base_epigenome_replicates; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.base_epigenome_replicates AS
+ WITH metadata_epig_expr_with_ids AS (
+         SELECT DISTINCT me_1.epigenome_id,
+            me_1.experiment_type,
+            me_1.experiment_target,
+            me_1.data_source,
+            me_1.biosample_accession,
+            array_agg(DISTINCT me_1.material) AS material,
+            me_1.term,
+            me_1.term_ontology,
+            array_agg(DISTINCT me_1.sex) AS sex,
+            array_agg(DISTINCT me_1.life_stage) AS life_stage,
+            array_agg(DISTINCT me_1.age ORDER BY me_1.age) AS age,
+            array_agg(DISTINCT me_1.age_unit) AS age_unit,
+            me_1.species_name,
+            me_1.assembly_name
+           FROM public.curated_experiment_metadata me_1
+          WHERE (me_1.term <> 'iPS-18c'::text)
+          GROUP BY me_1.epigenome_id, me_1.term, me_1.term_ontology, me_1.experiment_type, me_1.experiment_target, me_1.data_source, me_1.biosample_accession, me_1.species_name, me_1.assembly_name
+        ), age_n_sex_preprocessing AS (
+         SELECT metadata_epig_expr_with_ids.epigenome_id,
+            metadata_epig_expr_with_ids.experiment_type,
+            metadata_epig_expr_with_ids.experiment_target,
+            metadata_epig_expr_with_ids.data_source,
+            metadata_epig_expr_with_ids.biosample_accession,
+            metadata_epig_expr_with_ids.material,
+            metadata_epig_expr_with_ids.term,
+            metadata_epig_expr_with_ids.term_ontology,
+            metadata_epig_expr_with_ids.sex,
+            metadata_epig_expr_with_ids.life_stage,
+            metadata_epig_expr_with_ids.age,
+            metadata_epig_expr_with_ids.age_unit,
+            metadata_epig_expr_with_ids.species_name,
+            metadata_epig_expr_with_ids.assembly_name,
+            ARRAY( SELECT unnest(
+                        CASE
+                            WHEN ('unknown'::text = ANY (metadata_epig_expr_with_ids.age)) THEN NULL::numeric[]
+                            ELSE (metadata_epig_expr_with_ids.age)::numeric[]
+                        END) AS unnest
+                  ORDER BY (unnest(
+                        CASE
+                            WHEN ('unknown'::text = ANY (metadata_epig_expr_with_ids.age)) THEN NULL::numeric[]
+                            ELSE (metadata_epig_expr_with_ids.age)::numeric[]
+                        END))) AS age_sorted,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_expr_with_ids.age)) THEN NULL::text
+                    WHEN ((('embryo'::text = ANY (metadata_epig_expr_with_ids.life_stage)) OR ('embryonic'::text = ANY (metadata_epig_expr_with_ids.life_stage))) AND ('day'::text = ANY (metadata_epig_expr_with_ids.age_unit))) THEN 'days post fertilisation'::text
+                    ELSE array_to_string(metadata_epig_expr_with_ids.age_unit, ', '::text)
+                END AS age_unit_processed,
+                CASE
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @> ARRAY['unknown'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @> ARRAY['mixed'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @> ARRAY['male'::text, 'female'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] = ARRAY['male'::text]) THEN 'm'::text
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] = ARRAY['female'::text]) THEN 'f'::text
+                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] = ARRAY['phenotypic'::text]) THEN NULL::text
+                    ELSE 'Err: not contemplated case'::text
+                END AS sex_for_label
+           FROM metadata_epig_expr_with_ids
+        )
+ SELECT asp.species_name,
+    asp.assembly_name,
+    asp.epigenome_id AS base_epigenome_id,
+    lower(array_to_string(asp.material, ', '::text)) AS material,
+    asp.term,
+        CASE
+            WHEN (asp.term <> 'embryo'::text) THEN asp.term
+            ELSE NULL::text
+        END AS term_for_label,
+    asp.term_ontology,
+    array_to_string(asp.sex, ', '::text) AS sex,
+    asp.sex_for_label,
+    array_to_string(asp.life_stage, ', '::text) AS life_stage,
+        CASE
+            WHEN (((asp.sex)::text[] @> ARRAY['phenotypic'::text, 'unknown'::text]) AND (asp.term = 'embryo'::text)) THEN array_to_string(asp.life_stage, ', '::text)
+            ELSE NULL::text
+        END AS life_stage_for_label,
+        CASE
+            WHEN (array_length(asp.age_sorted, 1) = 1) THEN ((asp.age_sorted[1])::real)::text
+            ELSE NULL::text
+        END AS age_value,
+    array_to_string(asp.age_unit, ', '::text) AS age_unit,
+        CASE
+            WHEN ((asp.age_unit_processed <> ALL (ARRAY['days post fertilisation'::text, 'thermal time'::text])) AND (asp.age_sorted[1] <> (1)::numeric)) THEN concat(asp.age_unit_processed, 's')
+            ELSE asp.age_unit_processed
+        END AS modified_age_unit,
+        CASE
+            WHEN (array_length(asp.age_sorted, 1) = 1) THEN concat(((asp.age_sorted[1])::real)::text, ' ',
+            CASE
+                WHEN ((asp.age_unit_processed <> ALL (ARRAY['days post fertilisation'::text, 'thermal time'::text])) AND (asp.age_sorted[1] <> (1)::numeric)) THEN concat(asp.age_unit_processed, 's')
+                ELSE asp.age_unit_processed
+            END)
+            ELSE NULL::text
+        END AS extended_age,
+    ((
+        CASE
+            WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text
+            WHEN (array_length(asp.age_sorted, 1) = 1) THEN ((asp.age_sorted[1])::real)::text
+            ELSE concat(((asp.age_sorted[1])::real)::text, '-', ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)
+        END || ' '::text) ||
+        CASE asp.age_unit_processed
+            WHEN 'days post fertilisation'::text THEN 'dpf'::text
+            WHEN 'month'::text THEN 'mo'::text
+            WHEN 'year'::text THEN 'y'::text
+            WHEN 'week'::text THEN 'w'::text
+            WHEN 'day'::text THEN 'd'::text
+            WHEN 'thermal time'::text THEN 'tt'::text
+            ELSE asp.age_unit_processed
+        END) AS short_age,
+        CASE
+            WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text
+            WHEN (((asp.assembly_name)::text = 'GRCm39'::text) AND (array_to_string(asp.life_stage, ', '::text) = 'embryonic'::text)) THEN concat('E',
+            CASE
+                WHEN (array_length(asp.age_sorted, 1) = 1) THEN ((asp.age_sorted[1])::real)::text
+                ELSE concat(((asp.age_sorted[1])::real)::text, '-', ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)
+            END)
+            ELSE ((
+            CASE
+                WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text
+                WHEN (array_length(asp.age_sorted, 1) = 1) THEN ((asp.age_sorted[1])::real)::text
+                ELSE concat(((asp.age_sorted[1])::real)::text, '-', ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)
+            END || ' '::text) ||
+            CASE asp.age_unit_processed
+                WHEN 'days post fertilisation'::text THEN 'dpf'::text
+                WHEN 'month'::text THEN 'mo'::text
+                WHEN 'year'::text THEN 'y'::text
+                WHEN 'week'::text THEN 'w'::text
+                WHEN 'day'::text THEN 'd'::text
+                WHEN 'thermal time'::text THEN 'tt'::text
+                ELSE asp.age_unit_processed
+            END)
+        END AS age_for_label,
+    asp.experiment_type,
+    asp.experiment_target,
+    asp.biosample_accession,
+    asp.data_source
+   FROM age_n_sex_preprocessing asp;
+
+
+ALTER TABLE public.base_epigenome_replicates OWNER TO regulation_usr;
+
+--
+-- Name: biosample_biological_group; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.biosample_biological_group AS
+ WITH classified AS (
+         SELECT metadata.epigenome_id,
+                CASE lower(metadata.material)
+                    WHEN 'cell line'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['K562'::text, 'MEL'::text])) THEN 'blood and myeloid'::text
+                        WHEN (metadata.term = 'SK-N-SH'::text) THEN 'brain and nervous system'::text
+                        WHEN (metadata.term = ANY (ARRAY['Caco-2'::text, 'HCT116'::text])) THEN 'intestine'::text
+                        WHEN (metadata.term = 'HEK293'::text) THEN 'kidney'::text
+                        WHEN (metadata.term = ANY (ARRAY['A549'::text, 'PC-9'::text])) THEN 'lung'::text
+                        WHEN (metadata.term = ANY (ARRAY['CH12.LX'::text, 'DND-41'::text, 'DOHH2'::text, 'GM06990'::text, 'GM12878'::text, 'KMS-11'::text, 'KOPT-K1'::text, 'Karpas-422'::text, 'Loucy'::text, 'MM.1S'::text, 'NCI-H929'::text, 'OCI-LY1'::text, 'OCI-LY3'::text, 'OCI-LY7'::text, 'SU-DHL-6'::text])) THEN 'lymphoid'::text
+                        WHEN (metadata.term = 'MCF-7'::text) THEN 'mammary gland'::text
+                        WHEN (metadata.term = ANY (ARRAY['A673'::text, 'AG04450'::text, 'BJ'::text, 'GM23248'::text, 'IMR-90'::text, 'SK-N-MC'::text])) THEN 'mesenchymal and fibroblast'::text
+                        WHEN (metadata.term = 'Panc1'::text) THEN 'pancreas'::text
+                        WHEN (metadata.term = ANY (ARRAY['ES-Bruce4'::text, 'ES-E14'::text, 'ES-I3'::text, 'GM23338'::text, 'H1'::text, 'H7'::text, 'H9'::text, 'HUES48'::text, 'HUES6'::text, 'HUES64'::text, 'NT2/D1'::text, 'iPS DF 19.11'::text, 'iPS DF 6.9'::text, 'iPS-18a'::text, 'iPS-20b'::text])) THEN 'pluripotent cells and models'::text
+                        WHEN (metadata.term = 'PC-3'::text) THEN 'prostate gland'::text
+                        WHEN (metadata.term = 'ACC112'::text) THEN 'salivary gland'::text
+                        WHEN (metadata.term = 'HeLa-S3'::text) THEN 'uterus'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary cell'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['CD14-positive monocyte'::text, 'bone marrow macrophage'::text, 'common myeloid progenitor, CD34-positive'::text, 'mononuclear cell'::text, 'neutrophil'::text])) THEN 'blood and myeloid'::text
+                        WHEN (metadata.term = 'astrocyte'::text) THEN 'brain and nervous system'::text
+                        WHEN (metadata.term = 'kidney epithelial cell'::text) THEN 'kidney'::text
+                        WHEN (metadata.term = 'bronchial epithelial cell'::text) THEN 'lung'::text
+                        WHEN (metadata.term = ANY (ARRAY['B cell'::text, 'T-cell'::text, 'natural killer cell'::text])) THEN 'lymphoid'::text
+                        WHEN (metadata.term = 'mammary epithelial cell'::text) THEN 'mammary gland'::text
+                        WHEN (metadata.term = ANY (ARRAY['embryonic fibroblast'::text, 'fibroblast of dermis'::text, 'fibroblast of lung'::text, 'fibroblast of mammary gland'::text, 'foreskin fibroblast'::text, 'osteoblast'::text])) THEN 'mesenchymal and fibroblast'::text
+                        WHEN (metadata.term = 'skeletal muscle myoblast'::text) THEN 'musculature'::text
+                        WHEN (metadata.term = 'keratinocyte'::text) THEN 'skin'::text
+                        WHEN (metadata.term = 'endothelial cell of umbilical vein'::text) THEN 'vasculature'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary cell culture'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['neural cell'::text, 'neural progenitor cell'::text, 'neuron'::text, 'neuronal stem cell'::text])) THEN 'brain and nervous system'::text
+                        WHEN (metadata.term = ANY (ARRAY['ectodermal cell'::text, 'endodermal cell'::text, 'mesendoderm'::text, 'mesodermal cell'::text])) THEN 'embryo'::text
+                        WHEN (metadata.term = 'cardiac muscle cell'::text) THEN 'heart'::text
+                        WHEN (metadata.term = 'hepatocyte'::text) THEN 'liver'::text
+                        WHEN (metadata.term = 'mesenchymal stem cell'::text) THEN 'mesenchymal and fibroblast'::text
+                        WHEN (metadata.term = ANY (ARRAY['myotube'::text, 'smooth muscle cell'::text])) THEN 'musculature'::text
+                        WHEN (metadata.term = 'trophoblast cell'::text) THEN 'placenta'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary tissue'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['adipose tissue'::text, 'brown adipose tissue'::text, 'subcutaneous adipose tissue'::text])) THEN 'adipose tissue'::text
+                        WHEN (metadata.term = 'adrenal gland'::text) THEN 'adrenal gland'::text
+                        WHEN (metadata.term = 'bone marrow'::text) THEN 'blood and myeloid'::text
+                        WHEN (metadata.term = ANY (ARRAY['brain'::text, 'cerebellum'::text, 'cortex'::text, 'cortical plate'::text, 'forebrain'::text, 'frontal cortex'::text, 'hindbrain'::text, 'hypothalamus'::text, 'midbrain'::text, 'neural tube'::text, 'olfactory bulb'::text, 'tibial nerve'::text])) THEN 'brain and nervous system'::text
+                        WHEN (metadata.term = ANY (ARRAY['embryo'::text, 'embryonic facial prominence'::text, 'limb'::text])) THEN 'embryo'::text
+                        WHEN (metadata.term = ANY (ARRAY['esophagus muscularis mucosa'::text, 'esophagus squamous epithelium'::text])) THEN 'esophagus'::text
+                        WHEN (metadata.term = 'gill filament'::text) THEN 'gill'::text
+                        WHEN (metadata.term = ANY (ARRAY['gonad'::text, 'immature gonad'::text, 'testis'::text])) THEN 'gonad'::text
+                        WHEN (metadata.term = ANY (ARRAY['heart'::text, 'heart left ventricle'::text, 'right atrium auricular region'::text])) THEN 'heart'::text
+                        WHEN (metadata.term = ANY (ARRAY['Peyer''s patch'::text, 'ileum'::text, 'intestine'::text, 'large intestine'::text, 'sigmoid colon'::text, 'small intestine'::text, 'transverse colon'::text])) THEN 'intestine'::text
+                        WHEN (metadata.term = ANY (ARRAY['kidney'::text, 'mesonephros'::text])) THEN 'kidney'::text
+                        WHEN (metadata.term = ANY (ARRAY['liver'::text, 'lobe of liver'::text, 'right lobe of liver'::text])) THEN 'liver'::text
+                        WHEN (metadata.term = ANY (ARRAY['left lung lobe'::text, 'lung'::text, 'upper lobe of left lung'::text])) THEN 'lung'::text
+                        WHEN (metadata.term = 'breast epithelium'::text) THEN 'mammary gland'::text
+                        WHEN (metadata.term = ANY (ARRAY['fast muscle tissue'::text, 'gastrocnemius medialis'::text, 'gluteus medius'::text, 'hindlimb muscle'::text, 'longissimus dorsi muscle'::text, 'muscle of leg'::text, 'muscle of trunk'::text, 'psoas muscle'::text, 'skeletal muscle tissue'::text])) THEN 'musculature'::text
+                        WHEN (metadata.term = 'body of pancreas'::text) THEN 'pancreas'::text
+                        WHEN (metadata.term = 'placenta'::text) THEN 'placenta'::text
+                        WHEN (metadata.term = 'prostate gland'::text) THEN 'prostate gland'::text
+                        WHEN (metadata.term = ANY (ARRAY['skin of back'::text, 'skin of body'::text])) THEN 'skin'::text
+                        WHEN (metadata.term = 'spleen'::text) THEN 'spleen'::text
+                        WHEN (metadata.term = ANY (ARRAY['gastroesophageal sphincter'::text, 'stomach'::text])) THEN 'stomach'::text
+                        WHEN (metadata.term = 'thymus'::text) THEN 'thymus'::text
+                        WHEN (metadata.term = 'thyroid gland'::text) THEN 'thyroid gland'::text
+                        WHEN (metadata.term = 'trachea'::text) THEN 'trachea'::text
+                        WHEN (metadata.term = 'uterus'::text) THEN 'uterus'::text
+                        WHEN (metadata.term = 'vagina'::text) THEN 'vagina'::text
+                        WHEN (metadata.term = ANY (ARRAY['ascending aorta'::text, 'thoracic aorta'::text, 'tibial artery'::text])) THEN 'vasculature'::text
+                        ELSE NULL::text
+                    END
+                    ELSE NULL::text
+                END AS biological_group
+           FROM public.curated_experiment_metadata metadata
+        )
+ SELECT classified.epigenome_id,
+        CASE
+            WHEN (count(DISTINCT classified.biological_group) = 1) THEN min(classified.biological_group)
+            ELSE NULL::text
+        END AS biological_group
+   FROM classified
+  GROUP BY classified.epigenome_id;
+
+
+ALTER TABLE public.biosample_biological_group OWNER TO regulation_usr;
+
+--
+-- Name: biosample_sample_type; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.biosample_sample_type AS
+ WITH classified AS (
+         SELECT metadata.epigenome_id,
+                CASE lower(metadata.material)
+                    WHEN 'cell line'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['A549'::text, 'A673'::text, 'CH12.LX'::text, 'Caco-2'::text, 'DND-41'::text, 'DOHH2'::text, 'HCT116'::text, 'HeLa-S3'::text, 'K562'::text, 'KMS-11'::text, 'KOPT-K1'::text, 'Karpas-422'::text, 'Loucy'::text, 'MCF-7'::text, 'MEL'::text, 'MM.1S'::text, 'NCI-H929'::text, 'NT2/D1'::text, 'OCI-LY1'::text, 'OCI-LY3'::text, 'OCI-LY7'::text, 'PC-3'::text, 'PC-9'::text, 'Panc1'::text, 'SK-N-MC'::text, 'SK-N-SH'::text, 'SU-DHL-6'::text])) THEN 'Cancer cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['ES-Bruce4'::text, 'ES-E14'::text, 'ES-I3'::text, 'H1'::text, 'H7'::text, 'H9'::text, 'HUES48'::text, 'HUES6'::text, 'HUES64'::text])) THEN 'Embryonic stem cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['AG04450'::text, 'BJ'::text, 'GM23248'::text, 'IMR-90'::text])) THEN 'Finite cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['GM23338'::text, 'iPS DF 19.11'::text, 'iPS DF 6.9'::text, 'iPS-18a'::text, 'iPS-20b'::text])) THEN 'Induced pluripotent stem cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['ACC112'::text, 'GM06990'::text, 'GM12878'::text, 'HEK293'::text])) THEN 'Transformed cell line'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary cell'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['B cell'::text, 'CD14-positive monocyte'::text, 'T-cell'::text, 'astrocyte'::text, 'bone marrow macrophage'::text, 'bronchial epithelial cell'::text, 'common myeloid progenitor, CD34-positive'::text, 'embryonic fibroblast'::text, 'endothelial cell of umbilical vein'::text, 'fibroblast of dermis'::text, 'fibroblast of lung'::text, 'fibroblast of mammary gland'::text, 'foreskin fibroblast'::text, 'keratinocyte'::text, 'kidney epithelial cell'::text, 'mammary epithelial cell'::text, 'mononuclear cell'::text, 'natural killer cell'::text, 'neutrophil'::text, 'osteoblast'::text, 'skeletal muscle myoblast'::text])) THEN 'Primary cells'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary cell culture'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['cardiac muscle cell'::text, 'ectodermal cell'::text, 'endodermal cell'::text, 'hepatocyte'::text, 'mesenchymal stem cell'::text, 'mesendoderm'::text, 'mesodermal cell'::text, 'myotube'::text, 'neural cell'::text, 'neural progenitor cell'::text, 'neuron'::text, 'neuronal stem cell'::text, 'smooth muscle cell'::text, 'trophoblast cell'::text])) THEN 'In vitro differentiated cells'::text
+                        ELSE NULL::text
+                    END
+                    WHEN 'primary tissue'::text THEN
+                    CASE
+                        WHEN (metadata.term = ANY (ARRAY['Peyer''s patch'::text, 'adipose tissue'::text, 'adrenal gland'::text, 'ascending aorta'::text, 'body of pancreas'::text, 'bone marrow'::text, 'brain'::text, 'breast epithelium'::text, 'brown adipose tissue'::text, 'cerebellum'::text, 'cortex'::text, 'cortical plate'::text, 'embryo'::text, 'embryonic facial prominence'::text, 'esophagus muscularis mucosa'::text, 'esophagus squamous epithelium'::text, 'fast muscle tissue'::text, 'forebrain'::text, 'frontal cortex'::text, 'gastrocnemius medialis'::text, 'gastroesophageal sphincter'::text, 'gill filament'::text, 'gluteus medius'::text, 'gonad'::text, 'heart'::text, 'heart left ventricle'::text, 'hindbrain'::text, 'hindlimb muscle'::text, 'hypothalamus'::text, 'ileum'::text, 'immature gonad'::text, 'intestine'::text, 'kidney'::text, 'large intestine'::text, 'left lung lobe'::text, 'limb'::text, 'liver'::text, 'lobe of liver'::text, 'longissimus dorsi muscle'::text, 'lung'::text, 'mesonephros'::text, 'midbrain'::text, 'muscle of leg'::text, 'muscle of trunk'::text, 'neural tube'::text, 'olfactory bulb'::text, 'placenta'::text, 'prostate gland'::text, 'psoas muscle'::text, 'right atrium auricular region'::text, 'right lobe of liver'::text, 'sigmoid colon'::text, 'skeletal muscle tissue'::text, 'skin of back'::text, 'skin of body'::text, 'small intestine'::text, 'spleen'::text, 'stomach'::text, 'subcutaneous adipose tissue'::text, 'testis'::text, 'thoracic aorta'::text, 'thymus'::text, 'thyroid gland'::text, 'tibial artery'::text, 'tibial nerve'::text, 'trachea'::text, 'transverse colon'::text, 'upper lobe of left lung'::text, 'uterus'::text, 'vagina'::text])) THEN 'Primary tissue'::text
+                        ELSE NULL::text
+                    END
+                    ELSE NULL::text
+                END AS sample_type
+           FROM public.curated_experiment_metadata metadata
+        )
+ SELECT classified.epigenome_id,
+        CASE
+            WHEN (count(DISTINCT classified.sample_type) = 1) THEN min(classified.sample_type)
+            ELSE NULL::text
+        END AS sample_type
+   FROM classified
+  GROUP BY classified.epigenome_id;
+
+
+ALTER TABLE public.biosample_sample_type OWNER TO regulation_usr;
+
+--
+-- Name: biosample_term_group; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.biosample_term_group AS
+ SELECT DISTINCT curated_experiment_metadata.epigenome_id,
+        CASE
+            WHEN ((curated_experiment_metadata.term ~~* '%terus%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* ANY (ARRAY['%prostate%'::text, '%vagina%'::text]))) THEN 'reproductive'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%connective tissue%'::text) THEN 'connective tissue'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%blood%'::text) OR (array_to_string(curated_experiment_metadata.cell_slims, ','::text) ~~* '%B cell%'::text) OR ((array_to_string(curated_experiment_metadata.cell_slims, ','::text) ~~* '%hematopoietic%'::text) AND (curated_experiment_metadata.term !~~* '%bone marrow%'::text))) THEN 'blood'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%bone marrow%'::text) THEN 'bone marrow'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%tibial nerve%'::text) THEN 'limb'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%blood vessel%'::text) THEN 'blood vessel'::text
+            WHEN ((curated_experiment_metadata.term ~~* '%skin%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%skin%'::text)) THEN 'skin'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%embryo%'::text) THEN 'embryonic'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%liver%'::text) OR (curated_experiment_metadata.term ~~* '%liver%'::text)) THEN 'liver'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%kidney%'::text) OR (curated_experiment_metadata.term ~~* ANY (ARRAY['%kidney%'::text, '%mesonephros%'::text]))) THEN 'kidney'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%epithel%'::text) THEN 'epithelium'::text
+            WHEN ((curated_experiment_metadata.term ~~* '%testis%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%testis%'::text)) THEN 'gonad'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%endocrine%'::text) THEN 'endocrine gland'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* ANY (ARRAY['%spleen%'::text, '%thymus%'::text])) OR (curated_experiment_metadata.term ~~* ANY (ARRAY['%spleen%'::text, '%hymus%'::text]))) THEN 'immune organ'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%stomach%'::text) THEN 'stomach'::text
+            WHEN ((curated_experiment_metadata.term ~~* '%muscle%'::text) OR (curated_experiment_metadata.term ~~* '%gluteus medius%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* ANY (ARRAY['%musculature%'::text, '%gluteus%'::text, '%skeletal%'::text, '%longissimus%'::text]))) THEN 'muscle'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%intestine%'::text) OR (curated_experiment_metadata.term ~~* ANY (ARRAY['%ileum%'::text, '%intestine%'::text]))) THEN 'intestine'::text
+            WHEN (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%pancreas%'::text) THEN 'pancreas'::text
+            WHEN ((array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%lung%'::text) OR (curated_experiment_metadata.term ~~* '%lung%'::text)) THEN 'lung'::text
+            WHEN (curated_experiment_metadata.term ~~* '%tibial nerve%'::text) THEN 'limb'::text
+            WHEN ((curated_experiment_metadata.term ~~* '%heart%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%heart%'::text)) THEN 'heart'::text
+            WHEN (curated_experiment_metadata.term ~~* '%neuron%'::text) THEN 'neural cell'::text
+            WHEN ((curated_experiment_metadata.term ~~* '%brain%'::text) OR (array_to_string(curated_experiment_metadata.organ_slims, ','::text) ~~* '%brain%'::text) OR (curated_experiment_metadata.term ~~* ANY (ARRAY['%cortex%'::text, '%cerebellum%'::text, '%hypothalamus%'::text, '%neural progenitor%'::text]))) THEN 'brain'::text
+            WHEN (curated_experiment_metadata.term ~~* '%adipose%'::text) THEN 'adipose'::text
+            WHEN (curated_experiment_metadata.term = 'immature gonad'::text) THEN 'gonad'::text
+            ELSE curated_experiment_metadata.term
+        END AS term_group
+   FROM public.curated_experiment_metadata;
+
+
+ALTER TABLE public.biosample_term_group OWNER TO regulation_usr;
+
+--
+-- Name: base_epigenomes; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.base_epigenomes AS
+ WITH slims_before_agg AS (
+         SELECT curated_experiment_metadata.epigenome_id,
+                CASE
+                    WHEN (curated_experiment_metadata.organ_slims = ARRAY[]::text[]) THEN ARRAY['EMPTY'::text]
+                    WHEN (curated_experiment_metadata.organ_slims IS NULL) THEN ARRAY['UNANNOTATED'::text]
+                    ELSE curated_experiment_metadata.organ_slims
+                END AS organs_mod,
+                CASE
+                    WHEN (curated_experiment_metadata.system_slims = ARRAY[]::text[]) THEN ARRAY['EMPTY'::text]
+                    WHEN (curated_experiment_metadata.system_slims IS NULL) THEN ARRAY['UNANNOTATED'::text]
+                    ELSE curated_experiment_metadata.system_slims
+                END AS systems_mod
+           FROM public.curated_experiment_metadata
+        ), metadata_epig_with_ids AS (
+         SELECT DISTINCT curated_experiment_metadata.species_name,
+            curated_experiment_metadata.assembly_name,
+            curated_experiment_metadata.epigenome_name,
+            curated_experiment_metadata.epigenome_id,
+            curated_experiment_metadata.epigenome_description,
+            array_agg(DISTINCT curated_experiment_metadata.material) AS material,
+            curated_experiment_metadata.term,
+            curated_experiment_metadata.term_ontology,
+            public.unnest_2d_1d(array_agg(DISTINCT slims_before_agg.organs_mod)) AS organs,
+            public.unnest_2d_1d(array_agg(DISTINCT slims_before_agg.systems_mod)) AS systems,
+            array_agg(DISTINCT curated_experiment_metadata.sex) AS sex,
+            array_agg(DISTINCT curated_experiment_metadata.life_stage) AS life_stage,
+            array_agg(DISTINCT curated_experiment_metadata.age ORDER BY curated_experiment_metadata.age) AS age,
+            array_agg(DISTINCT curated_experiment_metadata.age_unit) AS age_unit
+           FROM (public.curated_experiment_metadata
+             JOIN slims_before_agg ON ((curated_experiment_metadata.epigenome_id = slims_before_agg.epigenome_id)))
+          GROUP BY curated_experiment_metadata.species_name, curated_experiment_metadata.assembly_name, curated_experiment_metadata.epigenome_name, curated_experiment_metadata.epigenome_id, curated_experiment_metadata.epigenome_description, curated_experiment_metadata.term, curated_experiment_metadata.term_ontology
+        ), slims_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN (metadata_epig_with_ids_1.organs = ARRAY['EMPTY'::text]) THEN ARRAY[]::text[]
+                    WHEN (metadata_epig_with_ids_1.organs = ARRAY['UNANNOTATED'::text]) THEN NULL::text[]
+                    ELSE metadata_epig_with_ids_1.organs
+                END AS organs,
+                CASE
+                    WHEN (metadata_epig_with_ids_1.systems = ARRAY['EMPTY'::text]) THEN ARRAY[]::text[]
+                    WHEN (metadata_epig_with_ids_1.systems = ARRAY['UNANNOTATED'::text]) THEN NULL::text[]
+                    ELSE metadata_epig_with_ids_1.systems
+                END AS systems,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::numeric[]
+                    ELSE (metadata_epig_with_ids_1.age)::numeric[]
+                END AS age,
+            metadata_epig_with_ids_1.age_unit
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), handle_age_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::numeric[]
+                    ELSE (metadata_epig_with_ids_1.age)::numeric[]
+                END AS age
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), sort_agg_age AS (
+         SELECT handle_age_after_agg.epigenome_id,
+            ARRAY( SELECT unnest(handle_age_after_agg.age) AS unnest
+                  ORDER BY (unnest(handle_age_after_agg.age))) AS age_sorted
+           FROM handle_age_after_agg
+        ), handle_sorted_age AS (
+         SELECT sort_agg_age.epigenome_id,
+                CASE
+                    WHEN (ARRAY[]::numeric[] = sort_agg_age.age_sorted) THEN NULL::text
+                    WHEN (array_length(sort_agg_age.age_sorted, 1) = 1) THEN ((sort_agg_age.age_sorted[1])::real)::text
+                    ELSE ((sort_agg_age.age_sorted)::real[])::text
+                END AS age
+           FROM sort_agg_age
+        ), handle_age_unit_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::text
+                    WHEN ((('embryo'::text = ANY (metadata_epig_with_ids_1.life_stage)) OR ('embryonic'::text = ANY (metadata_epig_with_ids_1.life_stage))) AND ('day'::text = ANY (metadata_epig_with_ids_1.age_unit))) THEN 'days post fertilisation'::text
+                    ELSE array_to_string(metadata_epig_with_ids_1.age_unit, ', '::text)
+                END AS age_unit
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), handle_age_unit_singular_plural AS (
+         SELECT handle_age_unit_after_agg.epigenome_id,
+                CASE
+                    WHEN ((handle_age_unit_after_agg.age_unit <> 'days post fertilisation'::text) AND (handle_age_unit_after_agg.age_unit <> 'thermal time'::text) AND (sort_agg_age.age_sorted[1] <> (1)::numeric)) THEN concat(handle_age_unit_after_agg.age_unit, 's')
+                    ELSE handle_age_unit_after_agg.age_unit
+                END AS age_unit
+           FROM (handle_age_unit_after_agg
+             JOIN sort_agg_age ON ((handle_age_unit_after_agg.epigenome_id = sort_agg_age.epigenome_id)))
+        ), age_range AS (
+         SELECT sort_agg_age.epigenome_id,
+                CASE
+                    WHEN (ARRAY[]::numeric[] = sort_agg_age.age_sorted) THEN NULL::text
+                    WHEN (array_length(sort_agg_age.age_sorted, 1) = 1) THEN ((sort_agg_age.age_sorted[1])::real)::text
+                    ELSE concat(((sort_agg_age.age_sorted[1])::real)::text, '-', ((sort_agg_age.age_sorted[array_upper(sort_agg_age.age_sorted, 1)])::real)::text)
+                END AS age_range
+           FROM sort_agg_age
+        ), shorten_age_unit AS (
+         SELECT handle_age_unit_after_agg.epigenome_id,
+                CASE
+                    WHEN (handle_age_unit_after_agg.age_unit = 'days post fertilisation'::text) THEN 'dpf'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'month'::text) THEN 'mo'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'year'::text) THEN 'y'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'week'::text) THEN 'w'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'day'::text) THEN 'd'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'thermal time'::text) THEN 'tt'::text
+                    ELSE handle_age_unit_after_agg.age_unit
+                END AS short_age_unit
+           FROM handle_age_unit_after_agg
+        ), shorten_sex AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['unknown'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['mixed'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['male'::text, 'female'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['male'::text]) THEN 'm'::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['female'::text]) THEN 'f'::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['phenotypic'::text]) THEN NULL::text
+                    ELSE 'Err: not contemplated case'::text
+                END AS sex_for_label
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), lifestage_in_label AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ((((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['phenotypic'::text]) OR ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['unknown'::text])) AND (metadata_epig_with_ids_1.term = 'embryo'::text)) THEN metadata_epig_with_ids_1.life_stage
+                    ELSE NULL::text[]
+                END AS life_stage_info_for_label
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        )
+ SELECT DISTINCT metadata_epig_with_ids.species_name,
+    metadata_epig_with_ids.assembly_name,
+    metadata_epig_with_ids.epigenome_id AS id,
+    lower(array_to_string(metadata_epig_with_ids.material, ', '::text)) AS material,
+    metadata_epig_with_ids.epigenome_name,
+    metadata_epig_with_ids.term,
+        CASE
+            WHEN (metadata_epig_with_ids.term <> 'embryo'::text) THEN metadata_epig_with_ids.term
+            ELSE NULL::text
+        END AS term_for_label,
+    metadata_epig_with_ids.term_ontology,
+    array_to_string(metadata_epig_with_ids.sex, ', '::text) AS sex,
+    shorten_sex.sex_for_label,
+    array_to_string(metadata_epig_with_ids.life_stage, ', '::text) AS life_stage,
+        CASE
+            WHEN ((((metadata_epig_with_ids.sex)::text[] @> ARRAY['phenotypic'::text]) OR ((metadata_epig_with_ids.sex)::text[] @> ARRAY['unknown'::text])) AND (metadata_epig_with_ids.term = 'embryo'::text)) THEN array_to_string(metadata_epig_with_ids.life_stage, ', '::text)
+            ELSE NULL::text
+        END AS life_stage_for_label,
+        CASE
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(handle_sorted_age.age, ' ', handle_age_unit_singular_plural.age_unit)
+        END AS extended_age,
+        CASE
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(age_range.age_range, ' ', shorten_age_unit.short_age_unit)
+        END AS age,
+        CASE
+            WHEN (((metadata_epig_with_ids.assembly_name)::text = 'GRCm39'::text) AND (array_to_string(metadata_epig_with_ids.life_stage, ', '::text) = 'embryonic'::text) AND (age_range.age_range IS NOT NULL)) THEN concat('E', age_range.age_range)
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(age_range.age_range, ' ', shorten_age_unit.short_age_unit)
+        END AS age_for_label,
+    slims_after_agg.organs,
+    slims_after_agg.systems,
+    biosample_term_group.term_group AS tissue_group,
+    biosample_biological_group.biological_group,
+    biosample_sample_type.sample_type
+   FROM (((((((((metadata_epig_with_ids
+     JOIN handle_sorted_age ON ((metadata_epig_with_ids.epigenome_id = handle_sorted_age.epigenome_id)))
+     JOIN age_range ON ((metadata_epig_with_ids.epigenome_id = age_range.epigenome_id)))
+     JOIN handle_age_unit_singular_plural ON ((metadata_epig_with_ids.epigenome_id = handle_age_unit_singular_plural.epigenome_id)))
+     JOIN shorten_age_unit ON ((metadata_epig_with_ids.epigenome_id = shorten_age_unit.epigenome_id)))
+     JOIN slims_after_agg ON ((metadata_epig_with_ids.epigenome_id = slims_after_agg.epigenome_id)))
+     JOIN shorten_sex ON ((metadata_epig_with_ids.epigenome_id = shorten_sex.epigenome_id)))
+     JOIN public.biosample_term_group ON ((metadata_epig_with_ids.epigenome_id = biosample_term_group.epigenome_id)))
+     LEFT JOIN public.biosample_biological_group ON ((metadata_epig_with_ids.epigenome_id = biosample_biological_group.epigenome_id)))
+     LEFT JOIN public.biosample_sample_type ON ((metadata_epig_with_ids.epigenome_id = biosample_sample_type.epigenome_id)))
+  WHERE (((metadata_epig_with_ids.assembly_name)::text <> 'GRCg6a'::text) AND (metadata_epig_with_ids.term <> 'iPS-18c'::text));
+
+
+ALTER TABLE public.base_epigenomes OWNER TO regulation_usr;
+
+--
+-- Name: base_epigenomes_flat_payload; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.base_epigenomes_flat_payload AS
+ WITH species AS (
+         SELECT DISTINCT base_epigenomes.species_name
+           FROM public.base_epigenomes
+        )
+ SELECT json_agg(json_build_object('species_name', species.species_name, 'base_epigenomes', ( SELECT json_agg(json_build_object('species_name', base_epigenomes.species_name, 'assembly_name', base_epigenomes.assembly_name, 'id', base_epigenomes.id, 'material', base_epigenomes.material, 'term', base_epigenomes.term, 'sex', base_epigenomes.sex, 'life_stage', base_epigenomes.life_stage, 'age', base_epigenomes.age_for_label, 'organs', base_epigenomes.organs, 'systems', base_epigenomes.systems, 'tissue_group', base_epigenomes.tissue_group, 'biological_group', base_epigenomes.biological_group, 'sample_type', base_epigenomes.sample_type)) AS json_agg
+           FROM public.base_epigenomes
+          WHERE (base_epigenomes.species_name = species.species_name)
+          GROUP BY base_epigenomes.species_name))) AS json_agg
+   FROM species;
+
+
+ALTER TABLE public.base_epigenomes_flat_payload OWNER TO regulation_usr;
+
+--
+-- Name: base_epigenomes_payload; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.base_epigenomes_payload AS
+ WITH base_epigenome_objects AS (
+         SELECT base_epigenomes.species_name,
+            base_epigenomes.id,
+            json_build_object('id', base_epigenomes.id, 'material', base_epigenomes.material, 'term', json_build_object('value', base_epigenomes.term, 'ontology', json_build_object('curie', replace(base_epigenomes.term_ontology, '_'::text, ':'::text), 'url', concat('https://purl.obolibrary.org/obo/', base_epigenomes.term_ontology))), 'sex', base_epigenomes.sex, 'life_stage', json_build_object('value', base_epigenomes.life_stage, 'rank', NULL::integer), 'age',
+                CASE
+                    WHEN (base_epigenomes.age_for_label IS NULL) THEN NULL::json
+                    ELSE json_build_object('value', base_epigenomes.age_for_label, 'description', base_epigenomes.extended_age, 'rank', NULL::integer)
+                END, 'organs',
+                CASE
+                    WHEN (base_epigenomes.organs IS NULL) THEN NULL::json
+                    ELSE COALESCE(( SELECT json_agg(json_build_object('value', organ.value, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text)) ORDER BY organ.value) AS json_agg
+                       FROM unnest(base_epigenomes.organs) organ(value)), '[]'::json)
+                END, 'systems',
+                CASE
+                    WHEN (base_epigenomes.systems IS NULL) THEN NULL::json
+                    ELSE COALESCE(( SELECT json_agg(json_build_object('value', system.value, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text)) ORDER BY system.value) AS json_agg
+                       FROM unnest(base_epigenomes.systems) system(value)), '[]'::json)
+                END, 'tissue_group', json_build_object('value', base_epigenomes.tissue_group, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text)), 'biological_group', json_build_object('value', base_epigenomes.biological_group, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text)), 'sample_type', json_build_object('value', base_epigenomes.sample_type, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text))) AS base_epigenome
+           FROM public.base_epigenomes
+        ), species_base_epigenomes AS (
+         SELECT base_epigenome_objects.species_name,
+            json_agg(base_epigenome_objects.base_epigenome ORDER BY base_epigenome_objects.id) AS base_epigenomes
+           FROM base_epigenome_objects
+          GROUP BY base_epigenome_objects.species_name
+        )
+ SELECT json_agg(json_build_object('species_name', species_base_epigenomes.species_name, 'base_epigenomes', species_base_epigenomes.base_epigenomes) ORDER BY species_base_epigenomes.species_name) AS json_agg
+   FROM species_base_epigenomes;
+
+
+ALTER TABLE public.base_epigenomes_payload OWNER TO regulation_usr;
+
+--
+-- Name: curated_experiment_analysis_files; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.curated_experiment_analysis_files AS
+ WITH signal_files AS (
+         SELECT analysis_file.analysis_file_id AS signal_analysis_file_id,
+            analysis_file.experiment_id AS signal_experiment_id,
+            assembly_1.assembly_id AS signal_assembly_id,
+            s3_object.key AS signal_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'signal'::public.analysis_type)
+        ), atac_seq_peak_files AS (
+         SELECT analysis_file.analysis_file_id AS atac_seq_peak_analysis_file_id,
+            analysis_file.experiment_id AS atac_seq_peak_experiment_id,
+            assembly_1.assembly_id AS atac_seq_peak_assembly_id,
+            s3_object.key AS atac_seq_peak_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'atac_seq_peaks'::public.analysis_type)
+        ), dnase_seq_peak_files AS (
+         SELECT analysis_file.analysis_file_id AS dnase_seq_peak_analysis_file_id,
+            analysis_file.experiment_id AS dnase_seq_peak_experiment_id,
+            assembly_1.assembly_id AS dnase_seq_peak_assembly_id,
+            s3_object.key AS dnase_seq_peak_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'dnase_seq_peaks'::public.analysis_type)
+        ), chip_seq_narrow_peak_files AS (
+         SELECT analysis_file.analysis_file_id AS chip_seq_narrow_peak_analysis_file_id,
+            analysis_file.experiment_id AS chip_seq_narrow_peak_experiment_id,
+            assembly_1.assembly_id AS chip_seq_narrow_peak_assembly_id,
+            s3_object.key AS chip_seq_narrow_peak_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'chip_seq_narrow_peaks'::public.analysis_type)
+        ), chip_seq_broad_peak_files AS (
+         SELECT analysis_file.analysis_file_id AS chip_seq_broad_peak_analysis_file_id,
+            analysis_file.experiment_id AS chip_seq_broad_peak_experiment_id,
+            assembly_1.assembly_id AS chip_seq_broad_peak_assembly_id,
+            s3_object.key AS chip_seq_broad_peak_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'chip_seq_broad_peaks'::public.analysis_type)
+        ), chip_seq_gapped_peak_files AS (
+         SELECT analysis_file.analysis_file_id AS chip_seq_gapped_peak_analysis_file_id,
+            analysis_file.experiment_id AS chip_seq_gapped_peak_experiment_id,
+            assembly_1.assembly_id AS chip_seq_gapped_peak_assembly_id,
+            s3_object.key AS chip_seq_gapped_peak_key
+           FROM (((public.analysis_file
+             JOIN public.assembly assembly_1 ON ((analysis_file.assembly_id = assembly_1.assembly_id)))
+             JOIN public.file ON ((analysis_file.file_id = file.file_id)))
+             JOIN public.s3_object ON ((file.file_id = s3_object.file_id)))
+          WHERE (analysis_file.analysis_type = 'chip_seq_gapped_peaks'::public.analysis_type)
+        )
+ SELECT DISTINCT curated_experiment_metadata.experiment_id,
+    curated_experiment_metadata.assembly_id,
+    COALESCE(atac_seq_peak_files.atac_seq_peak_key, dnase_seq_peak_files.dnase_seq_peak_key) AS open_chromatin_peak,
+    chip_seq_narrow_peak_files.chip_seq_narrow_peak_key,
+    chip_seq_broad_peak_files.chip_seq_broad_peak_key,
+    chip_seq_gapped_peak_files.chip_seq_gapped_peak_key,
+    signal_files.signal_key
+   FROM ((((((public.curated_experiment_metadata
+     LEFT JOIN signal_files ON (((curated_experiment_metadata.experiment_id = signal_files.signal_experiment_id) AND (signal_files.signal_assembly_id = curated_experiment_metadata.assembly_id))))
+     LEFT JOIN atac_seq_peak_files ON (((curated_experiment_metadata.experiment_id = atac_seq_peak_files.atac_seq_peak_experiment_id) AND (atac_seq_peak_files.atac_seq_peak_assembly_id = curated_experiment_metadata.assembly_id))))
+     LEFT JOIN dnase_seq_peak_files ON (((curated_experiment_metadata.experiment_id = dnase_seq_peak_files.dnase_seq_peak_experiment_id) AND (dnase_seq_peak_files.dnase_seq_peak_assembly_id = curated_experiment_metadata.assembly_id))))
+     LEFT JOIN chip_seq_narrow_peak_files ON (((curated_experiment_metadata.experiment_id = chip_seq_narrow_peak_files.chip_seq_narrow_peak_experiment_id) AND (chip_seq_narrow_peak_files.chip_seq_narrow_peak_assembly_id = curated_experiment_metadata.assembly_id))))
+     LEFT JOIN chip_seq_broad_peak_files ON (((curated_experiment_metadata.experiment_id = chip_seq_broad_peak_files.chip_seq_broad_peak_experiment_id) AND (chip_seq_broad_peak_files.chip_seq_broad_peak_assembly_id = curated_experiment_metadata.assembly_id))))
+     LEFT JOIN chip_seq_gapped_peak_files ON (((curated_experiment_metadata.experiment_id = chip_seq_gapped_peak_files.chip_seq_gapped_peak_experiment_id) AND (chip_seq_gapped_peak_files.chip_seq_gapped_peak_assembly_id = curated_experiment_metadata.assembly_id))));
+
+
+ALTER TABLE public.curated_experiment_analysis_files OWNER TO regulation_usr;
+
+--
+-- Name: base_epigenomes_replicates_and_files; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.base_epigenomes_replicates_and_files AS
+ WITH no_replicates AS (
+         SELECT base_epigenome_replicates_1.assembly_name,
+            base_epigenome_replicates_1.base_epigenome_id,
+            base_epigenome_replicates_1.experiment_type,
+            base_epigenome_replicates_1.experiment_target,
+            count(*) AS number_of_replicates
+           FROM public.base_epigenome_replicates base_epigenome_replicates_1
+          GROUP BY base_epigenome_replicates_1.assembly_name, base_epigenome_replicates_1.base_epigenome_id, base_epigenome_replicates_1.experiment_type, base_epigenome_replicates_1.experiment_target
+        )
+ SELECT DISTINCT base_epigenome_replicates.species_name,
+    base_epigenome_replicates.assembly_name,
+    base_epigenome_replicates.base_epigenome_id,
+    base_epigenome_replicates.material,
+    base_epigenome_replicates.term,
+    base_epigenome_replicates.term_for_label,
+    base_epigenome_replicates.term_ontology,
+    base_epigenome_replicates.sex,
+    base_epigenome_replicates.sex_for_label,
+    base_epigenome_replicates.life_stage,
+    base_epigenome_replicates.life_stage_for_label,
+    base_epigenome_replicates.age_value,
+    base_epigenome_replicates.age_unit,
+    base_epigenome_replicates.modified_age_unit,
+    base_epigenome_replicates.extended_age,
+    base_epigenome_replicates.short_age,
+    base_epigenome_replicates.age_for_label,
+    base_epigenome_replicates.experiment_type,
+    base_epigenome_replicates.experiment_target,
+    base_epigenome_replicates.biosample_accession,
+    base_epigenome_replicates.data_source,
+    biosample_term_group.term_group,
+    no_replicates.number_of_replicates,
+    curated_experiment_analysis_files.experiment_id,
+    curated_experiment_analysis_files.assembly_id,
+    curated_experiment_analysis_files.open_chromatin_peak,
+    curated_experiment_analysis_files.chip_seq_gapped_peak_key,
+    curated_experiment_analysis_files.chip_seq_narrow_peak_key,
+    curated_experiment_analysis_files.signal_key,
+    biosample_biological_group.biological_group,
+    biosample_sample_type.sample_type
+   FROM ((((((public.curated_experiment_metadata
+     JOIN public.curated_experiment_analysis_files ON (((curated_experiment_metadata.experiment_id = curated_experiment_analysis_files.experiment_id) AND (curated_experiment_metadata.assembly_id = curated_experiment_analysis_files.assembly_id))))
+     JOIN public.base_epigenome_replicates ON (((curated_experiment_metadata.experiment_type = base_epigenome_replicates.experiment_type) AND (curated_experiment_metadata.experiment_target = base_epigenome_replicates.experiment_target) AND (curated_experiment_metadata.epigenome_id = base_epigenome_replicates.base_epigenome_id) AND ((curated_experiment_metadata.assembly_name)::text = (base_epigenome_replicates.assembly_name)::text) AND (curated_experiment_metadata.species_name = base_epigenome_replicates.species_name))))
+     JOIN no_replicates ON (((curated_experiment_metadata.experiment_type = no_replicates.experiment_type) AND (curated_experiment_metadata.experiment_target = no_replicates.experiment_target) AND (curated_experiment_metadata.epigenome_id = no_replicates.base_epigenome_id) AND ((curated_experiment_metadata.assembly_name)::text = (no_replicates.assembly_name)::text))))
+     JOIN public.biosample_term_group ON (((base_epigenome_replicates.base_epigenome_id = biosample_term_group.epigenome_id) AND (curated_experiment_metadata.epigenome_id = biosample_term_group.epigenome_id) AND (no_replicates.base_epigenome_id = biosample_term_group.epigenome_id))))
+     LEFT JOIN public.biosample_biological_group ON ((base_epigenome_replicates.base_epigenome_id = biosample_biological_group.epigenome_id)))
+     LEFT JOIN public.biosample_sample_type ON ((base_epigenome_replicates.base_epigenome_id = biosample_sample_type.epigenome_id)));
+
+
+ALTER TABLE public.base_epigenomes_replicates_and_files OWNER TO regulation_usr;
+
+--
+-- Name: bucket; Type: TABLE; Schema: public; Owner: regulation_usr
+--
+
+CREATE TABLE public.bucket (
+    name text NOT NULL,
+    endpoint text NOT NULL,
+    bucket_id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE public.bucket OWNER TO regulation_usr;
+
+--
+-- Name: curated_open_chromatin_assay_metadata; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.curated_open_chromatin_assay_metadata AS
+ SELECT DISTINCT experiment_metadata.species_name,
+    experiment_metadata.epigenome_name,
+    experiment_metadata.name,
+    COALESCE(experiment_metadata.accession, experiment_metadata.biosample_accession) AS biosample_accession,
+    initcap(replace((experiment_metadata.biomaterial_type)::text, '_'::text, ' '::text)) AS material,
+        CASE
+            WHEN (experiment_metadata.biosample_term = ANY (ARRAY['Thymus'::text, 'Uterus'::text])) THEN lower(experiment_metadata.biosample_term)
+            ELSE experiment_metadata.biosample_term
+        END AS term,
+    concat(experiment_metadata.ontology_type, '_', experiment_metadata.curie) AS term_ontology,
+    experiment_metadata.organ_slims,
+    experiment_metadata.system_slims,
+        CASE
+            WHEN (experiment_metadata.experiment_type = 'atac_seq'::public.experiment_type) THEN 'ATAC-seq'::text
+            WHEN (experiment_metadata.experiment_type = 'dnase_seq'::public.experiment_type) THEN 'DNase-seq'::text
+            WHEN (experiment_metadata.experiment_type = 'chip_seq'::public.experiment_type) THEN 'ChIP-seq'::text
+            ELSE NULL::text
+        END AS experiment_type,
+        CASE
+            WHEN (experiment_metadata.experiment_target_type = 'atac_seq'::text) THEN 'open chromatin'::text
+            WHEN (experiment_metadata.experiment_target_type = 'dnase_seq'::text) THEN 'open chromatin'::text
+            WHEN (experiment_metadata.experiment_target_type = 'tf'::text) THEN 'transcription factor'::text
+            WHEN (experiment_metadata.experiment_target_type = 'histone'::text) THEN 'histone'::text
+            ELSE NULL::text
+        END AS experiment_target_type,
+        CASE
+            WHEN ((experiment_metadata.experiment_target = 'atac_seq'::text) OR (experiment_metadata.experiment_target = 'dnase_seq'::text)) THEN 'open chromatin'::text
+            ELSE experiment_metadata.experiment_target
+        END AS experiment_target,
+    experiment_metadata.sex,
+    COALESCE(experiment_metadata.life_stage_term, 'unknown'::text) AS life_stage,
+        CASE
+            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN (round(experiment_metadata.thermal_time, 2))::text
+            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) = upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))::text
+            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) <> upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN concat(lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)), '-', upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))
+            ELSE 'unknown'::text
+        END AS age,
+        CASE
+            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN 'thermal time'::text
+            ELSE (COALESCE(experiment_metadata.age_at_collection_unit, experiment_metadata.age_unit))::text
+        END AS age_unit,
+    COALESCE(experiment_metadata.replicate_set_accession, experiment_metadata.replicate_accession) AS data_source,
+    experiment_metadata.assembly_name,
+    experiment_metadata.experiment_id,
+    experiment_metadata.epigenome_id,
+    experiment_metadata.epigenome_description,
+    experiment_metadata.cell_slims,
+    experiment_metadata.species_id,
+    experiment_metadata.assembly_id
+   FROM (public.experiment_metadata
+     JOIN public.analysis_file ON (((experiment_metadata.experiment_id = analysis_file.experiment_id) AND (analysis_file.assembly_id = experiment_metadata.assembly_id))))
+  WHERE ((analysis_file.handover = true) AND (experiment_metadata.replicate_set_type = 'signal'::text) AND (analysis_file.analysis_type = ANY (ARRAY['dnase_seq_peaks'::public.analysis_type, 'atac_seq_peaks'::public.analysis_type])) AND (experiment_metadata.biomaterial_type IS NOT NULL) AND (experiment_metadata.experiment_id <> ALL (ARRAY['d19b02d2-d571-4ba8-9f24-b875fa3c69f5'::uuid, 'd67055dd-893e-48dc-bf80-3c7540e1fb7a'::uuid, '32f3f1f1-1a50-4a87-8cc7-582a52213689'::uuid])));
+
+
+ALTER TABLE public.curated_open_chromatin_assay_metadata OWNER TO regulation_usr;
 
 --
 -- Name: experiment_target_info; Type: VIEW; Schema: public; Owner: regulation_usr
@@ -1502,6 +2352,19 @@ UNION ALL
 
 
 ALTER TABLE public.experiment_target_info OWNER TO regulation_usr;
+
+--
+-- Name: inclusion_list; Type: TABLE; Schema: public; Owner: regulation_usr
+--
+
+CREATE TABLE public.inclusion_list (
+    inclusion_list_id uuid DEFAULT gen_random_uuid() NOT NULL,
+    chemistry character varying NOT NULL,
+    file_id uuid NOT NULL
+);
+
+
+ALTER TABLE public.inclusion_list OWNER TO regulation_usr;
 
 --
 -- Name: read_file_set; Type: TABLE; Schema: public; Owner: regulation_usr
@@ -1543,293 +2406,374 @@ CREATE TABLE public.mask_file (
 ALTER TABLE public.mask_file OWNER TO regulation_usr;
 
 --
--- Name: metadata_expr; Type: VIEW; Schema: public; Owner: regulation_usr
+-- Name: metadata_dimensions; Type: VIEW; Schema: public; Owner: regulation_usr
 --
 
-CREATE VIEW public.metadata_expr AS
- SELECT DISTINCT experiment_metadata.species_name,
-    experiment_metadata.epigenome_name,
-    experiment_metadata.name,
-    experiment_metadata.biosample_accession,
-    initcap(replace((experiment_metadata.biomaterial_type)::text, '_'::text, ' '::text)) AS material,
-    experiment_metadata.biosample_term AS term,
-    concat(experiment_metadata.ontology_type, '_', experiment_metadata.curie) AS term_ontology,
-    experiment_metadata.organ_slims,
-    experiment_metadata.system_slims,
-        CASE
-            WHEN (experiment_metadata.experiment_type = 'atac_seq'::public.experiment_type) THEN 'ATAC-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'dnase_seq'::public.experiment_type) THEN 'DNase-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'chip_seq'::public.experiment_type) THEN 'ChIP-seq'::text
-            ELSE NULL::text
-        END AS experiment_type,
-        CASE
-            WHEN (experiment_metadata.experiment_target_type = 'atac_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'dnase_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'tf'::text) THEN 'transcription factor'::text
-            WHEN (experiment_metadata.experiment_target_type = 'histone'::text) THEN 'histone'::text
-            ELSE NULL::text
-        END AS experiment_target_type,
-        CASE
-            WHEN ((experiment_metadata.experiment_target = 'atac_seq'::text) OR (experiment_metadata.experiment_target = 'dnase_seq'::text)) THEN 'open chromatin'::text
-            ELSE experiment_metadata.experiment_target
-        END AS experiment_target,
-    experiment_metadata.sex,
-    COALESCE(experiment_metadata.life_stage_term, 'unknown'::text) AS life_stage,
-        CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN (round(experiment_metadata.thermal_time, 2))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) = upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) <> upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN concat(lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)), '-', upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))
-            ELSE 'unknown'::text
-        END AS age,
-        CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN 'thermal time'::text
-            ELSE (COALESCE(experiment_metadata.age_at_collection_unit, experiment_metadata.age_unit))::text
-        END AS age_unit,
-    COALESCE(experiment_metadata.replicate_set_accession, experiment_metadata.replicate_accession) AS data_source
-   FROM (public.experiment_metadata
-     JOIN public.analysis_file ON ((experiment_metadata.experiment_id = analysis_file.experiment_id)))
-  WHERE ((analysis_file.handover = true) AND (experiment_metadata.replicate_set_type = 'signal'::text) AND (analysis_file.analysis_type = ANY (ARRAY['chip_seq_broad_peaks'::public.analysis_type, 'chip_seq_gapped_peaks'::public.analysis_type, 'chip_seq_narrow_peaks'::public.analysis_type, 'dnase_seq_peaks'::public.analysis_type, 'atac_seq_peaks'::public.analysis_type])) AND (experiment_metadata.biomaterial_type IS NOT NULL));
-
-
-ALTER TABLE public.metadata_expr OWNER TO regulation_usr;
-
---
--- Name: metadata_expr_agg; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_expr_agg AS
- SELECT metadata_expr.species_name,
-    metadata_expr.epigenome_name,
-    array_agg(DISTINCT metadata_expr.name) AS experiments,
-    array_agg(DISTINCT metadata_expr.biosample_accession) AS biosamples,
-    metadata_expr.material,
-    metadata_expr.term,
-    metadata_expr.term_ontology,
-    metadata_expr.organ_slims,
-    metadata_expr.system_slims,
-    array_agg(DISTINCT metadata_expr.experiment_type) AS experiment_types,
-    array_agg(DISTINCT metadata_expr.experiment_target_type) AS experiment_target_types,
-    array_agg(DISTINCT metadata_expr.experiment_target) AS experiment_targets,
-    metadata_expr.sex,
-    metadata_expr.life_stage,
-    metadata_expr.age,
-    metadata_expr.age_unit,
-    array_agg(DISTINCT metadata_expr.data_source) AS data_sources
-   FROM public.metadata_expr
-  GROUP BY metadata_expr.species_name, metadata_expr.epigenome_name, metadata_expr.material, metadata_expr.term, metadata_expr.term_ontology, metadata_expr.organ_slims, metadata_expr.system_slims, metadata_expr.sex, metadata_expr.life_stage, metadata_expr.age, metadata_expr.age_unit;
-
-
-ALTER TABLE public.metadata_expr_agg OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_age; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_age AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    COALESCE((min(
-        CASE
-            WHEN (metadata_expr_agg.age = 'unknown'::text) THEN NULL::double precision
-            ELSE (metadata_expr_agg.age)::double precision
-        END))::text, 'unknown'::text) AS min_value,
-    COALESCE((max(
-        CASE
-            WHEN (metadata_expr_agg.age = 'unknown'::text) THEN NULL::double precision
-            ELSE (metadata_expr_agg.age)::double precision
-        END))::text, 'unknown'::text) AS max_value,
-    COALESCE(metadata_expr_agg.age_unit, 'unknown'::text) AS unit
-   FROM public.metadata_expr_agg
-  GROUP BY metadata_expr_agg.species_name, metadata_expr_agg.age_unit
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_age OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_experiment_target; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_experiment_target AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    unnest(metadata_expr_agg.experiment_targets) AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_experiment_target OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_experiment_target_type; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_experiment_target_type AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    unnest(metadata_expr_agg.experiment_target_types) AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_experiment_target_type OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_experiment_type; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_experiment_type AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    unnest(metadata_expr_agg.experiment_types) AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_experiment_type OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_life_stage; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_life_stage AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    metadata_expr_agg.life_stage AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_life_stage OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_material; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_material AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    metadata_expr_agg.material AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_material OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_organ; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_organ AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    unnest(metadata_expr_agg.organ_slims) AS name,
-    array_agg(DISTINCT metadata_expr_agg.term) AS terms
-   FROM public.metadata_expr_agg
-  GROUP BY metadata_expr_agg.species_name, (unnest(metadata_expr_agg.organ_slims))
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_organ OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_sex; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_sex AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    metadata_expr_agg.sex AS name
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_sex OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_system; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_system AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    unnest(metadata_expr_agg.system_slims) AS name,
-    array_agg(DISTINCT metadata_expr_agg.term) AS terms
-   FROM public.metadata_expr_agg
-  GROUP BY metadata_expr_agg.species_name, (unnest(metadata_expr_agg.system_slims))
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_system OWNER TO regulation_usr;
-
---
--- Name: metadata_dimension_term; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_dimension_term AS
- SELECT DISTINCT metadata_expr_agg.species_name,
-    metadata_expr_agg.term AS name,
-    concat('http://purl.obolibrary.org/obo/', metadata_expr_agg.term_ontology) AS ontology
-   FROM public.metadata_expr_agg
-  ORDER BY metadata_expr_agg.species_name;
-
-
-ALTER TABLE public.metadata_dimension_term OWNER TO regulation_usr;
-
---
--- Name: metadata_expr_deagg; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.metadata_expr_deagg AS
- WITH organ_deagg AS (
-         SELECT DISTINCT experiment_metadata_1.biosample_id,
-            unnest(experiment_metadata_1.organ_slims) AS organ
-           FROM public.experiment_metadata experiment_metadata_1
-        ), system_deagg AS (
-         SELECT DISTINCT experiment_metadata_1.biosample_id,
-            unnest(experiment_metadata_1.system_slims) AS system
-           FROM public.experiment_metadata experiment_metadata_1
+CREATE VIEW public.metadata_dimensions AS
+ WITH base_epigenomes AS MATERIALIZED (
+         SELECT base_epigenomes.species_name,
+            base_epigenomes.assembly_name,
+            base_epigenomes.id,
+            base_epigenomes.material,
+            base_epigenomes.epigenome_name,
+            base_epigenomes.term,
+            base_epigenomes.term_for_label,
+            base_epigenomes.term_ontology,
+            base_epigenomes.sex,
+            base_epigenomes.sex_for_label,
+            base_epigenomes.life_stage,
+            base_epigenomes.life_stage_for_label,
+            base_epigenomes.extended_age,
+            base_epigenomes.age,
+            base_epigenomes.age_for_label,
+            base_epigenomes.organs,
+            base_epigenomes.systems,
+            base_epigenomes.tissue_group,
+            base_epigenomes.biological_group,
+            base_epigenomes.sample_type
+           FROM public.base_epigenomes
+        ), species AS (
+         SELECT DISTINCT base_epigenomes.species_name
+           FROM base_epigenomes
+        ), assemblies AS (
+         SELECT base_epigenomes.species_name,
+            array_agg(DISTINCT base_epigenomes.assembly_name) AS assemblies
+           FROM base_epigenomes
+          GROUP BY base_epigenomes.species_name
+        ), base_epigenome_terms AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            base_epigenomes.term,
+            base_epigenomes.term_ontology
+           FROM base_epigenomes
+        ), base_epigeome_age AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            base_epigenomes.age_for_label AS age,
+            base_epigenomes.extended_age
+           FROM base_epigenomes
+          WHERE (base_epigenomes.age IS NOT NULL)
+        ), base_epigenome_organ AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            unnest(base_epigenomes.organs) AS organ
+           FROM base_epigenomes
+        ), base_epigenome_system AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            unnest(base_epigenomes.systems) AS system
+           FROM base_epigenomes
+        ), base_epigenome_tissue_group AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            base_epigenomes.tissue_group
+           FROM base_epigenomes
+        ), base_epigenome_biological_group AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            base_epigenomes.biological_group
+           FROM base_epigenomes
+          WHERE (base_epigenomes.biological_group IS NOT NULL)
+        ), base_epigenome_sample_type AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            base_epigenomes.sample_type
+           FROM base_epigenomes
+          WHERE (base_epigenomes.sample_type IS NOT NULL)
+        ), filter_menu AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+                CASE
+                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(json_build_array('term'), json_build_array('tissue_group'), json_build_array('biological_group'), json_build_array('sample_type'), json_build_array('sex'), json_build_array('life_stage'), json_build_array('material')))::jsonb
+                    ELSE (json_build_array(json_build_array('term'), json_build_array('tissue_group'), json_build_array('biological_group'), json_build_array('sample_type'), json_build_array('organs'), json_build_array('systems'), json_build_array('sex'), json_build_array('life_stage'), json_build_array('material')))::jsonb
+                END AS filter_layout
+           FROM base_epigenomes
+        ), table_layout AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            (json_build_array('tissue_group', 'term', 'life_stage', 'age', 'sex', 'material'))::jsonb AS layout
+           FROM base_epigenomes
+        ), optional AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+                CASE
+                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array('biological_group', 'sample_type'))::jsonb
+                    ELSE (json_build_array('organs', 'systems', 'biological_group', 'sample_type'))::jsonb
+                END AS dimensions
+           FROM base_epigenomes
+        ), collapsible AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+            (json_build_array('sex', 'life_stage', 'age'))::jsonb AS dimensions
+           FROM base_epigenomes
+        ), filterable AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+                CASE
+                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array('material', 'tissue_group', 'biological_group', 'sample_type', 'sex', 'term', 'life_stage'))::jsonb
+                    ELSE (json_build_array('material', 'tissue_group', 'biological_group', 'sample_type', 'sex', 'term', 'life_stage', 'organs', 'systems'))::jsonb
+                END AS dimensions
+           FROM base_epigenomes
+        ), sortable AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+                CASE
+                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array('term', 'tissue_group', 'biological_group', 'sample_type', 'life_stage', 'sex', 'material'))::jsonb
+                    ELSE (json_build_array('tissue_group', 'biological_group', 'sample_type', 'organs', 'life_stage', 'sex', 'material', 'term', 'systems'))::jsonb
+                END AS dimensions
+           FROM base_epigenomes
+        ), zero_counts_visible AS (
+         SELECT DISTINCT base_epigenomes.species_name,
+                CASE
+                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array('material'))::jsonb
+                    ELSE (json_build_array('material', 'systems'))::jsonb
+                END AS dimensions
+           FROM base_epigenomes
+        ), species_dimensions AS (
+         SELECT json_build_object('species_name', species.species_name, 'assemblies', ( SELECT assemblies.assemblies
+                   FROM assemblies
+                  WHERE (assemblies.species_name = species.species_name)), 'ui_spec', json_build_object('filter_layout', ( SELECT filter_menu.filter_layout
+                   FROM filter_menu
+                  WHERE (filter_menu.species_name = species.species_name)), 'table_layout', ( SELECT table_layout.layout
+                   FROM table_layout
+                  WHERE (table_layout.species_name = species.species_name)), 'optional', ( SELECT optional.dimensions
+                   FROM optional
+                  WHERE (optional.species_name = species.species_name)), 'collapsible', ( SELECT collapsible.dimensions
+                   FROM collapsible
+                  WHERE (collapsible.species_name = species.species_name)), 'default_collapsed_by', json_build_array('age', 'sex'), 'filterable', ( SELECT filterable.dimensions
+                   FROM filterable
+                  WHERE (filterable.species_name = species.species_name)), 'sortable', ( SELECT sortable.dimensions
+                   FROM sortable
+                  WHERE (sortable.species_name = species.species_name)), 'zero_counts_visible', ( SELECT zero_counts_visible.dimensions
+                   FROM zero_counts_visible
+                  WHERE (zero_counts_visible.species_name = species.species_name))), 'dimensions', json_build_object('material', json_build_object('name', 'Biosample material', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.material) AS json_agg
+                   FROM base_epigenomes b
+                  WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values',
+                CASE
+                    WHEN (species.species_name = ANY (ARRAY['Homo sapiens'::text, 'Mus musculus'::text])) THEN json_build_array('cell line')
+                    ELSE json_build_array()
+                END)), 'sex', json_build_object('name', 'Sex', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.sex) AS json_agg
+                   FROM base_epigenomes b
+                  WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'term', json_build_object('name', 'Biosample term', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', t.term, 'ontology', json_build_object('curie', replace(t.term_ontology, '_'::text, ':'::text), 'url', concat('https://purl.obolibrary.org/obo/', t.term_ontology)))) AS json_agg
+                   FROM base_epigenome_terms t
+                  WHERE (t.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'life_stage', json_build_object('name', 'Life stage', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.life_stage) AS json_agg
+                   FROM base_epigenomes b
+                  WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'age', json_build_object('name', 'Age', 'type', 'categorical_with_description', 'values', ( SELECT json_agg(json_build_object('value', a.age, 'description', a.extended_age)) AS json_agg
+                   FROM base_epigeome_age a
+                  WHERE (a.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'organs', json_build_object('name', 'Organ', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', o.organ, 'ontology', json_build_object('curie', NULL::unknown, 'url', NULL::unknown))) AS json_agg
+                   FROM base_epigenome_organ o
+                  WHERE (o.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'systems', json_build_object('name', 'System', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', s.system, 'ontology', json_build_object('curie', NULL::unknown, 'url', NULL::unknown))) AS json_agg
+                   FROM base_epigenome_system s
+                  WHERE (s.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'tissue_group', json_build_object('name', 'Tissue group', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', t.tissue_group, 'ontology', json_build_object('curie', NULL::unknown, 'url', NULL::unknown))) AS json_agg
+                   FROM base_epigenome_tissue_group t
+                  WHERE (t.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'biological_group', json_build_object('name', 'Biological group', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', c.biological_group, 'ontology', json_build_object('curie', NULL::text, 'url', NULL::text)) ORDER BY c.biological_group) AS json_agg
+                   FROM base_epigenome_biological_group c
+                  WHERE (c.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'sample_type', json_build_object('name', 'Sample type', 'type', 'categorical', 'values', ( SELECT json_agg(c.sample_type ORDER BY c.sample_type) AS json_agg
+                   FROM base_epigenome_sample_type c
+                  WHERE (c.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())))) AS payload
+           FROM species
         )
- SELECT DISTINCT experiment_metadata.species_name,
-    experiment_metadata.epigenome_name AS name,
-    experiment_metadata.name AS experiment_name,
-    experiment_metadata.biosample_accession,
-    initcap(replace((experiment_metadata.biomaterial_type)::text, '_'::text, ' '::text)) AS material,
-    experiment_metadata.biosample_term AS term,
-    concat(experiment_metadata.ontology_type, '_', experiment_metadata.curie) AS term_ontology,
-    experiment_metadata.organ_slims,
-    organ_deagg.organ,
-    experiment_metadata.system_slims,
-    system_deagg.system,
+ SELECT jsonb_pretty((json_agg(species_dimensions.payload))::jsonb) AS species_dimensions
+   FROM species_dimensions;
+
+
+ALTER TABLE public.metadata_dimensions OWNER TO regulation_usr;
+
+--
+-- Name: metadata_override; Type: TABLE; Schema: public; Owner: regulation_usr
+--
+
+CREATE TABLE public.metadata_override (
+    metadata_override_id uuid DEFAULT gen_random_uuid() NOT NULL,
+    accession text NOT NULL,
+    original_values jsonb NOT NULL,
+    edited_values jsonb NOT NULL
+);
+
+
+ALTER TABLE public.metadata_override OWNER TO regulation_usr;
+
+--
+-- Name: multiome; Type: TABLE; Schema: public; Owner: regulation_usr
+--
+
+CREATE TABLE public.multiome (
+    experiment_id uuid NOT NULL,
+    sn_atac_seq_id uuid NOT NULL,
+    sn_rna_seq_id uuid,
+    library_preparation character varying
+);
+
+
+ALTER TABLE public.multiome OWNER TO regulation_usr;
+
+--
+-- Name: open_chromatin_base_epigenome; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.open_chromatin_base_epigenome AS
+ WITH slims_before_agg AS (
+         SELECT curated_open_chromatin_assay_metadata.epigenome_id,
+                CASE
+                    WHEN (curated_open_chromatin_assay_metadata.organ_slims = ARRAY[]::text[]) THEN ARRAY['EMPTY'::text]
+                    WHEN (curated_open_chromatin_assay_metadata.organ_slims IS NULL) THEN ARRAY['UNANNOTATED'::text]
+                    ELSE curated_open_chromatin_assay_metadata.organ_slims
+                END AS organs_mod,
+                CASE
+                    WHEN (curated_open_chromatin_assay_metadata.system_slims = ARRAY[]::text[]) THEN ARRAY['EMPTY'::text]
+                    WHEN (curated_open_chromatin_assay_metadata.system_slims IS NULL) THEN ARRAY['UNANNOTATED'::text]
+                    ELSE curated_open_chromatin_assay_metadata.system_slims
+                END AS systems_mod
+           FROM public.curated_open_chromatin_assay_metadata
+        ), metadata_epig_with_ids AS (
+         SELECT DISTINCT curated_open_chromatin_assay_metadata.species_name,
+            curated_open_chromatin_assay_metadata.assembly_name,
+            curated_open_chromatin_assay_metadata.epigenome_name,
+            curated_open_chromatin_assay_metadata.epigenome_id,
+            curated_open_chromatin_assay_metadata.epigenome_description,
+            array_agg(DISTINCT curated_open_chromatin_assay_metadata.material) AS material,
+            curated_open_chromatin_assay_metadata.term,
+            curated_open_chromatin_assay_metadata.term_ontology,
+            public.unnest_2d_1d(array_agg(DISTINCT slims_before_agg.organs_mod)) AS organs,
+            public.unnest_2d_1d(array_agg(DISTINCT slims_before_agg.systems_mod)) AS systems,
+            array_agg(DISTINCT curated_open_chromatin_assay_metadata.sex) AS sex,
+            array_agg(DISTINCT curated_open_chromatin_assay_metadata.life_stage) AS life_stage,
+            array_agg(DISTINCT curated_open_chromatin_assay_metadata.age ORDER BY curated_open_chromatin_assay_metadata.age) AS age,
+            array_agg(DISTINCT curated_open_chromatin_assay_metadata.age_unit) AS age_unit
+           FROM (public.curated_open_chromatin_assay_metadata
+             JOIN slims_before_agg ON ((curated_open_chromatin_assay_metadata.epigenome_id = slims_before_agg.epigenome_id)))
+          GROUP BY curated_open_chromatin_assay_metadata.species_name, curated_open_chromatin_assay_metadata.assembly_name, curated_open_chromatin_assay_metadata.epigenome_name, curated_open_chromatin_assay_metadata.epigenome_id, curated_open_chromatin_assay_metadata.epigenome_description, curated_open_chromatin_assay_metadata.term, curated_open_chromatin_assay_metadata.term_ontology
+        ), slims_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN (metadata_epig_with_ids_1.organs = ARRAY['EMPTY'::text]) THEN ARRAY[]::text[]
+                    WHEN (metadata_epig_with_ids_1.organs = ARRAY['UNANNOTATED'::text]) THEN NULL::text[]
+                    ELSE metadata_epig_with_ids_1.organs
+                END AS organs,
+                CASE
+                    WHEN (metadata_epig_with_ids_1.systems = ARRAY['EMPTY'::text]) THEN ARRAY[]::text[]
+                    WHEN (metadata_epig_with_ids_1.systems = ARRAY['UNANNOTATED'::text]) THEN NULL::text[]
+                    ELSE metadata_epig_with_ids_1.systems
+                END AS systems,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::numeric[]
+                    ELSE (metadata_epig_with_ids_1.age)::numeric[]
+                END AS age,
+            metadata_epig_with_ids_1.age_unit
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), handle_age_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::numeric[]
+                    ELSE (metadata_epig_with_ids_1.age)::numeric[]
+                END AS age
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), sort_agg_age AS (
+         SELECT handle_age_after_agg.epigenome_id,
+            ARRAY( SELECT unnest(handle_age_after_agg.age) AS unnest
+                  ORDER BY (unnest(handle_age_after_agg.age))) AS age_sorted
+           FROM handle_age_after_agg
+        ), handle_sorted_age AS (
+         SELECT sort_agg_age.epigenome_id,
+                CASE
+                    WHEN (ARRAY[]::numeric[] = sort_agg_age.age_sorted) THEN NULL::text
+                    WHEN (array_length(sort_agg_age.age_sorted, 1) = 1) THEN ((sort_agg_age.age_sorted[1])::real)::text
+                    ELSE ((sort_agg_age.age_sorted)::real[])::text
+                END AS age
+           FROM sort_agg_age
+        ), handle_age_unit_after_agg AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ('unknown'::text = ANY (metadata_epig_with_ids_1.age)) THEN NULL::text
+                    WHEN ((('embryo'::text = ANY (metadata_epig_with_ids_1.life_stage)) OR ('embryonic'::text = ANY (metadata_epig_with_ids_1.life_stage))) AND ('day'::text = ANY (metadata_epig_with_ids_1.age_unit))) THEN 'days post fertilisation'::text
+                    ELSE array_to_string(metadata_epig_with_ids_1.age_unit, ', '::text)
+                END AS age_unit
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), handle_age_unit_singular_plural AS (
+         SELECT handle_age_unit_after_agg.epigenome_id,
+                CASE
+                    WHEN ((handle_age_unit_after_agg.age_unit <> 'days post fertilisation'::text) AND (handle_age_unit_after_agg.age_unit <> 'thermal time'::text) AND (sort_agg_age.age_sorted[1] <> (1)::numeric)) THEN concat(handle_age_unit_after_agg.age_unit, 's')
+                    ELSE handle_age_unit_after_agg.age_unit
+                END AS age_unit
+           FROM (handle_age_unit_after_agg
+             JOIN sort_agg_age ON ((handle_age_unit_after_agg.epigenome_id = sort_agg_age.epigenome_id)))
+        ), age_range AS (
+         SELECT sort_agg_age.epigenome_id,
+                CASE
+                    WHEN (ARRAY[]::numeric[] = sort_agg_age.age_sorted) THEN NULL::text
+                    WHEN (array_length(sort_agg_age.age_sorted, 1) = 1) THEN ((sort_agg_age.age_sorted[1])::real)::text
+                    ELSE concat(((sort_agg_age.age_sorted[1])::real)::text, '-', ((sort_agg_age.age_sorted[array_upper(sort_agg_age.age_sorted, 1)])::real)::text)
+                END AS age_range
+           FROM sort_agg_age
+        ), shorten_age_unit AS (
+         SELECT handle_age_unit_after_agg.epigenome_id,
+                CASE
+                    WHEN (handle_age_unit_after_agg.age_unit = 'days post fertilisation'::text) THEN 'dpf'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'month'::text) THEN 'mo'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'year'::text) THEN 'y'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'week'::text) THEN 'w'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'day'::text) THEN 'd'::text
+                    WHEN (handle_age_unit_after_agg.age_unit = 'thermal time'::text) THEN 'tt'::text
+                    ELSE handle_age_unit_after_agg.age_unit
+                END AS short_age_unit
+           FROM handle_age_unit_after_agg
+        ), shorten_sex AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['unknown'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['mixed'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['male'::text, 'female'::text]) THEN NULL::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['male'::text]) THEN 'm'::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['female'::text]) THEN 'f'::text
+                    WHEN ((metadata_epig_with_ids_1.sex)::text[] = ARRAY['phenotypic'::text]) THEN NULL::text
+                    ELSE 'Err: not contemplated case'::text
+                END AS sex_for_label
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        ), lifestage_in_label AS (
+         SELECT metadata_epig_with_ids_1.epigenome_id,
+                CASE
+                    WHEN ((((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['phenotypic'::text]) OR ((metadata_epig_with_ids_1.sex)::text[] @> ARRAY['unknown'::text])) AND (metadata_epig_with_ids_1.term = 'embryo'::text)) THEN metadata_epig_with_ids_1.life_stage
+                    ELSE NULL::text[]
+                END AS life_stage_info_for_label
+           FROM metadata_epig_with_ids metadata_epig_with_ids_1
+        )
+ SELECT DISTINCT metadata_epig_with_ids.species_name,
+    metadata_epig_with_ids.assembly_name,
+    metadata_epig_with_ids.epigenome_id AS id,
+    lower(array_to_string(metadata_epig_with_ids.material, ', '::text)) AS material,
+    metadata_epig_with_ids.epigenome_name,
+    metadata_epig_with_ids.term,
         CASE
-            WHEN (experiment_metadata.experiment_type = 'atac_seq'::public.experiment_type) THEN 'ATAC-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'dnase_seq'::public.experiment_type) THEN 'DNase-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'chip_seq'::public.experiment_type) THEN 'ChIP-seq'::text
+            WHEN (metadata_epig_with_ids.term <> 'embryo'::text) THEN metadata_epig_with_ids.term
             ELSE NULL::text
-        END AS experiment_type,
+        END AS term_for_label,
+    metadata_epig_with_ids.term_ontology,
+    array_to_string(metadata_epig_with_ids.sex, ', '::text) AS sex,
+    shorten_sex.sex_for_label,
+    array_to_string(metadata_epig_with_ids.life_stage, ', '::text) AS life_stage,
         CASE
-            WHEN (experiment_metadata.experiment_target_type = 'atac_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'dnase_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'tf'::text) THEN 'transcription factor'::text
-            WHEN (experiment_metadata.experiment_target_type = 'histone'::text) THEN 'histone'::text
+            WHEN ((((metadata_epig_with_ids.sex)::text[] @> ARRAY['phenotypic'::text]) OR ((metadata_epig_with_ids.sex)::text[] @> ARRAY['unknown'::text])) AND (metadata_epig_with_ids.term = 'embryo'::text)) THEN array_to_string(metadata_epig_with_ids.life_stage, ', '::text)
             ELSE NULL::text
-        END AS experiment_target_type,
+        END AS life_stage_for_label,
         CASE
-            WHEN ((experiment_metadata.experiment_target = 'atac_seq'::text) OR (experiment_metadata.experiment_target = 'dnase_seq'::text)) THEN 'open chromatin'::text
-            ELSE experiment_metadata.experiment_target
-        END AS experiment_target,
-    experiment_metadata.sex,
-    COALESCE(experiment_metadata.life_stage_term, 'unknown'::text) AS life_stage,
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(handle_sorted_age.age, ' ', handle_age_unit_singular_plural.age_unit)
+        END AS extended_age,
         CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN (round(experiment_metadata.thermal_time, 2))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) = upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) <> upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN concat(lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)), '-', upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))
-            ELSE 'unknown'::text
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(age_range.age_range, ' ', shorten_age_unit.short_age_unit)
         END AS age,
         CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN 'thermal time'::text
-            ELSE (COALESCE(experiment_metadata.age_at_collection_unit, experiment_metadata.age_unit))::text
-        END AS age_unit,
-    COALESCE(experiment_metadata.replicate_set_accession, experiment_metadata.replicate_accession) AS data_source
-   FROM (((public.experiment_metadata
-     JOIN public.analysis_file ON ((experiment_metadata.experiment_id = analysis_file.experiment_id)))
-     LEFT JOIN organ_deagg ON ((organ_deagg.biosample_id = experiment_metadata.biosample_id)))
-     LEFT JOIN system_deagg ON ((system_deagg.biosample_id = experiment_metadata.biosample_id)))
-  WHERE ((analysis_file.handover = true) AND (experiment_metadata.replicate_set_type = 'signal'::text) AND (analysis_file.analysis_type = ANY (ARRAY['chip_seq_broad_peaks'::public.analysis_type, 'chip_seq_gapped_peaks'::public.analysis_type, 'chip_seq_narrow_peaks'::public.analysis_type, 'dnase_seq_peaks'::public.analysis_type, 'atac_seq_peaks'::public.analysis_type])) AND (experiment_metadata.biomaterial_type IS NOT NULL));
+            WHEN (((metadata_epig_with_ids.assembly_name)::text = 'GRCm39'::text) AND (array_to_string(metadata_epig_with_ids.life_stage, ', '::text) = 'embryonic'::text) AND (age_range.age_range IS NOT NULL)) THEN concat('E', age_range.age_range)
+            WHEN (handle_sorted_age.age IS NULL) THEN NULL::text
+            ELSE concat(age_range.age_range, ' ', shorten_age_unit.short_age_unit)
+        END AS age_for_label,
+    slims_after_agg.organs,
+    slims_after_agg.systems,
+    biosample_term_group.term_group AS tissue_group,
+    biosample_biological_group.biological_group,
+    biosample_sample_type.sample_type
+   FROM (((((((((metadata_epig_with_ids
+     JOIN handle_sorted_age ON ((metadata_epig_with_ids.epigenome_id = handle_sorted_age.epigenome_id)))
+     JOIN age_range ON ((metadata_epig_with_ids.epigenome_id = age_range.epigenome_id)))
+     JOIN handle_age_unit_singular_plural ON ((metadata_epig_with_ids.epigenome_id = handle_age_unit_singular_plural.epigenome_id)))
+     JOIN shorten_age_unit ON ((metadata_epig_with_ids.epigenome_id = shorten_age_unit.epigenome_id)))
+     JOIN slims_after_agg ON ((metadata_epig_with_ids.epigenome_id = slims_after_agg.epigenome_id)))
+     JOIN shorten_sex ON ((metadata_epig_with_ids.epigenome_id = shorten_sex.epigenome_id)))
+     JOIN public.biosample_term_group ON ((metadata_epig_with_ids.epigenome_id = biosample_term_group.epigenome_id)))
+     LEFT JOIN public.biosample_biological_group ON ((metadata_epig_with_ids.epigenome_id = biosample_biological_group.epigenome_id)))
+     LEFT JOIN public.biosample_sample_type ON ((metadata_epig_with_ids.epigenome_id = biosample_sample_type.epigenome_id)))
+  WHERE (((metadata_epig_with_ids.assembly_name)::text <> 'ARS-UCD1.3'::text) AND ((metadata_epig_with_ids.assembly_name)::text <> 'GRCg6a'::text) AND (metadata_epig_with_ids.term <> 'iPS-18c'::text));
 
 
-ALTER TABLE public.metadata_expr_deagg OWNER TO regulation_usr;
+ALTER TABLE public.open_chromatin_base_epigenome OWNER TO regulation_usr;
 
 --
 -- Name: posix_file; Type: TABLE; Schema: public; Owner: regulation_usr
@@ -1865,8 +2809,8 @@ CREATE TABLE public.quality_annotation (
     quality_annotation_id uuid DEFAULT gen_random_uuid() NOT NULL,
     accession text NOT NULL,
     date date,
-    note text NOT NULL,
-    quality_annotation_type public.quality_annotation_type NOT NULL
+    quality_annotation_type public.quality_annotation_type NOT NULL,
+    details jsonb NOT NULL
 );
 
 
@@ -1877,14 +2821,14 @@ ALTER TABLE public.quality_annotation OWNER TO regulation_usr;
 --
 
 CREATE TABLE public.read_file (
-    split_order integer NOT NULL,
-    technical_replicate integer NOT NULL,
+    split_order integer,
+    technical_replicate integer,
     read_file_id uuid DEFAULT gen_random_uuid() NOT NULL,
-    read_file_set_id uuid NOT NULL,
+    read_file_set_id uuid,
     file_id uuid NOT NULL,
     read_count integer,
     base_count bigint,
-    paired_order integer NOT NULL,
+    paired_order integer,
     run_order public.run_order_type,
     run_id uuid,
     data_source_id uuid
@@ -1922,16 +2866,35 @@ ALTER TABLE public.read_file_data_source OWNER TO regulation_usr;
 
 CREATE TABLE public.run (
     run_id uuid DEFAULT gen_random_uuid() NOT NULL,
-    run_type public.run_type NOT NULL,
     read_length integer NOT NULL,
     read_file_set_id uuid,
     data_source_id uuid,
     read_count integer NOT NULL,
-    technical_replicate integer NOT NULL
+    technical_replicate integer NOT NULL,
+    run_type public.run_type NOT NULL
 );
 
 
 ALTER TABLE public.run OWNER TO regulation_usr;
+
+--
+-- Name: run_accession; Type: VIEW; Schema: public; Owner: regulation_usr
+--
+
+CREATE VIEW public.run_accession AS
+ SELECT run.run_id,
+    run.run_type,
+    run.read_length,
+    run.read_file_set_id,
+    run.data_source_id,
+    run.read_count,
+    run.technical_replicate,
+    data_source.accession AS run_accession
+   FROM (public.run
+     LEFT JOIN public.data_source ON ((run.data_source_id = data_source.data_source_id)));
+
+
+ALTER TABLE public.run_accession OWNER TO regulation_usr;
 
 --
 -- Name: read_file_metadata; Type: VIEW; Schema: public; Owner: regulation_usr
@@ -1997,47 +2960,44 @@ CREATE VIEW public.read_file_metadata AS
     experiment_metadata.sex,
     library_data_source.library_accession,
     library_data_source.read_file_set_id,
-    run.technical_replicate,
-    run.run_type,
-    run.read_length,
-    run.read_count,
-    run.run_id,
+    run_accession.technical_replicate,
+    run_accession.run_type,
+    run_accession.read_length,
+    run_accession.read_count,
+    run_accession.run_id,
     read_file_data_source.run_order,
     read_file_data_source.read_file_accession,
     read_file_data_source.read_file_id,
     file.file_id,
     file.size,
     file.md5sum,
-    public_url.url
-   FROM ((((((public.experiment_metadata
+    public_url.url,
+    run_accession.run_accession,
+    s3_object.key
+   FROM (((((((public.experiment_metadata
      JOIN public.replicate ON (((experiment_metadata.replicate_id = replicate.replicate_id) AND (replicate.biosample_set_id = experiment_metadata.biosample_set_id))))
      JOIN public.library_data_source ON ((replicate.read_file_set_id = library_data_source.read_file_set_id)))
-     JOIN public.run ON ((library_data_source.read_file_set_id = run.read_file_set_id)))
-     JOIN public.read_file_data_source ON ((run.run_id = read_file_data_source.run_id)))
+     JOIN public.run_accession ON ((library_data_source.read_file_set_id = run_accession.read_file_set_id)))
+     JOIN public.read_file_data_source ON ((run_accession.run_id = read_file_data_source.run_id)))
      JOIN public.file ON ((read_file_data_source.file_id = file.file_id)))
-     JOIN public.public_url ON ((file.file_id = public_url.file_id)));
+     LEFT JOIN public.public_url ON ((file.file_id = public_url.file_id)))
+     LEFT JOIN public.s3_object ON ((file.file_id = s3_object.file_id)));
 
 
 ALTER TABLE public.read_file_metadata OWNER TO regulation_usr;
 
 --
--- Name: run_accession; Type: VIEW; Schema: public; Owner: regulation_usr
+-- Name: rna_seq; Type: TABLE; Schema: public; Owner: regulation_usr
 --
 
-CREATE VIEW public.run_accession AS
- SELECT run.run_id,
-    run.run_type,
-    run.read_length,
-    run.read_file_set_id,
-    run.data_source_id,
-    run.read_count,
-    run.technical_replicate,
-    data_source.accession AS run_accession
-   FROM (public.run
-     LEFT JOIN public.data_source ON ((run.data_source_id = data_source.data_source_id)));
+CREATE TABLE public.rna_seq (
+    experiment_id uuid NOT NULL,
+    replicate_set_id uuid NOT NULL,
+    library_preparation character varying
+);
 
 
-ALTER TABLE public.run_accession OWNER TO regulation_usr;
+ALTER TABLE public.rna_seq OWNER TO regulation_usr;
 
 --
 -- Name: run_alignment_task; Type: TABLE; Schema: public; Owner: regulation_usr
@@ -2052,89 +3012,25 @@ CREATE TABLE public.run_alignment_task (
 ALTER TABLE public.run_alignment_task OWNER TO regulation_usr;
 
 --
--- Name: subsite_data_sources; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.subsite_data_sources AS
- SELECT DISTINCT experiment_metadata.species_name,
-    experiment_metadata.name,
-    experiment_metadata.biosample_accession,
-    initcap(replace((experiment_metadata.biomaterial_type)::text, '_'::text, ' '::text)) AS material,
-    experiment_metadata.biosample_term AS term,
-    concat(experiment_metadata.ontology_type, '_', experiment_metadata.curie) AS term_ontology,
-        CASE
-            WHEN (experiment_metadata.experiment_type = 'atac_seq'::public.experiment_type) THEN 'ATAC-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'dnase_seq'::public.experiment_type) THEN 'DNase-seq'::text
-            WHEN (experiment_metadata.experiment_type = 'chip_seq'::public.experiment_type) THEN 'ChIP-seq'::text
-            ELSE NULL::text
-        END AS experiment_type,
-        CASE
-            WHEN (experiment_metadata.experiment_target_type = 'atac_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'dnase_seq'::text) THEN 'open chromatin'::text
-            WHEN (experiment_metadata.experiment_target_type = 'tf'::text) THEN 'transcription factor'::text
-            WHEN (experiment_metadata.experiment_target_type = 'histone'::text) THEN 'histone'::text
-            ELSE NULL::text
-        END AS experiment_target_type,
-        CASE
-            WHEN ((experiment_metadata.experiment_target = 'atac_seq'::text) OR (experiment_metadata.experiment_target = 'dnase_seq'::text)) THEN 'open chromatin'::text
-            ELSE experiment_metadata.experiment_target
-        END AS experiment_target,
-    experiment_metadata.sex,
-    COALESCE(experiment_metadata.life_stage_term, 'unknown'::text) AS life_stage,
-        CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN (round(experiment_metadata.thermal_time, 2))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) = upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))::text
-            WHEN (lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)) <> upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age))) THEN concat(lower(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)), '-', upper(COALESCE(experiment_metadata.age_at_collection, experiment_metadata.age)))
-            ELSE NULL::text
-        END AS age,
-        CASE
-            WHEN (experiment_metadata.thermal_time IS NOT NULL) THEN 'thermal time'::text
-            ELSE (COALESCE(experiment_metadata.age_at_collection_unit, experiment_metadata.age_unit))::text
-        END AS age_unit,
-    COALESCE(experiment_metadata.replicate_set_accession, experiment_metadata.replicate_accession) AS data_source
-   FROM (public.experiment_metadata
-     JOIN public.analysis_file ON ((experiment_metadata.experiment_id = analysis_file.experiment_id)))
-  WHERE ((analysis_file.handover = true) AND ((experiment_metadata.experiment_target_type <> 'tf'::text) OR (experiment_metadata.experiment_target = 'CTCF'::text)) AND (experiment_metadata.replicate_set_type = 'signal'::text) AND (analysis_file.analysis_type = ANY (ARRAY['chip_seq_broad_peaks'::public.analysis_type, 'chip_seq_gapped_peaks'::public.analysis_type, 'chip_seq_narrow_peaks'::public.analysis_type, 'dnase_seq_peaks'::public.analysis_type, 'atac_seq_peaks'::public.analysis_type])) AND (experiment_metadata.biomaterial_type IS NOT NULL));
-
-
-ALTER TABLE public.subsite_data_sources OWNER TO regulation_usr;
-
---
--- Name: subsite_data_sources_agg_by_expr; Type: VIEW; Schema: public; Owner: regulation_usr
---
-
-CREATE VIEW public.subsite_data_sources_agg_by_expr AS
- SELECT subsite_data_sources.species_name,
-    subsite_data_sources.name,
-    array_agg(subsite_data_sources.biosample_accession) AS biosamples,
-    subsite_data_sources.material,
-    subsite_data_sources.term,
-    subsite_data_sources.term_ontology,
-    subsite_data_sources.experiment_type,
-    subsite_data_sources.experiment_target_type,
-    subsite_data_sources.sex,
-    subsite_data_sources.life_stage,
-    subsite_data_sources.age,
-    subsite_data_sources.age_unit,
-    array_agg(DISTINCT subsite_data_sources.data_source) AS data_sources
-   FROM public.subsite_data_sources
-  GROUP BY subsite_data_sources.species_name, subsite_data_sources.name, subsite_data_sources.material, subsite_data_sources.term, subsite_data_sources.term_ontology, subsite_data_sources.experiment_type, subsite_data_sources.experiment_target_type, subsite_data_sources.sex, subsite_data_sources.life_stage, subsite_data_sources.age, subsite_data_sources.age_unit;
-
-
-ALTER TABLE public.subsite_data_sources_agg_by_expr OWNER TO regulation_usr;
-
---
 -- Name: track; Type: TABLE; Schema: public; Owner: regulation_usr
 --
 
 CREATE TABLE public.track (
     metadata jsonb,
-    epigenome_id uuid,
+    epigenome_id uuid NOT NULL,
     track_id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
 
 ALTER TABLE public.track OWNER TO regulation_usr;
+
+--
+-- Name: quality_annotation accession_date_details_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.quality_annotation
+    ADD CONSTRAINT accession_date_details_key UNIQUE (accession, date, details);
+
 
 --
 -- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
@@ -2217,6 +3113,14 @@ ALTER TABLE ONLY public.atac_seq
 
 
 --
+-- Name: barcode_file barcode_file_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.barcode_file
+    ADD CONSTRAINT barcode_file_pkey PRIMARY KEY (barcode_file_id);
+
+
+--
 -- Name: biosample biosample_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -2289,14 +3193,6 @@ ALTER TABLE ONLY public.dnase_seq
 
 
 --
--- Name: epigenome_group_assembly epigenome_group_assembly_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
---
-
-ALTER TABLE ONLY public.epigenome_group_assembly
-    ADD CONSTRAINT epigenome_group_assembly_pkey PRIMARY KEY (epigenome_group_assembly_id);
-
-
---
 -- Name: epigenome_group epigenome_group_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -2305,27 +3201,11 @@ ALTER TABLE ONLY public.epigenome_group
 
 
 --
--- Name: epigenome epigenome_name_species_id_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
---
-
-ALTER TABLE ONLY public.epigenome
-    ADD CONSTRAINT epigenome_name_species_id_key UNIQUE (name, species_id);
-
-
---
 -- Name: epigenome epigenome_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
 ALTER TABLE ONLY public.epigenome
     ADD CONSTRAINT epigenome_pkey PRIMARY KEY (epigenome_id);
-
-
---
--- Name: experiment experiment_name_epigenome_id_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
---
-
-ALTER TABLE ONLY public.experiment
-    ADD CONSTRAINT experiment_name_epigenome_id_key UNIQUE (name, epigenome_id);
 
 
 --
@@ -2361,6 +3241,14 @@ ALTER TABLE ONLY public.histone_target
 
 
 --
+-- Name: inclusion_list inclusion_list_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.inclusion_list
+    ADD CONSTRAINT inclusion_list_pkey PRIMARY KEY (inclusion_list_id);
+
+
+--
 -- Name: life_stage life_stage_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -2390,6 +3278,38 @@ ALTER TABLE ONLY public.mask_file
 
 ALTER TABLE ONLY public.mask_file
     ADD CONSTRAINT mask_file_pkey PRIMARY KEY (mask_file_id);
+
+
+--
+-- Name: metadata_override metadata_override_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.metadata_override
+    ADD CONSTRAINT metadata_override_pkey PRIMARY KEY (metadata_override_id);
+
+
+--
+-- Name: multiome multiome_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_pkey PRIMARY KEY (experiment_id);
+
+
+--
+-- Name: multiome multiome_sn_atac_seq_id_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_sn_atac_seq_id_key UNIQUE (sn_atac_seq_id);
+
+
+--
+-- Name: multiome multiome_sn_rna_seq_id_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_sn_rna_seq_id_key UNIQUE (sn_rna_seq_id);
 
 
 --
@@ -2462,6 +3382,22 @@ ALTER TABLE ONLY public.replicate
 
 ALTER TABLE ONLY public.replicate_set
     ADD CONSTRAINT replicate_set_pkey PRIMARY KEY (replicate_set_id);
+
+
+--
+-- Name: rna_seq rna_seq_pkey; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.rna_seq
+    ADD CONSTRAINT rna_seq_pkey PRIMARY KEY (experiment_id);
+
+
+--
+-- Name: rna_seq rna_seq_replicate_set_id_key; Type: CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.rna_seq
+    ADD CONSTRAINT rna_seq_replicate_set_id_key UNIQUE (replicate_set_id);
 
 
 --
@@ -2569,10 +3505,171 @@ ALTER TABLE ONLY public.run
 
 
 --
+-- Name: ix_alignment_file_alignment_task_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_alignment_file_alignment_task_id ON public.alignment_file USING btree (alignment_task_id);
+
+
+--
+-- Name: ix_alignment_file_assembly_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_alignment_file_assembly_id ON public.alignment_file USING btree (assembly_id);
+
+
+--
+-- Name: ix_alignment_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_alignment_file_file_id ON public.alignment_file USING btree (file_id);
+
+
+--
+-- Name: ix_alignment_file_read_file_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_alignment_file_read_file_set_id ON public.alignment_file USING btree (read_file_set_id);
+
+
+--
+-- Name: ix_analysis_file_assembly_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_analysis_file_assembly_id ON public.analysis_file USING btree (assembly_id);
+
+
+--
+-- Name: ix_analysis_file_experiment_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_analysis_file_experiment_id ON public.analysis_file USING btree (experiment_id);
+
+
+--
+-- Name: ix_analysis_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_analysis_file_file_id ON public.analysis_file USING btree (file_id);
+
+
+--
+-- Name: ix_assembly_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_assembly_file_id ON public.assembly USING btree (file_id);
+
+
+--
 -- Name: ix_assembly_species_id; Type: INDEX; Schema: public; Owner: regulation_usr
 --
 
 CREATE INDEX ix_assembly_species_id ON public.assembly USING btree (species_id);
+
+
+--
+-- Name: ix_barcode_file_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_barcode_file_data_source_id ON public.barcode_file USING btree (data_source_id);
+
+
+--
+-- Name: ix_barcode_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_barcode_file_file_id ON public.barcode_file USING btree (file_id);
+
+
+--
+-- Name: ix_barcode_file_run_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_barcode_file_run_id ON public.barcode_file USING btree (run_id);
+
+
+--
+-- Name: ix_biosample_alternative_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_alternative_data_source_id ON public.biosample USING btree (alternative_data_source_id);
+
+
+--
+-- Name: ix_biosample_biosource_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_biosource_id ON public.biosample USING btree (biosource_id);
+
+
+--
+-- Name: ix_biosample_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_data_source_id ON public.biosample USING btree (data_source_id);
+
+
+--
+-- Name: ix_biosample_life_stage_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_life_stage_id ON public.biosample USING btree (life_stage_id);
+
+
+--
+-- Name: ix_biosample_ontology_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_ontology_id ON public.biosample USING btree (ontology_id);
+
+
+--
+-- Name: ix_biosample_set_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosample_set_data_source_id ON public.biosample_set USING btree (data_source_id);
+
+
+--
+-- Name: ix_biosource_alternative_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosource_alternative_data_source_id ON public.biosource USING btree (alternative_data_source_id);
+
+
+--
+-- Name: ix_biosource_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosource_data_source_id ON public.biosource USING btree (data_source_id);
+
+
+--
+-- Name: ix_biosource_life_stage_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_biosource_life_stage_id ON public.biosource USING btree (life_stage_id);
+
+
+--
+-- Name: ix_chip_seq_control; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_chip_seq_control ON public.chip_seq USING btree (control);
+
+
+--
+-- Name: ix_chip_seq_histone_target_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_chip_seq_histone_target_id ON public.chip_seq USING btree (histone_target_id);
+
+
+--
+-- Name: ix_chip_seq_tf_target_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_chip_seq_tf_target_id ON public.chip_seq USING btree (tf_target_id);
 
 
 --
@@ -2583,17 +3680,80 @@ CREATE INDEX ix_data_source_accession ON public.data_source USING btree (accessi
 
 
 --
--- Name: ix_epigenome_group_assembly_assembly_id; Type: INDEX; Schema: public; Owner: regulation_usr
+-- Name: ix_data_source_archive_id; Type: INDEX; Schema: public; Owner: regulation_usr
 --
 
-CREATE INDEX ix_epigenome_group_assembly_assembly_id ON public.epigenome_group_assembly USING btree (assembly_id);
+CREATE INDEX ix_data_source_archive_id ON public.data_source USING btree (archive_id);
 
 
 --
--- Name: ix_epigenome_group_assembly_epigenome_group_id; Type: INDEX; Schema: public; Owner: regulation_usr
+-- Name: ix_epigenome_alternative_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
 --
 
-CREATE INDEX ix_epigenome_group_assembly_epigenome_group_id ON public.epigenome_group_assembly USING btree (epigenome_group_id);
+CREATE INDEX ix_epigenome_alternative_data_source_id ON public.epigenome USING btree (alternative_data_source_id);
+
+
+--
+-- Name: ix_epigenome_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_epigenome_data_source_id ON public.epigenome USING btree (data_source_id);
+
+
+--
+-- Name: ix_epigenome_epigenome_group_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_epigenome_epigenome_group_id ON public.epigenome USING btree (epigenome_group_id);
+
+
+--
+-- Name: ix_epigenome_group_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_epigenome_group_data_source_id ON public.epigenome_group USING btree (data_source_id);
+
+
+--
+-- Name: ix_epigenome_species_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_epigenome_species_id ON public.epigenome USING btree (species_id);
+
+
+--
+-- Name: ix_experiment_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_experiment_data_source_id ON public.experiment USING btree (data_source_id);
+
+
+--
+-- Name: ix_experiment_epigenome_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_experiment_epigenome_id ON public.experiment USING btree (epigenome_id);
+
+
+--
+-- Name: ix_file_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_file_data_source_id ON public.file USING btree (data_source_id);
+
+
+--
+-- Name: ix_inclusion_list_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_inclusion_list_file_id ON public.inclusion_list USING btree (file_id);
+
+
+--
+-- Name: ix_life_stage_ontology_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_life_stage_ontology_id ON public.life_stage USING btree (ontology_id);
 
 
 --
@@ -2604,10 +3764,143 @@ CREATE INDEX ix_mask_file_assembly_id ON public.mask_file USING btree (assembly_
 
 
 --
+-- Name: ix_mask_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_mask_file_file_id ON public.mask_file USING btree (file_id);
+
+
+--
+-- Name: ix_metadata_override_accession; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_metadata_override_accession ON public.metadata_override USING btree (accession);
+
+
+--
+-- Name: ix_posix_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_posix_file_file_id ON public.posix_file USING btree (file_id);
+
+
+--
+-- Name: ix_public_url_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_public_url_file_id ON public.public_url USING btree (file_id);
+
+
+--
 -- Name: ix_quality_annotation_accession; Type: INDEX; Schema: public; Owner: regulation_usr
 --
 
 CREATE INDEX ix_quality_annotation_accession ON public.quality_annotation USING btree (accession);
+
+
+--
+-- Name: ix_read_file_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_read_file_data_source_id ON public.read_file USING btree (data_source_id);
+
+
+--
+-- Name: ix_read_file_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_read_file_file_id ON public.read_file USING btree (file_id);
+
+
+--
+-- Name: ix_read_file_read_file_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_read_file_read_file_set_id ON public.read_file USING btree (read_file_set_id);
+
+
+--
+-- Name: ix_read_file_run_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_read_file_run_id ON public.read_file USING btree (run_id);
+
+
+--
+-- Name: ix_read_file_set_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_read_file_set_data_source_id ON public.read_file_set USING btree (data_source_id);
+
+
+--
+-- Name: ix_replicate_biosample_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_replicate_biosample_set_id ON public.replicate USING btree (biosample_set_id);
+
+
+--
+-- Name: ix_replicate_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_replicate_data_source_id ON public.replicate USING btree (data_source_id);
+
+
+--
+-- Name: ix_replicate_read_file_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_replicate_read_file_set_id ON public.replicate USING btree (read_file_set_id);
+
+
+--
+-- Name: ix_replicate_replicate_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_replicate_replicate_set_id ON public.replicate USING btree (replicate_set_id);
+
+
+--
+-- Name: ix_replicate_set_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_replicate_set_data_source_id ON public.replicate_set USING btree (data_source_id);
+
+
+--
+-- Name: ix_run_data_source_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_run_data_source_id ON public.run USING btree (data_source_id);
+
+
+--
+-- Name: ix_run_read_file_set_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_run_read_file_set_id ON public.run USING btree (read_file_set_id);
+
+
+--
+-- Name: ix_s3_object_bucket_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_s3_object_bucket_id ON public.s3_object USING btree (bucket_id);
+
+
+--
+-- Name: ix_s3_object_file_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_s3_object_file_id ON public.s3_object USING btree (file_id);
+
+
+--
+-- Name: ix_track_epigenome_id; Type: INDEX; Schema: public; Owner: regulation_usr
+--
+
+CREATE INDEX ix_track_epigenome_id ON public.track USING btree (epigenome_id);
 
 
 --
@@ -2696,6 +3989,30 @@ ALTER TABLE ONLY public.atac_seq
 
 ALTER TABLE ONLY public.atac_seq
     ADD CONSTRAINT atac_seq_replicate_set_id_fkey FOREIGN KEY (replicate_set_id) REFERENCES public.replicate_set(replicate_set_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: barcode_file barcode_file_data_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.barcode_file
+    ADD CONSTRAINT barcode_file_data_source_id_fkey FOREIGN KEY (data_source_id) REFERENCES public.data_source(data_source_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: barcode_file barcode_file_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.barcode_file
+    ADD CONSTRAINT barcode_file_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(file_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: barcode_file barcode_file_run_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.barcode_file
+    ADD CONSTRAINT barcode_file_run_id_fkey FOREIGN KEY (run_id) REFERENCES public.run(run_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -2875,22 +4192,6 @@ ALTER TABLE ONLY public.epigenome
 
 
 --
--- Name: epigenome_group_assembly epigenome_group_assembly_assembly_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
---
-
-ALTER TABLE ONLY public.epigenome_group_assembly
-    ADD CONSTRAINT epigenome_group_assembly_assembly_id_fkey FOREIGN KEY (assembly_id) REFERENCES public.assembly(assembly_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: epigenome_group_assembly epigenome_group_assembly_epigenome_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
---
-
-ALTER TABLE ONLY public.epigenome_group_assembly
-    ADD CONSTRAINT epigenome_group_assembly_epigenome_group_id_fkey FOREIGN KEY (epigenome_group_id) REFERENCES public.epigenome_group(epigenome_group_id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
 -- Name: epigenome_group epigenome_group_data_source_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -2931,6 +4232,14 @@ ALTER TABLE ONLY public.file
 
 
 --
+-- Name: inclusion_list inclusion_list_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.inclusion_list
+    ADD CONSTRAINT inclusion_list_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(file_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
 -- Name: life_stage life_stage_ontology_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -2952,6 +4261,30 @@ ALTER TABLE ONLY public.mask_file
 
 ALTER TABLE ONLY public.mask_file
     ADD CONSTRAINT mask_file_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(file_id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: multiome multiome_experiment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES public.experiment(experiment_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: multiome multiome_sn_atac_seq_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_sn_atac_seq_id_fkey FOREIGN KEY (sn_atac_seq_id) REFERENCES public.replicate_set(replicate_set_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: multiome multiome_sn_rna_seq_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.multiome
+    ADD CONSTRAINT multiome_sn_rna_seq_id_fkey FOREIGN KEY (sn_rna_seq_id) REFERENCES public.replicate_set(replicate_set_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
@@ -3051,6 +4384,22 @@ ALTER TABLE ONLY public.replicate_set
 
 
 --
+-- Name: rna_seq rna_seq_experiment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.rna_seq
+    ADD CONSTRAINT rna_seq_experiment_id_fkey FOREIGN KEY (experiment_id) REFERENCES public.experiment(experiment_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: rna_seq rna_seq_replicate_set_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
+--
+
+ALTER TABLE ONLY public.rna_seq
+    ADD CONSTRAINT rna_seq_replicate_set_id_fkey FOREIGN KEY (replicate_set_id) REFERENCES public.replicate_set(replicate_set_id) MATCH FULL ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
 -- Name: run_alignment_task run_alignment_task_alignment_task_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: regulation_usr
 --
 
@@ -3109,4 +4458,3 @@ ALTER TABLE ONLY public.track
 --
 -- PostgreSQL database dump complete
 --
-

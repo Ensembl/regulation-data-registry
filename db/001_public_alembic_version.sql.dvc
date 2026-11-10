@@ -1,5 +1,5 @@
 outs:
-- md5: f199866ed6629c5df3a9a42a7e086511
+- md5: 0e59e8eb4e8f2e302a71b0498d9119d4
   size: 711
   hash: md5
   path: 001_public_alembic_version.sql

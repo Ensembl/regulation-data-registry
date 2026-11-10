@@ -1,0 +1,5 @@
+outs:
+- md5: ff48c517e72955f40c135f3e954b1193
+  size: 533419
+  hash: md5
+  path: 017_public_read_file_set.sql

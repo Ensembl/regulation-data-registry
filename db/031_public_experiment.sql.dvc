@@ -1,0 +1,5 @@
+outs:
+- md5: 3783a44c2987eedb55709e23adbcbb8a
+  size: 497857
+  hash: md5
+  path: 031_public_experiment.sql

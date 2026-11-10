@@ -1,0 +1,5 @@
+outs:
+- md5: fd681874c5a9edde589dfd81157841ae
+  size: 2715
+  hash: md5
+  path: 019_public_assembly.sql

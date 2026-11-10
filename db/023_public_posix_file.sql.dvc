@@ -1,0 +1,5 @@
+outs:
+- md5: ecbe21e5657f8303b25b811e766cf677
+  size: 705
+  hash: md5
+  path: 023_public_posix_file.sql

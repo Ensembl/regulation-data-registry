@@ -1,0 +1,5 @@
+outs:
+- md5: 5822e996d8838e080926cd50796cbd9c
+  size: 738
+  hash: md5
+  path: 040_public_multiome.sql

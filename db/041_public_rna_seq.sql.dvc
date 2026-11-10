@@ -1,0 +1,5 @@
+outs:
+- md5: 0e2c1f18078874d148dfcee6e0dd6c80
+  size: 723
+  hash: md5
+  path: 041_public_rna_seq.sql

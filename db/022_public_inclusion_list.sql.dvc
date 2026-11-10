@@ -1,0 +1,5 @@
+outs:
+- md5: dc3142c8451b9b3d8a099f32b797770a
+  size: 722
+  hash: md5
+  path: 022_public_inclusion_list.sql

@@ -1,0 +1,5 @@
+outs:
+- md5: b0210e9a65ac4c85f6e668d6cdd83f74
+  size: 2733
+  hash: md5
+  path: 012_public_life_stage.sql

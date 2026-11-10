@@ -1,0 +1,5 @@
+outs:
+- md5: cf2c7668467664c3c8d40ff4e9fd639f
+  size: 729
+  hash: md5
+  path: 029_public_barcode_file.sql

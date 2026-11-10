@@ -1,0 +1,5 @@
+outs:
+- md5: b24d700d7fbd45389a0ab38395ab69f5
+  size: 12064
+  hash: md5
+  path: 010_public_tf_target.sql

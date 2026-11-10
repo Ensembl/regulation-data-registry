@@ -1,5 +1,0 @@
-outs:
-- md5: 1ae341e78b2ce2d56600b3ec5fc91f75
-  size: 518979
-  hash: md5
-  path: 008_public_read_file_set.sql
