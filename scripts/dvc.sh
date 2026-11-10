@@ -7,4 +7,4 @@ export DVC_GID="$(id -g)"
 
 # Use a separate project and ignore the database's .env file.
 exec docker compose --env-file /dev/null --project-name rdr-dvc \
-    --file compose.dvc.yml run --build --rm --no-deps -T dvc "$@"
+    --file containers/compose.dvc.yml run --build --rm --no-deps -T dvc "$@"

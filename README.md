@@ -115,7 +115,7 @@ Pulls use the public HTTP remote; pushes use `ensreg-git-lfs` on
 `./scripts/dvc.sh pull -r ensreg-git-lfs`.
 
 Run `make dvc-build` to rebuild with base-image security updates. DVC dependencies
-are managed in `tools/dvc/pyproject.toml` and `tools/dvc/uv.lock`.
+are managed in `containers/dvc/pyproject.toml` and `containers/dvc/uv.lock`.
 
 ### Pre-built container image
 

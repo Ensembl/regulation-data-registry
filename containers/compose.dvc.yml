@@ -2,8 +2,8 @@ services:
   dvc:
     init: true
     build:
-      context: ./tools/dvc
-      dockerfile: Dockerfile
+      context: ./dvc
+      dockerfile: Containerfile
       target: runtime
     working_dir: /workspace
     environment:
@@ -13,7 +13,7 @@ services:
       DVC_SITE_CACHE_DIR: /workspace/.dvc/tmp/container-site-cache
     volumes:
       - type: bind
-        source: .
+        source: ..
         target: /workspace
         read_only: false
         bind:

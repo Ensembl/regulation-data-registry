@@ -3,7 +3,7 @@
 
 db-up:
 	docker compose \
-	-f compose.yml \
+	-f containers/compose.yml \
 	-p rdr \
 	up \
 	--build \
@@ -12,6 +12,7 @@ db-up:
 
 db-down:
 	docker compose \
+	-f containers/compose.yml \
  	-p rdr \
  	down \
  	-v \
@@ -20,6 +21,7 @@ db-down:
 
 db-dump:
 	docker compose \
+	-f containers/compose.yml \
 	-p rdr \
 	run \
 	--remove-orphans \
@@ -28,6 +30,7 @@ db-dump:
 
 db-schema-dump:
 	docker compose \
+	-f containers/compose.yml \
 	-p rdr \
 	run \
 	--remove-orphans \
@@ -36,6 +39,7 @@ db-schema-dump:
 
 db-data-dump:
 	docker compose \
+	-f containers/compose.yml \
 	-p rdr \
 	run \
 	--remove-orphans \
@@ -47,7 +51,7 @@ dvc:
 
 dvc-build:
 	docker compose --env-file /dev/null --project-name rdr-dvc \
-		--file compose.dvc.yml build --pull --no-cache dvc
+		--file containers/compose.dvc.yml build --pull --no-cache dvc
 
 db-data-push:
 	./scripts/dvc.sh \
@@ -60,6 +64,7 @@ db-data-pull:
 
 schemapy-docs:
 	docker compose \
+	-f containers/compose.yml \
 	-p rdr \
 	run \
 	--remove-orphans \
