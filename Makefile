@@ -44,7 +44,7 @@ db-data-dump:
 db-data-push:
 	dvc \
 	push \
-	-r regulation-s3
+	-r ensreg-git-lfs
 
 db-data-pull:
 	dvc \

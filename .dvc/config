@@ -1,9 +1,9 @@
 [core]
     analytics = false
-    remote = regulation-s3-http
-['remote "regulation-s3"']
-    url = s3://regulation-prod-wfs/dvcstore
-    endpointurl = https://uk1s3.embassy.ebi.ac.uk
+    remote = ensreg-git-lfs-http
+['remote "ensreg-git-lfs"']
+    url = s3://ensreg-git-lfs/dvcstore
+    endpointurl = https://livingobjects.ebi.ac.uk
     acl = public-read
-['remote "regulation-s3-http"']
-    url = https://uk1s3.embassy.ebi.ac.uk/regulation-prod-wfs/dvcstore
+['remote "ensreg-git-lfs-http"']
+    url = https://livingobjects.ebi.ac.uk/ensreg-git-lfs/dvcstore

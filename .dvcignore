@@ -1,4 +1,3 @@
-# Add patterns of files dvc should ignore, which could improve
-# the performance. Learn more at
+# Add patterns of files dvc should ignore
 # https://dvc.org/doc/user-guide/dvcignore
 db/000_schema.sql
