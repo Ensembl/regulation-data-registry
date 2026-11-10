@@ -68,34 +68,35 @@ running databases are separate for each engine; use the same engine consistently
 
 #### DB up & running
 
-Clone this repository and run the following command to spin up a local database instance:
+Clone the repository, enter it, and start the checked-out snapshot:
 
 ```bash
 git clone https://gitlab.ebi.ac.uk/ensreg/rdr
-```
-
-```bash
+cd rdr
 make db-up
 ```
 
-The database will be available at `localhost:2345` with the following credentials:
+`db-up` downloads the selected revision's DVC data, builds and starts PostgreSQL,
+waits for initialization, and prints connection details. No `.env` is required.
+It runs `db-data-pull`, `db-start`, `db-wait`, and `db-info` in order.
+Defaults are PostgreSQL 14 at `127.0.0.1:2345`, database `rdr`, user `regulation_usr`, password
+`rdr-local-password`. Copy `.env.example` to `.env` to override local settings.
 
-```
-Database: `rdr`
-User: `regulation_usr`
-Password: `docker`
-```
+To use another snapshot, check out its Git tag or commit before running `make db-up`.
+Save any local database changes before changing revisions or rebuilding the container.
 
-If you want to spin up the DB version corresponding to a specific commit, tag, or branch, `git checkout` to the desired
-reference and then run `make db-up`.
+#### Saving changes and shutting down
 
-#### DB down
-
-To stop the database instance, run the following command:
+The database uses temporary storage, with no persistent data volume. Stopping or
+removing its container discards database changes. Export anything worth keeping first:
 
 ```bash
-make db-down
+make db-dump    # Export both schema and table data into db/
+make db-down   # Remove the disposable database
 ```
+
+Dumping does not commit or upload anything. Review the exports, then decide whether
+to update DVC pointers, upload the data, and commit the changes.
 
 ### Managing data with DVC
 

@@ -1,28 +1,42 @@
+x-db-environment: &db-environment
+  POSTGRES_DB: ${DB_NAME:-rdr}
+  DB_NAME: ${DB_NAME:-rdr}
+  POSTGRES_USER: ${POSTGRES_USER:-regulation_usr}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rdr-local-password}
+
 services:
   db:
     build:
       context: ..
       dockerfile: containers/db.Containerfile
       args:
-        POSTGRES_VERSION: ${POSTGRES_VERSION}
-        DB_NAME: ${DB_NAME}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_USER: ${POSTGRES_USER}
-        PGDATA: ${PGDATA}
-    env_file: ../.env
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-14}
+    environment:
+      <<: *db-environment
+      PGDATA: /var/lib/postgresql/data
     ports:
-      - '${DB_SERVICE_PORT_TEST}:5432'
+      - '127.0.0.1:${DB_SERVICE_PORT_TEST:-2345}:5432'
+    # Disposable database: stopping the container discards changes not dumped.
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+    healthcheck:
+      # TCP becomes available after the initialization scripts finish.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 2s
+      timeout: 5s
+      retries: 60
 
   db-dump:
     build:
       context: ..
       dockerfile: containers/db-dump.Containerfile
       args:
-        POSTGRES_VERSION: ${POSTGRES_VERSION}
-        DB_NAME: ${DB_NAME}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_USER: ${POSTGRES_USER}
-    env_file: ../.env
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-14}
+    environment:
+      <<: *db-environment
+      POSTGRES_HOST: db
+      POSTGRES_PORT: '5432'
     volumes:
       - type: bind
         source: ../db
@@ -31,12 +45,11 @@ services:
           create_host_path: false
           selinux: z
     depends_on:
-      - db
-    entrypoint: [ "/dump/dump.sh" ]
+      db:
+        condition: service_healthy
 
   schemapy-docs:
     image: docker.io/schemaspy/schemaspy:7.0.2
-    env_file: ../.env
     volumes:
       - type: bind
         source: ../docs/schemaspy
@@ -45,21 +58,6 @@ services:
           create_host_path: false
           selinux: z
     depends_on:
-      - db
-    command: [ "-t", "pgsql11", "--user", "$POSTGRES_USER", "-db", "$DB_NAME", "-port", "$DB_SERVICE_PORT", "-host", "db", "-p", "$POSTGRES_PASSWORD" ]
-
-  sut:
-    image: docker.io/library/postgres:${POSTGRES_VERSION}
-    env_file: ../.env
-    depends_on:
-      - db
-    command: [ "bash", "/var/run_tests.sh" ]
-    volumes:
-      - "../run_tests.sh:/var/run_tests.sh"
-      - "db:${PGDATA}"
-
-volumes:
-  db:
-    driver: local
-
-
+      db:
+        condition: service_healthy
+    command: ["-t", "pgsql11", "--user", "${POSTGRES_USER:-regulation_usr}", "-db", "${DB_NAME:-rdr}", "-port", "5432", "-host", "db", "-p", "${POSTGRES_PASSWORD:-rdr-local-password}"]

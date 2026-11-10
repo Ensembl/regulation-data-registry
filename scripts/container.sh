@@ -62,7 +62,8 @@ run_compose() {
 
         # Podman otherwise prefers docker-compose when both providers are installed.
         PODMAN_COMPOSE_PROVIDER=$(command -v podman-compose)
-        export PODMAN_COMPOSE_PROVIDER
+        PODMAN_COMPOSE_WARNING_LOGS=false
+        export PODMAN_COMPOSE_PROVIDER PODMAN_COMPOSE_WARNING_LOGS
     fi
 
     exec "$engine" compose "$@"
@@ -72,7 +73,12 @@ run_db_compose() {
     repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
     cd "$repo_root"
 
-    run_compose --file containers/compose.yml "$@"
+    # Load optional local overrides explicitly, consistently across providers.
+    if [ -f .env ]; then
+        run_compose --env-file .env --file containers/compose.yml "$@"
+    else
+        run_compose --env-file /dev/null --file containers/compose.yml "$@"
+    fi
 }
 
 run_dvc_compose() {
