@@ -107,8 +107,15 @@ tracked by DVC. It contains the complete schema and data. `db/schema.sql` is
 extracted from that same archive and tracked in Git so schema changes can be
 reviewed as SQL. Startup restores the archive directly with `pg_restore`.
 
-Export checks that the archive's table of contents is readable. After reviewing
-the schema, update the single pointer:
+Export checks that the archive's table of contents is readable; it does not
+restore a second database. To run that stronger check before publishing, use:
+
+```bash
+make db-validate
+```
+
+Validation restores the archive into a disposable database without publishing a
+port. After reviewing the schema and validation result, update the single pointer:
 
 ```bash
 make db-data-track
@@ -129,7 +136,8 @@ chmod 600 .dvc/config.local
 make db-data-push
 ```
 
-Commit `db/schema.sql` and `db/data.dump.dvc` together. Exporting and uploading data do not create Git commits. Exports are staged before replacing
+Commit `db/schema.sql` and `db/data.dump.dvc` together. Exporting, validating,
+and uploading data do not create Git commits. Exports are staged before replacing
 the previous files. An export may produce a new archive hash even when rows have
 not changed; byte-for-byte reproducibility and per-table uploads are not promised.
 

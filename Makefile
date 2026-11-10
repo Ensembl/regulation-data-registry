@@ -116,7 +116,10 @@ db-schema-dump-and-exit: db-schema-dump db-down
 
 db-data-dump-and-exit: db-data-dump db-down
 
-.PHONY: db-data-track
+.PHONY: db-validate db-data-track
+
+db-validate:
+	$(DB_COMPOSE) run --build --rm --no-deps -T db-validate
 
 db-data-track:
 	./scripts/dvc.sh add db/data.dump

@@ -27,6 +27,18 @@ services:
       timeout: 5s
       retries: 60
 
+  db-validate:
+    build:
+      context: ..
+      dockerfile: containers/db.Containerfile
+      args:
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-14}
+    environment: *db-environment
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+    entrypoint: ["/usr/local/bin/validate-db"]
+
   db-dump:
     image: docker.io/library/postgres:${POSTGRES_VERSION:-14}
     environment:
