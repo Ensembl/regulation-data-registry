@@ -1,5 +1,0 @@
-outs:
-- md5: f7a6fac7f0103721170bd83e0f680934
-  size: 891
-  hash: md5
-  path: 004_public_bucket.sql

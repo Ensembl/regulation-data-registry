@@ -102,11 +102,16 @@ After editing the local database, export both schema and data:
 make db-dump
 ```
 
-Review the files in `db/`. Remove obsolete `.dvc` pointers if tables were deleted
-or renumbered, then update the data references:
+The snapshot is stored as one compressed PostgreSQL archive, `db/data.dump`,
+tracked by DVC. It contains the complete schema and data. `db/schema.sql` is
+extracted from that same archive and tracked in Git so schema changes can be
+reviewed as SQL. Startup restores the archive directly with `pg_restore`.
+
+Export checks that the archive's table of contents is readable. After reviewing
+the schema, update the single pointer:
 
 ```bash
-./scripts/dvc.sh add db/*_public_*.sql
+make db-data-track
 ./scripts/dvc.sh status
 ```
 
@@ -124,8 +129,19 @@ chmod 600 .dvc/config.local
 make db-data-push
 ```
 
-Commit the schema, `.dvc` pointers and `db/.gitignore` together. Exporting and
-uploading data do not create Git commits.
+Commit `db/schema.sql` and `db/data.dump.dvc` together. Exporting and uploading data do not create Git commits. Exports are staged before replacing
+the previous files. An export may produce a new archive hash even when rows have
+not changed; byte-for-byte reproducibility and per-table uploads are not promised.
+
+Normally use `make db-dump` to keep the archive and reviewed schema together.
+`make db-schema-dump` and `make db-data-dump` are aliases for the same full export. Editing the review
+SQL alone does not change the database: apply schema changes to the local database
+and export them.
+
+The numbered per-table dumps and their pointers have been replaced by the archive.
+The original snapshot and pointers are backed up under
+`.dvc/tmp/single-archive-migration-*/db/`. Existing cached objects are retained;
+new archive objects must be uploaded explicitly before sharing their Git pointers.
 
 ### Tooling
 

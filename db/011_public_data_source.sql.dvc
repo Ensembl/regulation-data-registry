@@ -1,5 +1,0 @@
-outs:
-- md5: 6dadfa755ae51227acd154c5ba94b098
-  size: 109637701
-  hash: md5
-  path: 011_public_data_source.sql

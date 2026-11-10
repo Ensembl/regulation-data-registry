@@ -1,3 +1,5 @@
-# Keep the schema in Git; table data is tracked through DVC.
+# Keep SQL schema in Git and snapshot contents in DVC.
 *.sql
-!000_schema.sql
+!/schema.sql
+*.dump
+.dump-*/

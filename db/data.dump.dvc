@@ -1,0 +1,5 @@
+outs:
+- md5: 5e11d8e334e5dafd7c01143b08b593e6
+  size: 24655770
+  hash: md5
+  path: data.dump

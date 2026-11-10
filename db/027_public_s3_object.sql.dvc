@@ -1,5 +1,0 @@
-outs:
-- md5: d52ba9c4f3fe9b94459c91553b072346
-  size: 5857966
-  hash: md5
-  path: 027_public_s3_object.sql

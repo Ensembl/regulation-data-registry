@@ -1,5 +1,5 @@
 ARG POSTGRES_VERSION=14
 FROM docker.io/library/postgres:${POSTGRES_VERSION}
 
-# Load the selected schema and DVC-managed data at container startup.
-COPY db/*.sql /docker-entrypoint-initdb.d/
+COPY db/data.dump /snapshot/data.dump
+COPY --chmod=755 containers/init-db.sh /docker-entrypoint-initdb.d/010-restore.sh

@@ -1,5 +1,0 @@
-outs:
-- md5: 19e4bb7dd1766cee5198f13a759e0e8c
-  size: 1106
-  hash: md5
-  path: 006_public_metadata_override.sql

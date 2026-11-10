@@ -1,5 +1,0 @@
-outs:
-- md5: a533932d3849b8fae3205bc22d4a575f
-  size: 415111
-  hash: md5
-  path: 018_public_replicate_set.sql

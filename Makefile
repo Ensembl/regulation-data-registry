@@ -3,6 +3,7 @@
 
 DB_PROJECT ?= rdr
 DB_START_TIMEOUT ?= 120
+DB_DUMP_DIR ?= /db
 DB_COMPOSE = ./scripts/container.sh compose --project-name "$(DB_PROJECT)"
 
 .PHONY: db-start db-wait db-info
@@ -51,31 +52,39 @@ db-down:
 	--rmi all
 
 db-dump:
-	./scripts/container.sh compose \
-	-p "$${DB_PROJECT:-rdr}" \
-	run \
-	--no-deps \
-	--rm \
-	--build \
-	db-dump
+	@$(DB_COMPOSE) run --rm --no-deps -T --entrypoint bash db-dump -eo pipefail -c '\
+		output="$(DB_DUMP_DIR)"; \
+		mkdir -p "$$output"; \
+		stage=$$(mktemp -d "$$output/.dump-XXXXXX"); \
+		publishing=false; \
+		cleanup() { \
+			status=$$?; \
+			if $$publishing && [ "$$status" -ne 0 ]; then \
+				for file in data.dump schema.sql; do \
+					if [ -f "$$stage/previous/$$file" ]; then \
+						mv "$$stage/previous/$$file" "$$output/$$file"; \
+					else rm -f "$$output/$$file"; fi; \
+				done; \
+			fi; \
+			rm -rf "$$stage"; \
+			return "$$status"; \
+		}; \
+		trap cleanup EXIT; \
+		pg_dump --format=custom --file="$$stage/data.dump"; \
+		pg_restore --list "$$stage/data.dump" > /dev/null; \
+		pg_restore --schema-only --file="$$stage/schema.raw.sql" "$$stage/data.dump"; \
+		sed "$$ { /^$$/d; }" "$$stage/schema.raw.sql" > "$$stage/schema.sql"; \
+		mkdir "$$stage/previous"; \
+		for file in data.dump schema.sql; do \
+			if [ -f "$$output/$$file" ]; then cp -p "$$output/$$file" "$$stage/previous/$$file"; fi; \
+		done; \
+		publishing=true; \
+		mv "$$stage/data.dump" "$$output/data.dump"; \
+		mv "$$stage/schema.sql" "$$output/schema.sql"; \
+		printf "Snapshot exported to %s\n" "$$output"'
 
-db-schema-dump:
-	./scripts/container.sh compose \
-	-p "$${DB_PROJECT:-rdr}" \
-	run \
-	--no-deps \
-	--rm \
-	--build \
-	db-dump --schema
-
-db-data-dump:
-	./scripts/container.sh compose \
-	-p "$${DB_PROJECT:-rdr}" \
-	run \
-	--no-deps \
-	--rm \
-	--build \
-	db-dump --data
+# Keep the old commands as aliases; always export a matching archive/schema pair.
+db-schema-dump db-data-dump: db-dump
 
 dvc:
 	./scripts/dvc.sh $(DVC_ARGS)
@@ -106,3 +115,8 @@ db-dump-and-exit: db-dump db-down
 db-schema-dump-and-exit: db-schema-dump db-down
 
 db-data-dump-and-exit: db-data-dump db-down
+
+.PHONY: db-data-track
+
+db-data-track:
+	./scripts/dvc.sh add db/data.dump

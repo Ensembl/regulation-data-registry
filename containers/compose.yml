@@ -28,15 +28,13 @@ services:
       retries: 60
 
   db-dump:
-    build:
-      context: ..
-      dockerfile: containers/db-dump.Containerfile
-      args:
-        POSTGRES_VERSION: ${POSTGRES_VERSION:-14}
+    image: docker.io/library/postgres:${POSTGRES_VERSION:-14}
     environment:
-      <<: *db-environment
-      POSTGRES_HOST: db
-      POSTGRES_PORT: '5432'
+      PGHOST: db
+      PGPORT: '5432'
+      PGDATABASE: ${DB_NAME:-rdr}
+      PGUSER: ${POSTGRES_USER:-ensreg-usr}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-rdr-local-password}
     volumes:
       - type: bind
         source: ../db
