@@ -1,0 +1,6 @@
+# Rootless Podman maps the invoking user to the requested container UID/GID.
+services:
+  dvc:
+    userns_mode: "keep-id:uid=${DVC_UID:-1000},gid=${DVC_GID:-1000}"
+    # The entrypoint creates account records, then drops to DVC_UID:DVC_GID.
+    user: "0:0"

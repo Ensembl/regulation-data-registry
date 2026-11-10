@@ -44,8 +44,27 @@ public archives and provide a unified way to interact with it. The design consid
 
 #### Requirements
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Podman](https://podman.io/docs/installation) 6+ and [podman-compose](https://github.com/containers/podman-compose) 1.6+
+  (or Docker with Compose v2)
+- Make and a POSIX shell (WSL on Windows)
+
+On macOS, install the tools and start a Linux VM:
+
+```bash
+brew install podman podman-compose
+podman machine init
+podman machine start
+```
+
+On Linux, install Podman and podman-compose through your package manager;
+no VM is needed. On Windows, use the commands from a WSL environment with Podman
+installed and configured there.
+
+Commands prefer Podman when installed and otherwise use Docker. Select explicitly
+with `CONTAINER_ENGINE=podman make db-up` or `CONTAINER_ENGINE=docker make db-up`.
+The selected engine must be running; commands never switch engines after a failure.
+Podman always uses podman-compose, so Docker is not required. Images, volumes and
+running databases are separate for each engine; use the same engine consistently.
 
 #### DB up & running
 
@@ -56,7 +75,7 @@ git clone https://gitlab.ebi.ac.uk/ensreg/rdr
 ```
 
 ```bash
-make test-db-up
+make db-up
 ```
 
 The database will be available at `localhost:2345` with the following credentials:
@@ -68,20 +87,22 @@ Password: `docker`
 ```
 
 If you want to spin up the DB version corresponding to a specific commit, tag, or branch, `git checkout` to the desired
-reference and then run `make test-db-up`.
+reference and then run `make db-up`.
 
 #### DB down
 
 To stop the database instance, run the following command:
 
 ```bash
-make test-db-down
+make db-down
 ```
 
 ### Managing data with DVC
 
-DVC runs in a container using Docker Compose v2 and a POSIX shell (WSL on Windows).
+DVC uses the selected container engine and Compose provider.
 No local DVC installation or running database is needed. The image builds on first use.
+Container configuration lives in `containers/`. Its shared `compose.dvc.yml`
+uses `compose.dvc.podman.yml` or `compose.dvc.docker.yml` for engine-specific settings.
 
 ```bash
 make db-data-pull          # Download the current dumps
@@ -137,7 +158,7 @@ for proof of concepts or analyses that are outside the scope of the release cycl
 For pulling a specific pre-built image, use the following command:
 
 ```
-docker pull dockerhub.ebi.ac.uk/ensreg/rdr/rdr:<image-tag>
+./scripts/container.sh pull dockerhub.ebi.ac.uk/ensreg/rdr/rdr:<image-tag>
 ```
 
 To spin up a local database instance pointiong to a specific commit, check

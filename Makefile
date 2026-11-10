@@ -2,8 +2,7 @@
 .PHONY: dvc dvc-build db-data-push db-data-pull
 
 db-up:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
 	-p rdr \
 	up \
 	--build \
@@ -11,8 +10,7 @@ db-up:
 	db
 
 db-down:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
  	-p rdr \
  	down \
  	-v \
@@ -20,29 +18,26 @@ db-down:
  	--rmi all
 
 db-dump:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
 	-p rdr \
 	run \
-	--remove-orphans \
+	--rm \
     --build \
 	db-dump
 
 db-schema-dump:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
 	-p rdr \
 	run \
-	--remove-orphans \
+	--rm \
 	--build \
 	db-dump --schema
 
 db-data-dump:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
 	-p rdr \
 	run \
-	--remove-orphans \
+	--rm \
 	--build \
 	db-dump --data
 
@@ -50,8 +45,7 @@ dvc:
 	./scripts/dvc.sh $(DVC_ARGS)
 
 dvc-build:
-	docker compose --env-file /dev/null --project-name rdr-dvc \
-		--file containers/compose.dvc.yml build --pull --no-cache dvc
+	./scripts/container.sh dvc-compose build --pull --no-cache dvc
 
 db-data-push:
 	./scripts/dvc.sh \
@@ -63,11 +57,10 @@ db-data-pull:
 	pull
 
 schemapy-docs:
-	docker compose \
-	-f containers/compose.yml \
+	./scripts/container.sh compose \
 	-p rdr \
 	run \
-	--remove-orphans \
+	--rm \
 	--build \
 	schemapy-docs
 

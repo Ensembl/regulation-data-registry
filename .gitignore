@@ -17,3 +17,6 @@
 ._*
 Thumbs.db
 Desktop.ini
+
+# Python test bytecode
+__pycache__/

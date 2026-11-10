@@ -1,0 +1,5 @@
+services:
+  dvc:
+    # Start as container root to create account records; the entrypoint then
+    # drops to the host UID/GID before running DVC.
+    user: "0:0"

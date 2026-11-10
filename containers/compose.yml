@@ -24,22 +24,32 @@ services:
         POSTGRES_USER: ${POSTGRES_USER}
     env_file: ../.env
     volumes:
-      - ../db/:/db
+      - type: bind
+        source: ../db
+        target: /db
+        bind:
+          create_host_path: false
+          selinux: z
     depends_on:
       - db
     entrypoint: [ "/dump/dump.sh" ]
 
   schemapy-docs:
-    image: schemaspy/schemaspy:7.0.2
+    image: docker.io/schemaspy/schemaspy:7.0.2
     env_file: ../.env
     volumes:
-      - ../docs/schemaspy:/output
+      - type: bind
+        source: ../docs/schemaspy
+        target: /output
+        bind:
+          create_host_path: false
+          selinux: z
     depends_on:
       - db
     command: [ "-t", "pgsql11", "--user", "$POSTGRES_USER", "-db", "$DB_NAME", "-port", "$DB_SERVICE_PORT", "-host", "db", "-p", "$POSTGRES_PASSWORD" ]
 
   sut:
-    image: postgres:${POSTGRES_VERSION}
+    image: docker.io/library/postgres:${POSTGRES_VERSION}
     env_file: ../.env
     depends_on:
       - db

@@ -1,6 +1,6 @@
 ARG POSTGRES_VERSION
 
-FROM postgres:${POSTGRES_VERSION}
+FROM docker.io/library/postgres:${POSTGRES_VERSION}
 
 ARG DB_NAME
 ARG POSTGRES_PASSWORD
@@ -11,7 +11,7 @@ ENV POSTGRES_DB ${DB_NAME}
 ENV POSTGRES_PASSWORD ${POSTGRES_PASSWORD}
 ENV POSTGRES_USER ${POSTGRES_USER}
 
-FROM postgres:${POSTGRES_VERSION}
+FROM docker.io/library/postgres:${POSTGRES_VERSION}
 
 RUN apt-get update && apt-get install -y coreutils gawk sed
 

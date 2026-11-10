@@ -1,3 +1,4 @@
+# Shared DVC configuration; engine-specific settings live in the overrides.
 services:
   dvc:
     init: true
@@ -18,6 +19,8 @@ services:
         read_only: false
         bind:
           create_host_path: false
+          # Share the checkout between containers on SELinux hosts.
+          selinux: z
       - type: tmpfs
         target: /tmp
         tmpfs:

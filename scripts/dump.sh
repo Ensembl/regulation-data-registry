@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # See the NOTICE file distributed with this work for additional information
 # regarding copyright ownership.
 #
@@ -12,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/usr/bin/env bash
 set -euo pipefail
 
 # === Default values ===
@@ -50,9 +50,9 @@ Environment Variables:
   POSTGRES_PORT       Port number (default: 5432)
 
 Example:
-  docker compose run --rm db-dump --schema
-  docker compose run --rm db-dump --data
-  docker compose run --rm db-dump         # dumps both
+  ./scripts/container.sh compose run --rm db-dump --schema
+  ./scripts/container.sh compose run --rm db-dump --data
+  ./scripts/container.sh compose run --rm db-dump         # dumps both
 EOF
 }
 
