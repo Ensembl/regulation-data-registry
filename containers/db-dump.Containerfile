@@ -1,25 +1,10 @@
-ARG POSTGRES_VERSION
-
+ARG POSTGRES_VERSION=14
 FROM docker.io/library/postgres:${POSTGRES_VERSION}
 
-ARG DB_NAME
-ARG POSTGRES_PASSWORD
-ARG POSTGRES_USER
-ARG PGDATA
-
-ENV POSTGRES_DB ${DB_NAME}
-ENV POSTGRES_PASSWORD ${POSTGRES_PASSWORD}
-ENV POSTGRES_USER ${POSTGRES_USER}
-
-FROM docker.io/library/postgres:${POSTGRES_VERSION}
-
-RUN apt-get update && apt-get install -y coreutils gawk sed
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y coreutils gawk sed \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /dump
-
-COPY scripts/dump.sh .
-
-RUN chmod +x /dump/dump.sh
-
+COPY --chmod=755 scripts/dump.sh .
 ENTRYPOINT ["/dump/dump.sh"]
-

@@ -21,7 +21,7 @@ POSTGRES_USER="${POSTGRES_USER:-regulation_usr}"
 POSTGRES_HOST="${POSTGRES_HOST:-db}"
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-docker}"
-DUMP_DIR="/db"
+OUTPUT_DIR="/db"
 
 DUMP_SCHEMA=false
 DUMP_DATA=false
@@ -45,7 +45,7 @@ Defaults:
 Environment Variables:
   DB_NAME             Database name (default: rdr)
   POSTGRES_USER       Database user (default: regulation_usr)
-  POSTGRES_PASSWORD   Password for DB user (required)
+  POSTGRES_PASSWORD   Password for DB user (default: docker)
   POSTGRES_HOST       Hostname of the DB (default: db)
   POSTGRES_PORT       Port number (default: 5432)
 
@@ -82,7 +82,10 @@ while true; do
 done
 
 # === Setup ===
-mkdir -p "$DUMP_DIR"
+mkdir -p "$OUTPUT_DIR"
+# Complete the export before replacing the previous snapshot.
+DUMP_DIR=$(mktemp -d)
+trap 'rm -rf "$DUMP_DIR"' EXIT
 export PGPASSWORD="$POSTGRES_PASSWORD"
 
 # === Schema Dump ===
@@ -159,3 +162,10 @@ if [ "$DUMP_DATA" = true ]; then
   echo "🟢 Data dump complete into $DUMP_DIR/"
 fi
 
+# Remove old numbered dumps, including files whose order changed or tables that
+# were deleted. DVC pointers are left for the contributor to review and update.
+if [ "$DUMP_DATA" = true ]; then
+  rm -f "$OUTPUT_DIR"/[0-9][0-9][0-9]_public_*.sql
+fi
+mv "$DUMP_DIR"/*.sql "$OUTPUT_DIR/"
+echo "Snapshot exported to $OUTPUT_DIR"
