@@ -1,7 +1,7 @@
 x-db-environment: &db-environment
   POSTGRES_DB: ${DB_NAME:-rdr}
   DB_NAME: ${DB_NAME:-rdr}
-  POSTGRES_USER: ${POSTGRES_USER:-regulation_usr}
+  POSTGRES_USER: ${POSTGRES_USER:-ensreg-usr}
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rdr-local-password}
 
 services:
@@ -60,4 +60,4 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["-t", "pgsql11", "--user", "${POSTGRES_USER:-regulation_usr}", "-db", "${DB_NAME:-rdr}", "-port", "5432", "-host", "db", "-p", "${POSTGRES_PASSWORD:-rdr-local-password}"]
+    command: ["-t", "pgsql11", "--user", "${POSTGRES_USER:-ensreg-usr}", "-db", "${DB_NAME:-rdr}", "-port", "5432", "-host", "db", "-p", "${POSTGRES_PASSWORD:-rdr-local-password}"]

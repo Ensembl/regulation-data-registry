@@ -17,7 +17,7 @@ set -euo pipefail
 
 # === Default values ===
 DB_NAME="${DB_NAME:-rdr}"
-POSTGRES_USER="${POSTGRES_USER:-regulation_usr}"
+POSTGRES_USER="${POSTGRES_USER:-ensreg-usr}"
 POSTGRES_HOST="${POSTGRES_HOST:-db}"
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-rdr-local-password}"
@@ -44,7 +44,7 @@ Defaults:
 
 Environment Variables:
   DB_NAME             Database name (default: rdr)
-  POSTGRES_USER       Database user (default: regulation_usr)
+  POSTGRES_USER       Database user (default: ensreg-usr)
   POSTGRES_PASSWORD   Password for DB user (default: rdr-local-password)
   POSTGRES_HOST       Hostname of the DB (default: db)
   POSTGRES_PORT       Port number (default: 5432)

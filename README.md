@@ -79,7 +79,7 @@ make db-up
 `db-up` downloads the selected revision's DVC data, builds and starts PostgreSQL,
 waits for initialization, and prints connection details. No `.env` is required.
 It runs `db-data-pull`, `db-start`, `db-wait`, and `db-info` in order.
-Defaults are PostgreSQL 14 at `127.0.0.1:2345`, database `rdr`, user `regulation_usr`, password
+Defaults are PostgreSQL 14 at `127.0.0.1:2345`, database `rdr`, user `ensreg-usr`, password
 `rdr-local-password`. Copy `.env.example` to `.env` to override local settings.
 
 To use another snapshot, check out its Git tag or commit before running `make db-up`.
