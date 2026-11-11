@@ -656,8 +656,10 @@ When finished:
 make db-down
 ```
 
-The database is disposable: stopping or removing the container discards local
-changes. See [Development](#development) to export changes before stopping.
+Shutdown removes the database container and project network, retaining container
+images for reuse. The database is disposable: stopping or removing the container
+discards local changes. See [Development](#development) to export changes before
+stopping.
 
 ### Choose a snapshot
 

@@ -44,16 +44,11 @@ db-info:
 	@printf '\nThis database is disposable. Run make db-dump before stopping it to save schema and data changes.\n'
 
 db-down:
-	./scripts/container.sh compose \
-	-p "$${DB_PROJECT:-rdr}" \
-	down \
-	-v \
-	--remove-orphans \
-	--rmi all
+	$(DB_COMPOSE) down --volumes --remove-orphans
 
 # Export once, then extract matching schema and data SQL files.
 db-dump:
-	@$(DB_COMPOSE) run --rm --no-deps -T --entrypoint sh db-dump -ec '\
+	@$(DB_COMPOSE) --profile tools run --rm --no-deps -T --entrypoint sh db-dump -ec '\
 		stage=$$(mktemp -d "$(DB_DUMP_DIR)/.dump-XXXXXX"); \
 		trap "rm -rf \"$$stage\"" EXIT; \
 		pg_dump --format=custom --file="$$stage/snapshot.dump"; \
@@ -85,7 +80,7 @@ schemaspy-docs: db-wait
 .PHONY: db-validate db-data-track
 
 db-validate:
-	$(DB_COMPOSE) run --build --rm --no-deps -T db-validate
+	$(DB_COMPOSE) --profile tools run --build --rm --no-deps -T db-validate
 
 db-data-track:
 	./scripts/dvc.sh add db/data.sql

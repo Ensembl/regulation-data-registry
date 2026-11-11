@@ -51,6 +51,15 @@ elif 'port' in args:
     def calls(self):
         return [json.loads(line) for line in self.log.read_text().splitlines()]
 
+    def test_shutdown_keeps_images_and_uses_the_selected_project(self):
+        result = subprocess.run(['make', '--no-print-directory', 'DB_PROJECT=rdr-test',
+                                 'db-down'], cwd=self.root,
+                                env=dict(os.environ, TEST_CALLS=str(self.log)),
+                                text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.calls(), [['container.sh', 'compose', '--project-name',
+                                         'rdr-test', 'down', '--volumes', '--remove-orphans']])
+
     def test_fetches_before_starting_and_waits_before_showing_connection(self):
         result = self.start('success')
         self.assertEqual(result.returncode, 0, result.stderr)

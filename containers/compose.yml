@@ -28,6 +28,7 @@ services:
       retries: 60
 
   db-validate:
+    profiles: [tools]
     build:
       context: ..
       dockerfile: containers/db.Containerfile
@@ -40,6 +41,7 @@ services:
     entrypoint: ["/usr/local/bin/validate-db"]
 
   db-dump:
+    profiles: [tools]
     image: docker.io/library/postgres:${POSTGRES_VERSION:-14}
     environment:
       PGHOST: db
