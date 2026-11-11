@@ -1,10 +1,9 @@
 # Regulation Data Registry
 
 The Ensembl Regulation Data Registry (RDR) structures experiment metadata from
-public archives, including ENCODE, FAANG, ENA and BioSamples, and provides a
-unified way to work with it. It records experiments relevant to Ensembl Regulation
-and references their data files rather than duplicating information available
-in those files.
+public archives and provides a unified way to work with it. It records experiments
+relevant to [Ensembl Regulation](https://regulation.ensembl.org/) and references
+their data files rather than duplicating information available in those files.
 
 The schema supports multiple species and genome assemblies and can accommodate
 additional data sources and experiment types. The database is versioned
@@ -36,8 +35,11 @@ Additional experiment types under development:
 
 Epigenomes group experiments by biological context. Assay-specific tables connect
 experiments to sets of replicates; each replicate links sequencing reads to a
-set of biological samples. Analysis files associate an experiment with a genome
-assembly and a registered file.
+set of biological samples. Alignment files associate read-file sets with genome
+assemblies and registered files. Analysis files associate an experiment with a
+genome assembly and a registered file.
+
+The complete schema contains **41 tables** and **34 views**.
 
 ```mermaid
 ---
@@ -131,22 +133,19 @@ erDiagram
     class overview_key key
 ```
 
-Read the main column from top to bottom: species → epigenome → experiment →
-replicate set → replicate → read-file set → run → read file.
+The expandable sections below describe:
 
-The overview above shows the main path through the schema. The four expandable
-sections below provide more detail about assays, samples, files, and provenance.
-Select a section title to see its detailed diagrams. Repeated boxes refer to the same table. Most
-boxes show table names only; the provenance section also includes column
-definitions. Views are omitted throughout.
+- **Assays:** replicate sets, ChIP-seq signal/control sets and targets, and multiome components.
+- **Samples:** biological sources, sample-set membership, ontologies, and life stages.
+- **Files and processing:** file types, storage locations, sequencing runs, and alignment tasks.
+- **Provenance and curation:** archive accessions, source records, metadata overrides, quality annotations, and schema versioning.
 
 <details>
 <summary><strong>Assay types and replicate sets</strong></summary>
 
-Each assay has its own group, with `experiment` on the left and replicate sets
-and targets on the right. Repeated boxes refer to the same tables, drawn
-separately to avoid crossing lines. The signal/control and ATAC/RNA labels
-distinguish the roles of replicate sets.
+Assay tables link experiments to replicate sets. ChIP-seq distinguishes signal
+and control sets and records histone or transcription factor targets; multiome
+links ATAC-seq and RNA-seq sets.
 
 ```mermaid
 ---
@@ -235,9 +234,8 @@ erDiagram
 <details>
 <summary><strong>Samples and biological annotations</strong></summary>
 
-The membership table connects sample sets to samples. Life-stage and ontology
-links add biological annotations; the optional sample-set link ties samples
-to replicates.
+Biological sources provide samples, which are grouped into sample sets for
+replicates. Ontologies and life stages describe their biological context.
 
 ```mermaid
 ---
@@ -307,8 +305,7 @@ erDiagram
 
 File-role tables share the generic `file` registry. Locations are recorded
 separately. The `run_alignment_task` membership table connects runs and alignment
-tasks; an alignment file can optionally identify its task. Shared tables are
-repeated inside labeled compartments to keep the relationships separate.
+tasks; an alignment file can optionally identify its task.
 
 ```mermaid
 ---
@@ -429,9 +426,7 @@ erDiagram
 <details>
 <summary><strong>Provenance, curation, and schema version</strong></summary>
 
-Archive accessions are recorded in `data_source`. The native entity-relationship
-boxes show column names, SQL types, and primary/foreign keys (`PK` / `FK`);
-`enum` denotes a PostgreSQL enumeration.
+`data_source` records archive accessions and links them to their source archive.
 
 **Archive accessions**
 
@@ -456,7 +451,7 @@ config:
 ---
 erDiagram
     direction LR
-    archive ||..o{ data_source : registers
+    archive ||..o{ data_source : ""
     archive {
         varchar name
         varchar website
@@ -477,8 +472,8 @@ erDiagram
 
 **Record provenance**
 
-The compact map repeats `data_source` without its columns to keep relationships
-readable.
+Samples, experiments, replicates, runs, and files reference their source
+accessions through `data_source`.
 
 ```mermaid
 ---
@@ -566,9 +561,9 @@ erDiagram
 
 **Curation and schema version**
 
-These tables have no foreign keys. `metadata_override` and `quality_annotation`
-identify records by accession; `alembic_version` stores the schema migration
-version. Their separate boxes do not imply relationships.
+`metadata_override` stores curated metadata changes, and `quality_annotation`
+records quality assessments by accession. `alembic_version` tracks schema
+migrations.
 
 ```mermaid
 ---
