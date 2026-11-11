@@ -39,7 +39,10 @@ set of biological samples. Alignment files associate read-file sets with genome
 assemblies and registered files. Analysis files associate an experiment with a
 genome assembly and a registered file.
 
-The complete schema contains **41 tables** and **34 views**.
+The complete schema contains **41 tables** and **34 views**. Their columns, keys,
+constraints, and relationships are described in the
+[full schema documentation](https://ensembl.github.io/regulation-data-registry/).
+The diagram below summarises the main relationships.
 
 ```mermaid
 ---
