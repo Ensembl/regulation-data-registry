@@ -1,7 +1,5 @@
 # Regulation Data Registry
 
-[![pipeline status](https://gitlab.ebi.ac.uk/ensreg/rdr/badges/main/pipeline.svg)](https://gitlab.ebi.ac.uk/ensreg/rdr/-/commits/main)
-
 The Ensembl Regulation Data Registry (RDR) structures experiment metadata from
 public archives, including ENCODE, FAANG, ENA and BioSamples, and provides a
 unified way to work with it. It records experiments relevant to Ensembl Regulation
@@ -13,9 +11,6 @@ additional data sources and experiment types. The database is versioned
 independently of Ensembl releases so that its schema and contents can evolve
 as new data is registered. This repository distributes snapshots that users can
 run and query locally, with Git tags identifying specific versions.
-
-The schema documentation describes the [tables](docs/schemaspy/index.html) and
-their [relationships](docs/schemaspy/relationships.html).
 
 ### Supported data sources
 
