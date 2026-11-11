@@ -1,4 +1,4 @@
-.PHONY: db-up db-down db-dump db-schema-dump db-data-dump db-dump-and-exit db-schema-dump-and-exit db-data-dump-and-exit
+.PHONY: db-up db-down db-dump
 .PHONY: dvc dvc-build db-data-push db-data-pull
 
 DB_PROJECT ?= rdr
@@ -51,40 +51,16 @@ db-down:
 	--remove-orphans \
 	--rmi all
 
+# Export once, then extract matching schema and data SQL files.
 db-dump:
-	@$(DB_COMPOSE) run --rm --no-deps -T --entrypoint bash db-dump -eo pipefail -c '\
-		output="$(DB_DUMP_DIR)"; \
-		mkdir -p "$$output"; \
-		stage=$$(mktemp -d "$$output/.dump-XXXXXX"); \
-		publishing=false; \
-		cleanup() { \
-			status=$$?; \
-			if $$publishing && [ "$$status" -ne 0 ]; then \
-				for file in data.dump schema.sql; do \
-					if [ -f "$$stage/previous/$$file" ]; then \
-						mv "$$stage/previous/$$file" "$$output/$$file"; \
-					else rm -f "$$output/$$file"; fi; \
-				done; \
-			fi; \
-			rm -rf "$$stage"; \
-			return "$$status"; \
-		}; \
-		trap cleanup EXIT; \
-		pg_dump --format=custom --file="$$stage/data.dump"; \
-		pg_restore --list "$$stage/data.dump" > /dev/null; \
-		pg_restore --schema-only --file="$$stage/schema.raw.sql" "$$stage/data.dump"; \
-		sed "$$ { /^$$/d; }" "$$stage/schema.raw.sql" > "$$stage/schema.sql"; \
-		mkdir "$$stage/previous"; \
-		for file in data.dump schema.sql; do \
-			if [ -f "$$output/$$file" ]; then cp -p "$$output/$$file" "$$stage/previous/$$file"; fi; \
-		done; \
-		publishing=true; \
-		mv "$$stage/data.dump" "$$output/data.dump"; \
-		mv "$$stage/schema.sql" "$$output/schema.sql"; \
-		printf "Snapshot exported to %s\n" "$$output"'
-
-# Keep the old commands as aliases; always export a matching archive/schema pair.
-db-schema-dump db-data-dump: db-dump
+	@$(DB_COMPOSE) run --rm --no-deps -T --entrypoint sh db-dump -ec '\
+		stage=$$(mktemp -d "$(DB_DUMP_DIR)/.dump-XXXXXX"); \
+		trap "rm -rf \"$$stage\"" EXIT; \
+		pg_dump --format=custom --file="$$stage/snapshot.dump"; \
+		pg_restore --schema-only --file="$$stage/schema.sql" "$$stage/snapshot.dump"; \
+		pg_restore --data-only --file="$$stage/data.sql" "$$stage/snapshot.dump"; \
+		mv "$$stage/schema.sql" "$$stage/data.sql" "$(DB_DUMP_DIR)/"; \
+		printf "Schema and data exported to %s\n" "$(DB_DUMP_DIR)"'
 
 dvc:
 	./scripts/dvc.sh $(DVC_ARGS)
@@ -110,16 +86,10 @@ schemapy-docs:
 	--build \
 	schemapy-docs
 
-db-dump-and-exit: db-dump db-down
-
-db-schema-dump-and-exit: db-schema-dump db-down
-
-db-data-dump-and-exit: db-data-dump db-down
-
 .PHONY: db-validate db-data-track
 
 db-validate:
 	$(DB_COMPOSE) run --build --rm --no-deps -T db-validate
 
 db-data-track:
-	./scripts/dvc.sh add db/data.dump
+	./scripts/dvc.sh add db/data.sql

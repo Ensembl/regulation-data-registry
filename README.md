@@ -102,19 +102,20 @@ After editing the local database, export both schema and data:
 make db-dump
 ```
 
-The snapshot is stored as one compressed PostgreSQL archive, `db/data.dump`,
-tracked by DVC. It contains the complete schema and data. `db/schema.sql` is
-extracted from that same archive and tracked in Git so schema changes can be
-reviewed as SQL. Startup restores the archive directly with `pg_restore`.
+`db/schema.sql` contains the schema and is tracked in Git. `db/data.sql` contains
+only table data and sequence values and is tracked by DVC. The export creates one
+temporary archive and extracts both SQL files from the same database snapshot.
+Initialization loads the schema first, followed by the data in PostgreSQL's
+dependency-safe dump order. Use the matching PostgreSQL 14 client and server
+images supplied by the container setup.
 
-Export checks that the archive's table of contents is readable; it does not
-restore a second database. To run that stronger check before publishing, use:
+Export does not run a second database. Before publishing, validate the SQL files:
 
 ```bash
 make db-validate
 ```
 
-Validation restores the archive into a disposable database without publishing a
+Validation restores the SQL files into a disposable database without publishing a
 port. After reviewing the schema and validation result, update the single pointer:
 
 ```bash
@@ -136,20 +137,21 @@ chmod 600 .dvc/config.local
 make db-data-push
 ```
 
-Commit `db/schema.sql` and `db/data.dump.dvc` together. Exporting, validating,
+Commit `db/schema.sql` and `db/data.sql.dvc` together. Exporting, validating,
 and uploading data do not create Git commits. Exports are staged before replacing
-the previous files. An export may produce a new archive hash even when rows have
-not changed; byte-for-byte reproducibility and per-table uploads are not promised.
+the previous files. An export may produce a new dump hash even when rows have
+not changed: PostgreSQL includes random restriction keys and version comments,
+and row order can change. Restriction protection is retained; byte-for-byte
+reproducibility is not promised.
 
-Normally use `make db-dump` to keep the archive and reviewed schema together.
-`make db-schema-dump` and `make db-data-dump` are aliases for the same full export. Editing the review
-SQL alone does not change the database: apply schema changes to the local database
-and export them.
+Use `make db-dump` to keep the schema and data together.
+Apply changes to the local database and export them. The next fresh instance
+loads the Git-versioned schema and DVC-versioned data.
 
-The numbered per-table dumps and their pointers have been replaced by the archive.
-The original snapshot and pointers are backed up under
-`.dvc/tmp/single-archive-migration-*/db/`. Existing cached objects are retained;
-new archive objects must be uploaded explicitly before sharing their Git pointers.
+Upload new data objects before sharing Git commits that reference them. This
+format starts a fresh DVC baseline: obsolete snapshot objects have been purged.
+Earlier Git revisions retain their pointers, but their snapshots can no longer
+be pulled from the remote.
 
 ### Tooling
 

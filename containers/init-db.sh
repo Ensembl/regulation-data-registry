@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# The archive includes schema, table data, sequences and restore dependencies.
-exec pg_restore --exit-on-error --single-transaction \
-    --username="$POSTGRES_USER" --dbname="$POSTGRES_DB" /snapshot/data.dump
+# Keep SQL outside the automatic init directory so it is executed exactly once.
+exec psql -X --set=ON_ERROR_STOP=1 --single-transaction \
+    --username="$POSTGRES_USER" --dbname="$POSTGRES_DB" \
+    --file=/snapshot/schema.sql --file=/snapshot/data.sql

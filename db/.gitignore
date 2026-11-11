@@ -1,5 +1,4 @@
-# Keep SQL schema in Git and snapshot contents in DVC.
+# Keep the schema in Git; data.sql is tracked only by DVC.
 *.sql
 !/schema.sql
-*.dump
 .dump-*/
