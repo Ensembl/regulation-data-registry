@@ -23,3 +23,6 @@ __pycache__/
 
 # Temporary SchemaSpy output during documentation generation
 docs/.schemaspy-*/
+
+# Generated documentation is published separately on gh-pages
+/docs/schemaspy/

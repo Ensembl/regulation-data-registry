@@ -680,7 +680,7 @@ When switching an existing instance, run `make db-down` before changing revision
 │   └── dvc/               # DVC container and locked Python environment
 ├── scripts/               # Container-engine, DVC and SchemaSpy command wrappers
 ├── docs/
-│   └── schemaspy/         # Generated HTML schema documentation and diagrams
+│   └── schemaspy/         # Local generated docs; Git-ignored, published on gh-pages
 ├── tests/                 # Workflow tests for startup, export and documentation
 ├── .dvc/                  # DVC configuration and local state
 │   ├── config             # Shared remote configuration, tracked in Git
@@ -777,8 +777,22 @@ Preview locally:
 python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
 ```
 
-Open <http://localhost:8000/schemaspy/>. Review and commit `docs/schemaspy/`
-alongside the corresponding `db/schema.sql` changes after `make db-dump`.
+Open <http://localhost:8000/schemaspy/>. Generated files stay out of `main` and
+are published separately on `gh-pages`. After reviewing the preview:
+
+```bash
+make docs-publish
+git push origin gh-pages
+```
+
+`docs-publish` updates only the local `gh-pages` branch with the generated site
+at its root. It preserves that branch's history and leaves the current checkout
+and staged changes untouched. The push is a separate, manual step.
+
+For GitHub Pages, select **Settings → Pages → Deploy from a branch → gh-pages →
+/(root)**. The publishing command adds `.nojekyll` so GitHub serves the generated
+HTML directly. Continue committing schema changes to `main`; regenerate and
+publish the documentation when those changes are ready.
 
 ### Tooling
 

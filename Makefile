@@ -72,10 +72,13 @@ db-data-pull:
 	./scripts/dvc.sh \
 	pull
 
-.PHONY: schemaspy-docs
+.PHONY: schemaspy-docs docs-publish
 
 schemaspy-docs: db-wait
 	DB_PROJECT="$(DB_PROJECT)" ./scripts/schemaspy.sh
+
+docs-publish:
+	./scripts/publish-docs.sh
 
 .PHONY: db-validate db-data-track
 
