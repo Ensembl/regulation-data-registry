@@ -77,14 +77,10 @@ db-data-pull:
 	./scripts/dvc.sh \
 	pull
 
-schemapy-docs:
-	./scripts/container.sh compose \
-	-p "$${DB_PROJECT:-rdr}" \
-	run \
-	--no-deps \
-	--rm \
-	--build \
-	schemapy-docs
+.PHONY: schemaspy-docs
+
+schemaspy-docs: db-wait
+	DB_PROJECT="$(DB_PROJECT)" ./scripts/schemaspy.sh
 
 .PHONY: db-validate db-data-track
 

@@ -153,6 +153,35 @@ format starts a fresh DVC baseline: obsolete snapshot objects have been purged.
 Earlier Git revisions retain their pointers, but their snapshots can no longer
 be pulled from the remote.
 
+### Update schema documentation
+
+With the local database running, regenerate the HTML and relationship diagrams:
+
+```bash
+make db-up           # If the database is not already running
+make schemaspy-docs
+```
+
+This uses the pinned SchemaSpy 7.0.2 container with its bundled PostgreSQL driver
+and Graphviz; no local Java installation is needed. It reads the `public` schema
+from the current local database, including any schema changes you have applied.
+It uses the same engine, `DB_PROJECT`, and `.env` connection settings as the
+database commands. It waits for PostgreSQL without restarting the database.
+
+Generation replaces `docs/schemaspy/` only after succeeding, removing obsolete
+pages for dropped tables. Failed generation preserves the existing docs. Row
+counts are omitted so the documentation focuses on the schema. The container
+runs with your user ID so generated files remain editable.
+
+Preview locally:
+
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
+```
+
+Open <http://localhost:8000/schemaspy/>. Review and commit `docs/schemaspy/`
+alongside the corresponding `db/schema.sql` changes after `make db-dump`.
+
 ### Tooling
 
 Container configuration and the locked DVC environment live in `containers/`.

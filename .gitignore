@@ -20,3 +20,6 @@ Desktop.ini
 
 # Python test bytecode
 __pycache__/
+
+# Temporary SchemaSpy output during documentation generation
+docs/.schemaspy-*/

@@ -58,11 +58,15 @@ services:
       db:
         condition: service_healthy
 
-  schemapy-docs:
+  schemaspy-docs:
+    profiles: [tools]
     image: docker.io/schemaspy/schemaspy:7.0.2
+    user: "${SCHEMASPY_UID:-1000}:${SCHEMASPY_GID:-1000}"
+    # The wrapper selects keep-id for rootless Podman and host for Docker.
+    userns_mode: "${SCHEMASPY_USERNS:-host}"
     volumes:
       - type: bind
-        source: ../docs/schemaspy
+        source: ${SCHEMASPY_OUTPUT_DIR:-../docs/schemaspy}
         target: /output
         bind:
           create_host_path: false
@@ -70,4 +74,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["-t", "pgsql11", "--user", "${POSTGRES_USER:-ensreg-usr}", "-db", "${DB_NAME:-rdr}", "-port", "5432", "-host", "db", "-p", "${POSTGRES_PASSWORD:-rdr-local-password}"]
+    command:
+      - -t
+      - pgsql11
+      - -host
+      - db
+      - -port
+      - '5432'
+      - -db
+      - ${DB_NAME:-rdr}
+      - -u
+      - ${POSTGRES_USER:-ensreg-usr}
+      - -p
+      - ${POSTGRES_PASSWORD:-rdr-local-password}
+      - -s
+      - public
+      # Keep documentation focused on structure, independent of snapshot row counts.
+      - -norows
