@@ -762,4 +762,7 @@ for DVC wrapper usage. Run workflow tests with `python3 -m unittest discover -s 
 
 ## License
 
-[Apache License 2.0](LICENSE).
+Licensed under Apache-2.0 or MIT, at your option.
+
+See [LICENSE-APACHE](LICENSE-APACHE), [LICENSE-MIT](LICENSE-MIT), and
+[COPYRIGHT](COPYRIGHT) for details.
