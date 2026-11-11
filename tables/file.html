@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>file - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>file</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="basename">basename</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="file_type">file_type</span></td>
+                                    <td>file_type</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="size">size</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="md5sum">md5sum</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="file_id">file_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>gen_random_uuid()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="alignment_file.file_id references file.file_id via alignment_file_file_id_fkey"><a href='alignment_file.html'>alignment_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">alignment_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="analysis_file.file_id references file.file_id via analysis_file_file_id_fkey"><a href='analysis_file.html'>analysis_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">analysis_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="assembly.file_id references file.file_id via assembly_file_id_fkey"><a href='assembly.html'>assembly</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">assembly_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="barcode_file.file_id references file.file_id via barcode_file_file_id_fkey"><a href='barcode_file.html'>barcode_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">barcode_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="inclusion_list.file_id references file.file_id via inclusion_list_file_id_fkey"><a href='inclusion_list.html'>inclusion_list</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">inclusion_list_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="mask_file.file_id references file.file_id via mask_file_file_id_fkey"><a href='mask_file.html'>mask_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">mask_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="posix_file.file_id references file.file_id via posix_file_file_id_fkey"><a href='posix_file.html'>posix_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">posix_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="public_url.file_id references file.file_id via public_url_file_id_fkey"><a href='public_url.html'>public_url</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">public_url_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="read_file.file_id references file.file_id via read_file_file_id_fkey"><a href='read_file.html'>read_file</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">read_file_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="read_file_data_source.file_id&#39;s name implies that it&#39;s a child of file.file_id, but it doesn&#39;t reference that column."><a href='read_file_data_source.html'>read_file_data_source</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="read_file_metadata.file_id&#39;s name implies that it&#39;s a child of file.file_id, but it doesn&#39;t reference that column."><a href='read_file_metadata.html'>read_file_metadata</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="s3_object.file_id references file.file_id via s3_object_file_id_fkey"><a href='s3_object.html'>s3_object</a><span class='relatedKey'>.file_id</span></td>
+                                                <td class="constraint detail">s3_object_file_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="execution_metadata">execution_metadata</span></td>
+                                    <td>jsonb</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="data_source_id">data_source_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="file.data_source_id references data_source.data_source_id via file_data_source_id_fkey"><a href='data_source.html'>data_source</a><span class='relatedKey'>.data_source_id</span></td>
+                                                <td class="constraint detail">file_data_source_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="imported">imported</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="file_systems">file_systems</span></td>
+                                    <td>_file_system_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> file_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>file_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>ix_file_data_source_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>data_source_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="alignment_file.html" target="_top" title="alignment_file" alt="" coords="1086,754,1311,964">
+<area shape="rect" id="node2" href="assembly.html" target="_top" title="assembly" alt="" coords="805,228,1040,410">
+<area shape="rect" id="node3" href="file.html" target="_top" title="file" alt="" coords="268,694,761,1027">
+<area shape="rect" id="node6" href="data_source.html" target="_top" title="data_source" alt="" coords="5,1108,224,1284">
+<area shape="rect" id="node4" href="analysis_file.html" target="_top" title="analysis_file" alt="" coords="1084,76,1313,311">
+<area shape="rect" id="node5" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="821,1020,1024,1202">
+<area shape="rect" id="node7" href="inclusion_list.html" target="_top" title="inclusion_list" alt="" coords="818,64,1027,211">
+<area shape="rect" id="node8" href="mask_file.html" target="_top" title="mask_file" alt="" coords="1111,380,1286,532">
+<area shape="rect" id="node9" href="posix_file.html" target="_top" title="posix_file" alt="" coords="835,427,1010,574">
+<area shape="rect" id="node10" href="public_url.html" target="_top" title="public_url" alt="" coords="833,591,1012,738">
+<area shape="rect" id="node11" href="read_file.html" target="_top" title="read_file" alt="" coords="806,1219,1039,1454">
+<area shape="rect" id="node12" href="s3_object.html" target="_top" title="s3_object" alt="" coords="835,755,1010,931">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/file.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="alignment_file.html" target="_top" title="alignment_file" alt="" coords="1564,965,1785,1053">
+<area shape="rect" id="node2" href="alignment_task.html" target="_top" title="alignment_task" alt="" coords="1288,1256,1520,1344">
+<area shape="rect" id="node3" href="assembly.html" target="_top" title="assembly" alt="" coords="1317,147,1491,235">
+<area shape="rect" id="node4" href="file.html" target="_top" title="file" alt="" coords="751,473,1244,807">
+<area shape="rect" id="node5" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="475,1001,681,1089">
+<area shape="rect" id="node8" href="species.html" target="_top" title="species" alt="" coords="500,347,656,435">
+<area shape="rect" id="node10" href="data_source.html" target="_top" title="data_source" alt="" coords="204,624,405,712">
+<area shape="rect" id="node6" href="analysis_file.html" target="_top" title="analysis_file" alt="" coords="1573,76,1776,164">
+<area shape="rect" id="node7" href="experiment.html" target="_top" title="experiment" alt="" coords="1306,5,1502,93">
+<area shape="rect" id="node16" href="epigenome.html" target="_top" title="epigenome" alt="" coords="901,227,1093,315">
+<area shape="rect" id="node9" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1303,816,1505,904">
+<area shape="rect" id="node11" href="run.html" target="_top" title="run" alt="" coords="939,860,1055,948">
+<area shape="rect" id="node15" href="archive.html" target="_top" title="archive" alt="" coords="5,621,160,709">
+<area shape="rect" id="node12" href="biosample.html" target="_top" title="biosample" alt="" coords="905,368,1089,456">
+<area shape="rect" id="node13" href="biosource.html" target="_top" title="biosource" alt="" coords="489,587,667,675">
+<area shape="rect" id="node14" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="467,1107,689,1195">
+<area shape="rect" id="node17" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="449,189,707,277">
+<area shape="rect" id="node18" href="inclusion_list.html" target="_top" title="inclusion_list" alt="" coords="1299,452,1509,599">
+<area shape="rect" id="node19" href="mask_file.html" target="_top" title="mask_file" alt="" coords="1587,281,1762,369">
+<area shape="rect" id="node20" href="posix_file.html" target="_top" title="posix_file" alt="" coords="1317,616,1491,763">
+<area shape="rect" id="node21" href="public_url.html" target="_top" title="public_url" alt="" coords="1315,252,1493,399">
+<area shape="rect" id="node22" href="read_file.html" target="_top" title="read_file" alt="" coords="1320,921,1488,1009">
+<area shape="rect" id="node23" href="replicate.html" target="_top" title="replicate" alt="" coords="913,1248,1082,1336">
+<area shape="rect" id="node24" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="473,1248,683,1336">
+<area shape="rect" id="node25" href="s3_object.html" target="_top" title="s3_object" alt="" coords="1317,1027,1491,1203">
+<area shape="rect" id="node26" href="bucket.html" target="_top" title="bucket" alt="" coords="923,1059,1072,1147">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/file.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="alignment_file.html" target="_top" title="alignment_file" alt="" coords="1221,687,1446,897">
+<area shape="rect" id="node2" href="assembly.html" target="_top" title="assembly" alt="" coords="873,761,1107,943">
+<area shape="rect" id="node3" href="file.html" target="_top" title="file" alt="" coords="268,800,761,1133">
+<area shape="rect" id="node6" href="data_source.html" target="_top" title="data_source" alt="" coords="5,1313,224,1489">
+<area shape="rect" id="node4" href="analysis_file.html" target="_top" title="analysis_file" alt="" coords="1219,915,1448,1149">
+<area shape="rect" id="node5" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="889,5,1091,187">
+<area shape="rect" id="node7" href="inclusion_list.html" target="_top" title="inclusion_list" alt="" coords="885,1032,1095,1179">
+<area shape="rect" id="node8" href="mask_file.html" target="_top" title="mask_file" alt="" coords="1246,289,1421,441">
+<area shape="rect" id="node9" href="posix_file.html" target="_top" title="posix_file" alt="" coords="903,240,1077,387">
+<area shape="rect" id="node10" href="public_url.html" target="_top" title="public_url" alt="" coords="901,404,1079,551">
+<area shape="rect" id="node11" href="read_file.html" target="_top" title="read_file" alt="" coords="873,1196,1107,1431">
+<area shape="rect" id="node12" href="read_file_data_source.html" target="_top" title="read_file_data_source" alt="" coords="844,1448,1136,1629">
+<area shape="rect" id="node13" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="805,1647,1175,2121">
+<area shape="rect" id="node14" href="s3_object.html" target="_top" title="s3_object" alt="" coords="903,568,1077,744">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/file.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="alignment_file.html" target="_top" title="alignment_file" alt="" coords="1525,1233,1747,1321">
+<area shape="rect" id="node2" href="alignment_task.html" target="_top" title="alignment_task" alt="" coords="1059,1230,1291,1318">
+<area shape="rect" id="node3" href="assembly.html" target="_top" title="assembly" alt="" coords="1087,1335,1262,1423">
+<area shape="rect" id="node4" href="file.html" target="_top" title="file" alt="" coords="464,505,957,838">
+<area shape="rect" id="node5" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="607,1086,814,1174">
+<area shape="rect" id="node8" href="species.html" target="_top" title="species" alt="" coords="633,1813,789,1901">
+<area shape="rect" id="node10" href="data_source.html" target="_top" title="data_source" alt="" coords="219,2618,420,2706">
+<area shape="rect" id="node6" href="analysis_file.html" target="_top" title="analysis_file" alt="" coords="1924,1319,2127,1407">
+<area shape="rect" id="node7" href="experiment.html" target="_top" title="experiment" alt="" coords="1538,3191,1734,3279">
+<area shape="rect" id="node13" href="epigenome.html" target="_top" title="epigenome" alt="" coords="1079,2593,1271,2681">
+<area shape="rect" id="node9" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1535,613,1737,701">
+<area shape="rect" id="node11" href="run.html" target="_top" title="run" alt="" coords="1117,945,1233,1033">
+<area shape="rect" id="node25" href="archive.html" target="_top" title="archive" alt="" coords="13,2607,167,2695">
+<area shape="rect" id="node12" href="base_epigenomes_replicates_and_files.html" target="_top" title="base_epigenomes_replicates_and_files" alt="" coords="1409,2095,1863,2159">
+<area shape="rect" id="node26" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="582,2483,839,2571">
+<area shape="rect" id="node14" href="biosample.html" target="_top" title="biosample" alt="" coords="1083,3299,1267,3387">
+<area shape="rect" id="node15" href="biosource.html" target="_top" title="biosource" alt="" coords="621,3513,800,3601">
+<area shape="rect" id="node16" href="life_stage.html" target="_top" title="life_stage" alt="" coords="231,3513,408,3601">
+<area shape="rect" id="node17" href="ontology.html" target="_top" title="ontology" alt="" coords="5,2713,175,2801">
+<area shape="rect" id="node18" href="biosample_data_source.html" target="_top" title="biosample_data_source" alt="" coords="1482,3625,1790,3689">
+<area shape="rect" id="node19" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="599,2198,822,2286">
+<area shape="rect" id="node20" href="biosample_set_data_source.html" target="_top" title="biosample_set_data_source" alt="" coords="1001,2082,1348,2146">
+<area shape="rect" id="node21" href="biosource_data_source.html" target="_top" title="biosource_data_source" alt="" coords="1023,3481,1326,3545">
+<area shape="rect" id="node22" href="curated_experiment_analysis_files.html" target="_top" title="curated_experiment_analysis_files" alt="" coords="1429,1390,1843,1454">
+<area shape="rect" id="node23" href="curated_experiment_metadata.html" target="_top" title="curated_experiment_metadata" alt="" coords="1447,1799,1825,1863">
+<area shape="rect" id="node24" href="curated_open_chromatin_assay_metadata.html" target="_top" title="curated_open_chromatin_assay_metadata" alt="" coords="1392,1718,1880,1782">
+<area shape="rect" id="node27" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1478,2353,1794,2417">
+<area shape="rect" id="node28" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="1437,2785,1835,2849">
+<area shape="rect" id="node29" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="606,2894,815,2982">
+<area shape="rect" id="node30" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="1443,2703,1829,2767">
+<area shape="rect" id="node31" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1477,2947,1795,3011">
+<area shape="rect" id="node32" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1489,2607,1783,2671">
+<area shape="rect" id="node33" href="replicate.html" target="_top" title="replicate" alt="" coords="1090,2235,1259,2323">
+<area shape="rect" id="node34" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="1443,3029,1829,3093">
+<area shape="rect" id="node35" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="1448,2866,1824,2930">
+<area shape="rect" id="node36" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1481,3110,1791,3174">
+<area shape="rect" id="node37" href="inclusion_list.html" target="_top" title="inclusion_list" alt="" coords="1070,483,1279,630">
+<area shape="rect" id="node38" href="library_data_source.html" target="_top" title="library_data_source" alt="" coords="1039,827,1311,891">
+<area shape="rect" id="node39" href="mask_file.html" target="_top" title="mask_file" alt="" coords="1549,1127,1723,1215">
+<area shape="rect" id="node40" href="posix_file.html" target="_top" title="posix_file" alt="" coords="1087,155,1262,302">
+<area shape="rect" id="node41" href="public_url.html" target="_top" title="public_url" alt="" coords="1085,319,1264,466">
+<area shape="rect" id="node42" href="read_file.html" target="_top" title="read_file" alt="" coords="1552,751,1720,839">
+<area shape="rect" id="node43" href="read_file_data_source.html" target="_top" title="read_file_data_source" alt="" coords="1490,925,1782,989">
+<area shape="rect" id="node44" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1502,2177,1770,2241">
+<area shape="rect" id="node45" href="replicate_data_source.html" target="_top" title="replicate_data_source" alt="" coords="1489,2014,1783,2078">
+<area shape="rect" id="node46" href="replicate_set_data_source.html" target="_top" title="replicate_set_data_source" alt="" coords="1008,3110,1341,3174">
+<area shape="rect" id="node47" href="run_accession.html" target="_top" title="run_accession" alt="" coords="1527,1046,1745,1110">
+<area shape="rect" id="node48" href="s3_object.html" target="_top" title="s3_object" alt="" coords="1087,1477,1262,1653">
+<area shape="rect" id="node49" href="bucket.html" target="_top" title="bucket" alt="" coords="636,1509,785,1597">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/file.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

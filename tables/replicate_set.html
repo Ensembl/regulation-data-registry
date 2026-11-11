@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>replicate_set - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>replicate_set</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="replicate_set_id">replicate_set_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>gen_random_uuid()</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="analysis_file_experiment_info.control_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='analysis_file_experiment_info.html'>analysis_file_experiment_info</a><span class='relatedKey'>.control_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="analysis_file_experiment_info.signal_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='analysis_file_experiment_info.html'>analysis_file_experiment_info</a><span class='relatedKey'>.signal_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="analysis_file_info_with_checks.control_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='analysis_file_info_with_checks.html'>analysis_file_info_with_checks</a><span class='relatedKey'>.control_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="analysis_file_info_with_checks.signal_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='analysis_file_info_with_checks.html'>analysis_file_info_with_checks</a><span class='relatedKey'>.signal_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="atac_seq.replicate_set_id references replicate_set.replicate_set_id via atac_seq_replicate_set_id_fkey"><a href='atac_seq.html'>atac_seq</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">atac_seq_replicate_set_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="chip_seq.control references replicate_set.replicate_set_id via chip_seq_control_fkey"><a href='chip_seq.html'>chip_seq</a><span class='relatedKey'>.control</span></td>
+                                                <td class="constraint detail">chip_seq_control_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="chip_seq.signal references replicate_set.replicate_set_id via chip_seq_signal_fkey"><a href='chip_seq.html'>chip_seq</a><span class='relatedKey'>.signal</span></td>
+                                                <td class="constraint detail">chip_seq_signal_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="dnase_seq.replicate_set_id references replicate_set.replicate_set_id via dnase_seq_replicate_set_id_fkey"><a href='dnase_seq.html'>dnase_seq</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">dnase_seq_replicate_set_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_control_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_control_data_source.html'>experiment_control_data_source</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_control_target_info.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_control_target_info.html'>experiment_control_target_info</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_data_source.html'>experiment_data_source</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_metadata.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_metadata.html'>experiment_metadata</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_signal_and_control_data_source.control_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_signal_and_control_d_d519e7f1.html'>experiment_signal_and_control_data_source</a><span class='relatedKey'>.control_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_signal_and_control_data_source.signal_replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_signal_and_control_d_d519e7f1.html'>experiment_signal_and_control_data_source</a><span class='relatedKey'>.signal_replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_signal_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_signal_data_source.html'>experiment_signal_data_source</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_signal_target_info.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_signal_target_info.html'>experiment_signal_target_info</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="experiment_target_info.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='experiment_target_info.html'>experiment_target_info</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="multiome.sn_atac_seq_id references replicate_set.replicate_set_id via multiome_sn_atac_seq_id_fkey"><a href='multiome.html'>multiome</a><span class='relatedKey'>.sn_atac_seq_id</span></td>
+                                                <td class="constraint detail">multiome_sn_atac_seq_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="multiome.sn_rna_seq_id references replicate_set.replicate_set_id via multiome_sn_rna_seq_id_fkey"><a href='multiome.html'>multiome</a><span class='relatedKey'>.sn_rna_seq_id</span></td>
+                                                <td class="constraint detail">multiome_sn_rna_seq_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="read_file_metadata.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='read_file_metadata.html'>read_file_metadata</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="replicate.replicate_set_id references replicate_set.replicate_set_id via replicate_replicate_set_id_fkey"><a href='replicate.html'>replicate</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">replicate_replicate_set_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="replicate_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='replicate_data_source.html'>replicate_data_source</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="replicate_set_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='replicate_set_data_source.html'>replicate_set_data_source</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="rna_seq.replicate_set_id references replicate_set.replicate_set_id via rna_seq_replicate_set_id_fkey"><a href='rna_seq.html'>rna_seq</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">rna_seq_replicate_set_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="data_source_id">data_source_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="replicate_set.data_source_id references data_source.data_source_id via replicate_set_data_source_id_fkey"><a href='data_source.html'>data_source</a><span class='relatedKey'>.data_source_id</span></td>
+                                                <td class="constraint detail">replicate_set_data_source_id_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="indexes_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> replicate_set_pkey</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>replicate_set_id</td>
+                                </tr>
+                                <tr>
+                                    <td title='Indexed'>ix_replicate_set_data_source_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>data_source_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="660,5,897,152">
+<area shape="rect" id="node2" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="268,588,616,716">
+<area shape="rect" id="node7" href="data_source.html" target="_top" title="data_source" alt="" coords="5,813,224,989">
+<area shape="rect" id="node3" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="660,169,897,404">
+<area shape="rect" id="node4" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="678,421,879,544">
+<area shape="rect" id="node5" href="multiome.html" target="_top" title="multiome" alt="" coords="660,561,897,737">
+<area shape="rect" id="node6" href="replicate.html" target="_top" title="replicate" alt="" coords="671,919,886,1129">
+<area shape="rect" id="node8" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="660,755,897,901">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/replicate_set.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="1379,169,1616,316">
+<area shape="rect" id="node2" href="experiment.html" target="_top" title="experiment" alt="" coords="1063,316,1259,404">
+<area shape="rect" id="node3" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="987,421,1335,549">
+<area shape="rect" id="node5" href="data_source.html" target="_top" title="data_source" alt="" coords="204,548,405,636">
+<area shape="rect" id="node16" href="epigenome.html" target="_top" title="epigenome" alt="" coords="751,323,943,411">
+<area shape="rect" id="node4" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1059,567,1262,655">
+<area shape="rect" id="node6" href="file.html" target="_top" title="file" alt="" coords="789,612,904,700">
+<area shape="rect" id="node7" href="run.html" target="_top" title="run" alt="" coords="789,717,905,805">
+<area shape="rect" id="node14" href="archive.html" target="_top" title="archive" alt="" coords="5,545,160,633">
+<area shape="rect" id="node20" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="475,849,681,937">
+<area shape="rect" id="node8" href="biosample.html" target="_top" title="biosample" alt="" coords="755,507,939,595">
+<area shape="rect" id="node9" href="biosource.html" target="_top" title="biosource" alt="" coords="489,507,667,595">
+<area shape="rect" id="node10" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="467,955,689,1043">
+<area shape="rect" id="node11" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="1379,667,1616,901">
+<area shape="rect" id="node12" href="histone_target.html" target="_top" title="histone_target" alt="" coords="1048,777,1273,865">
+<area shape="rect" id="node13" href="tf_target.html" target="_top" title="tf_target" alt="" coords="1076,883,1245,971">
+<area shape="rect" id="node15" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="1397,333,1598,456">
+<area shape="rect" id="node17" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="449,277,707,365">
+<area shape="rect" id="node18" href="multiome.html" target="_top" title="multiome" alt="" coords="1379,473,1616,649">
+<area shape="rect" id="node19" href="read_file.html" target="_top" title="read_file" alt="" coords="1077,672,1245,760">
+<area shape="rect" id="node21" href="replicate.html" target="_top" title="replicate" alt="" coords="1413,971,1582,1059">
+<area shape="rect" id="node22" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="1379,5,1616,152">
+</map>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/replicate_set.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="731,698,1098,908">
+<area shape="rect" id="node2" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="268,1538,616,1666">
+<area shape="rect" id="node8" href="data_source.html" target="_top" title="data_source" alt="" coords="5,1792,224,1968">
+<area shape="rect" id="node3" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="728,1283,1101,1494">
+<area shape="rect" id="node4" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="796,1511,1033,1658">
+<area shape="rect" id="node5" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="796,1675,1033,1910">
+<area shape="rect" id="node6" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="814,1927,1015,2050">
+<area shape="rect" id="node7" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="716,118,1113,270">
+<area shape="rect" id="node9" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="721,287,1108,439">
+<area shape="rect" id="node10" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="755,456,1074,608">
+<area shape="rect" id="node11" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1213,732,1583,1148">
+<area shape="rect" id="node12" href="replicate.html" target="_top" title="replicate" alt="" coords="807,2295,1022,2506">
+<area shape="rect" id="node13" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="660,2067,1169,2278">
+<area shape="rect" id="node14" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="721,2559,1108,2711">
+<area shape="rect" id="node15" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="727,2728,1103,2880">
+<area shape="rect" id="node16" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="760,2898,1069,3050">
+<area shape="rect" id="node17" href="multiome.html" target="_top" title="multiome" alt="" coords="796,926,1033,1102">
+<area shape="rect" id="node18" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1213,240,1583,715">
+<area shape="rect" id="node19" href="replicate_data_source.html" target="_top" title="replicate_data_source" alt="" coords="1251,2424,1545,2635">
+<area shape="rect" id="node20" href="replicate_set_data_source.html" target="_top" title="replicate_set_data_source" alt="" coords="748,3067,1081,3190">
+<area shape="rect" id="node21" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="796,1119,1033,1266">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/replicate_set.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="1318,2240,1685,2450">
+<area shape="rect" id="node2" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="464,2656,812,2784">
+<area shape="rect" id="node3" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="509,2105,767,2193">
+<area shape="rect" id="node4" href="epigenome.html" target="_top" title="epigenome" alt="" coords="933,2377,1125,2465">
+<area shape="rect" id="node5" href="species.html" target="_top" title="species" alt="" coords="560,1945,716,2033">
+<area shape="rect" id="node12" href="data_source.html" target="_top" title="data_source" alt="" coords="219,1436,420,1524">
+<area shape="rect" id="node6" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="1315,1784,1688,1994">
+<area shape="rect" id="node7" href="assembly.html" target="_top" title="assembly" alt="" coords="942,996,1117,1084">
+<area shape="rect" id="node8" href="file.html" target="_top" title="file" alt="" coords="581,880,695,968">
+<area shape="rect" id="node9" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="1800,2489,2037,2636">
+<area shape="rect" id="node10" href="experiment.html" target="_top" title="experiment" alt="" coords="1403,2702,1599,2790">
+<area shape="rect" id="node11" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1400,496,1603,584">
+<area shape="rect" id="node13" href="run.html" target="_top" title="run" alt="" coords="971,658,1087,746">
+<area shape="rect" id="node25" href="archive.html" target="_top" title="archive" alt="" coords="13,1433,167,1521">
+<area shape="rect" id="node38" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="535,996,741,1084">
+<area shape="rect" id="node14" href="biosample.html" target="_top" title="biosample" alt="" coords="937,276,1121,364">
+<area shape="rect" id="node15" href="biosource.html" target="_top" title="biosource" alt="" coords="549,312,727,400">
+<area shape="rect" id="node16" href="life_stage.html" target="_top" title="life_stage" alt="" coords="231,169,408,257">
+<area shape="rect" id="node17" href="ontology.html" target="_top" title="ontology" alt="" coords="5,169,175,257">
+<area shape="rect" id="node18" href="biosample_data_source.html" target="_top" title="biosample_data_source" alt="" coords="1347,221,1655,285">
+<area shape="rect" id="node19" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="527,1433,749,1521">
+<area shape="rect" id="node20" href="biosample_set_data_source.html" target="_top" title="biosample_set_data_source" alt="" coords="856,1540,1203,1604">
+<area shape="rect" id="node21" href="biosource_data_source.html" target="_top" title="biosource_data_source" alt="" coords="878,381,1181,445">
+<area shape="rect" id="node22" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="1800,2818,2037,3053">
+<area shape="rect" id="node23" href="histone_target.html" target="_top" title="histone_target" alt="" coords="1389,2961,1614,3049">
+<area shape="rect" id="node24" href="tf_target.html" target="_top" title="tf_target" alt="" coords="1417,3148,1586,3236">
+<area shape="rect" id="node26" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="1818,2661,2019,2784">
+<area shape="rect" id="node27" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1343,1702,1659,1766">
+<area shape="rect" id="node28" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="1303,3442,1700,3506">
+<area shape="rect" id="node29" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="1308,2468,1695,2532">
+<area shape="rect" id="node30" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1342,2621,1661,2685">
+<area shape="rect" id="node31" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1354,1092,1649,1156">
+<area shape="rect" id="node32" href="replicate.html" target="_top" title="replicate" alt="" coords="945,1362,1114,1450">
+<area shape="rect" id="node33" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="1247,2012,1756,2222">
+<area shape="rect" id="node34" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="1308,2844,1695,2908">
+<area shape="rect" id="node35" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="1313,3066,1689,3130">
+<area shape="rect" id="node36" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1347,3361,1656,3425">
+<area shape="rect" id="node37" href="library_data_source.html" target="_top" title="library_data_source" alt="" coords="893,1245,1165,1309">
+<area shape="rect" id="node39" href="multiome.html" target="_top" title="multiome" alt="" coords="1800,3070,2037,3246">
+<area shape="rect" id="node40" href="read_file.html" target="_top" title="read_file" alt="" coords="1417,780,1585,868">
+<area shape="rect" id="node41" href="read_file_data_source.html" target="_top" title="read_file_data_source" alt="" coords="1355,885,1647,949">
+<area shape="rect" id="node42" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1367,1180,1635,1244">
+<area shape="rect" id="node43" href="replicate_data_source.html" target="_top" title="replicate_data_source" alt="" coords="1355,1481,1648,1545">
+<area shape="rect" id="node44" href="replicate_set_data_source.html" target="_top" title="replicate_set_data_source" alt="" coords="863,3204,1196,3268">
+<area shape="rect" id="node45" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="1800,3264,2037,3410">
+<area shape="rect" id="node46" href="run_accession.html" target="_top" title="run_accession" alt="" coords="1393,601,1610,665">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/replicate_set.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>experiment_metadata - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>experiment_metadata</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="species_name">species_name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="species_id">species_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.species_id&#39;s name implies that it&#39;s a child of species.species_id, but it doesn&#39;t reference that column."><a href='species.html'>species</a><span class='relatedKey'>.species_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="epigenome_group_description">epigenome_group_description</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="epigenome_group_id">epigenome_group_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.epigenome_group_id&#39;s name implies that it&#39;s a child of epigenome_group.epigenome_group_id, but it doesn&#39;t reference that column."><a href='epigenome_group.html'>epigenome_group</a><span class='relatedKey'>.epigenome_group_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="epigenome_accession">epigenome_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="epigenome_name">epigenome_name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="epigenome_description">epigenome_description</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="name">name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_type">experiment_type</span></td>
+                                    <td>experiment_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="epigenome_id">epigenome_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.epigenome_id&#39;s name implies that it&#39;s a child of epigenome.epigenome_id, but it doesn&#39;t reference that column."><a href='epigenome.html'>epigenome</a><span class='relatedKey'>.epigenome_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_id">experiment_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="data_source_id">data_source_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.data_source_id&#39;s name implies that it&#39;s a child of data_source.data_source_id, but it doesn&#39;t reference that column."><a href='data_source.html'>data_source</a><span class='relatedKey'>.data_source_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="replicate_set_id">replicate_set_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='replicate_set.html'>replicate_set</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="replicate_set_type">replicate_set_type</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_target_type">experiment_target_type</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_target">experiment_target</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="replicate_set_accession">replicate_set_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="replicate_id">replicate_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.replicate_id&#39;s name implies that it&#39;s a child of replicate.replicate_id, but it doesn&#39;t reference that column."><a href='replicate.html'>replicate</a><span class='relatedKey'>.replicate_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="replicate_accession">replicate_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="biosample_set_id">biosample_set_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.biosample_set_id&#39;s name implies that it&#39;s a child of biosample_set.biosample_set_id, but it doesn&#39;t reference that column."><a href='biosample_set.html'>biosample_set</a><span class='relatedKey'>.biosample_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosample_set_type">biosample_set_type</span></td>
+                                    <td>biosample_set_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="accession">accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="biosample_id">biosample_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.biosample_id&#39;s name implies that it&#39;s a child of biosample.biosample_id, but it doesn&#39;t reference that column."><a href='biosample.html'>biosample</a><span class='relatedKey'>.biosample_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosample_accession">biosample_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosample_alternative_accession">biosample_alternative_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biomaterial_type">biomaterial_type</span></td>
+                                    <td>biomaterial_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosample_term">biosample_term</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="ontology_id">ontology_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.ontology_id&#39;s name implies that it&#39;s a child of ontology.ontology_id, but it doesn&#39;t reference that column."><a href='ontology.html'>ontology</a><span class='relatedKey'>.ontology_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="ontology_type">ontology_type</span></td>
+                                    <td>ontology_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="curie">curie</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="organ_slims">organ_slims</span></td>
+                                    <td>_text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="cell_slims">cell_slims</span></td>
+                                    <td>_text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="developmental_slims">developmental_slims</span></td>
+                                    <td>_text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="system_slims">system_slims</span></td>
+                                    <td>_text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="synonyms">synonyms</span></td>
+                                    <td>_text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="life_stage_id">life_stage_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.life_stage_id&#39;s name implies that it&#39;s a child of life_stage.life_stage_id, but it doesn&#39;t reference that column."><a href='life_stage.html'>life_stage</a><span class='relatedKey'>.life_stage_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage_term">life_stage_term</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage_ontology_relation">life_stage_ontology_relation</span></td>
+                                    <td>ontology_relation_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="life_stage_ontology_id">life_stage_ontology_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.life_stage_ontology_id&#39;s name implies that it&#39;s a child of ontology.ontology_id, but it doesn&#39;t reference that column."><a href='ontology.html'>ontology</a><span class='relatedKey'>.ontology_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage_ontology_type">life_stage_ontology_type</span></td>
+                                    <td>ontology_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage_ontology_curie">life_stage_ontology_curie</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_at_collection">age_at_collection</span></td>
+                                    <td>numrange</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_at_collection_unit">age_at_collection_unit</span></td>
+                                    <td>age_unit_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="time_post_fertilisation">time_post_fertilisation</span></td>
+                                    <td>numeric</td>
+                                    <td>0</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="time_post_fertilisation_unit">time_post_fertilisation_unit</span></td>
+                                    <td>time_post_fertilisation_unit_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="thermal_time">thermal_time</span></td>
+                                    <td>numeric</td>
+                                    <td>0</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="perturbed">perturbed</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="treatments">treatments</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="health_status">health_status</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="disease_term_id">disease_term_id</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="disease_term_name">disease_term_name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="genetic_modifications">genetic_modifications</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosource_accession">biosource_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosource_alternative_accession">biosource_alternative_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age">age</span></td>
+                                    <td>numrange</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_unit">age_unit</span></td>
+                                    <td>age_unit_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="sex">sex</span></td>
+                                    <td>sex_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="assembly_name">assembly_name</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="assembly_id">assembly_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_metadata.assembly_id&#39;s name implies that it&#39;s a child of assembly.assembly_id, but it doesn&#39;t reference that column."><a href='assembly.html'>assembly</a><span class='relatedKey'>.assembly_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="5,5,728,1781">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/experiment_metadata.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="assembly.html" target="_top" title="assembly" alt="" coords="609,329,844,510">
+<area shape="rect" id="node2" href="species.html" target="_top" title="species" alt="" coords="319,218,475,335">
+<area shape="rect" id="node3" href="biosample.html" target="_top" title="biosample" alt="" coords="569,863,884,1127">
+<area shape="rect" id="node4" href="data_source.html" target="_top" title="data_source" alt="" coords="5,593,224,769">
+<area shape="rect" id="node5" href="life_stage.html" target="_top" title="life_stage" alt="" coords="287,1181,507,1362">
+<area shape="rect" id="node6" href="ontology.html" target="_top" title="ontology" alt="" coords="21,1187,208,1339">
+<area shape="rect" id="node7" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="277,739,517,886">
+<area shape="rect" id="node8" href="epigenome.html" target="_top" title="epigenome" alt="" coords="572,77,881,311">
+<area shape="rect" id="node9" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="268,54,525,201">
+<area shape="rect" id="node10" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="928,157,1651,1933">
+<area shape="rect" id="node11" href="replicate.html" target="_top" title="replicate" alt="" coords="619,599,834,810">
+<area shape="rect" id="node12" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="292,563,501,686">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/experiment_metadata.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="alignment_file.html" target="_top" title="alignment_file" alt="" coords="1471,2395,1692,2483">
+<area shape="rect" id="node2" href="assembly.html" target="_top" title="assembly" alt="" coords="915,2685,1090,2773">
+<area shape="rect" id="node3" href="file.html" target="_top" title="file" alt="" coords="567,2291,682,2379">
+<area shape="rect" id="node4" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="521,2473,728,2561">
+<area shape="rect" id="node11" href="species.html" target="_top" title="species" alt="" coords="547,3144,703,3232">
+<area shape="rect" id="node15" href="data_source.html" target="_top" title="data_source" alt="" coords="219,2547,420,2635">
+<area shape="rect" id="node5" href="analysis_file.html" target="_top" title="analysis_file" alt="" coords="1987,2649,2189,2737">
+<area shape="rect" id="node6" href="experiment.html" target="_top" title="experiment" alt="" coords="1483,4217,1679,4305">
+<area shape="rect" id="node10" href="epigenome.html" target="_top" title="epigenome" alt="" coords="907,3484,1099,3572">
+<area shape="rect" id="node7" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="1398,3804,1765,3868">
+<area shape="rect" id="node8" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="520,3969,729,4057">
+<area shape="rect" id="node9" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="496,3420,753,3508">
+<area shape="rect" id="node12" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="1395,3641,1768,3705">
+<area shape="rect" id="node13" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="2004,4063,2172,4151">
+<area shape="rect" id="node14" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1480,2500,1683,2588">
+<area shape="rect" id="node16" href="run.html" target="_top" title="run" alt="" coords="945,2544,1061,2632">
+<area shape="rect" id="node35" href="archive.html" target="_top" title="archive" alt="" coords="13,2544,167,2632">
+<area shape="rect" id="node17" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="1407,3397,1756,3461">
+<area shape="rect" id="node18" href="base_epigenomes_replicates_and_files.html" target="_top" title="base_epigenomes_replicates_and_files" alt="" coords="1354,2885,1809,2949">
+<area shape="rect" id="node19" href="biosample.html" target="_top" title="biosample" alt="" coords="911,1128,1095,1216">
+<area shape="rect" id="node20" href="biosource.html" target="_top" title="biosource" alt="" coords="535,1216,714,1304">
+<area shape="rect" id="node21" href="life_stage.html" target="_top" title="life_stage" alt="" coords="231,1037,408,1125">
+<area shape="rect" id="node22" href="ontology.html" target="_top" title="ontology" alt="" coords="5,1251,175,1339">
+<area shape="rect" id="node23" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="1406,3479,1757,3543">
+<area shape="rect" id="node24" href="biosample_data_source.html" target="_top" title="biosample_data_source" alt="" coords="1427,5,1735,69">
+<area shape="rect" id="node25" href="biosample_sample_type.html" target="_top" title="biosample_sample_type" alt="" coords="1425,3560,1737,3624">
+<area shape="rect" id="node26" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="513,1711,736,1799">
+<area shape="rect" id="node27" href="biosample_set_biosample.html" target="_top" title="biosample_set_biosample" alt="" coords="1415,87,1747,175">
+<area shape="rect" id="node28" href="biosample_set_data_source.html" target="_top" title="biosample_set_data_source" alt="" coords="829,1781,1176,1845">
+<area shape="rect" id="node29" href="biosample_term_group.html" target="_top" title="biosample_term_group" alt="" coords="1430,3211,1733,3275">
+<area shape="rect" id="node30" href="biosource_data_source.html" target="_top" title="biosource_data_source" alt="" coords="851,1288,1154,1352">
+<area shape="rect" id="node31" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="2004,4168,2172,4256">
+<area shape="rect" id="node32" href="curated_experiment_analysis_files.html" target="_top" title="curated_experiment_analysis_files" alt="" coords="1374,2723,1789,2787">
+<area shape="rect" id="node33" href="curated_experiment_metadata.html" target="_top" title="curated_experiment_metadata" alt="" coords="1392,2967,1771,3031">
+<area shape="rect" id="node34" href="curated_open_chromatin_assay_metadata.html" target="_top" title="curated_open_chromatin_assay_metadata" alt="" coords="1337,3048,1825,3112">
+<area shape="rect" id="node36" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="1995,4273,2181,4361">
+<area shape="rect" id="node37" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1423,3129,1739,3193">
+<area shape="rect" id="node38" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="1383,4323,1780,4387">
+<area shape="rect" id="node39" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="1388,3885,1775,3949">
+<area shape="rect" id="node40" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1422,3967,1741,4031">
+<area shape="rect" id="node41" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1220,192,1943,1968">
+<area shape="rect" id="node42" href="replicate.html" target="_top" title="replicate" alt="" coords="918,1971,1087,2059">
+<area shape="rect" id="node43" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="1327,3723,1836,3787">
+<area shape="rect" id="node44" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="1388,4048,1775,4112">
+<area shape="rect" id="node45" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="1393,4528,1769,4592">
+<area shape="rect" id="node46" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1427,4609,1736,4673">
+<area shape="rect" id="node47" href="library_data_source.html" target="_top" title="library_data_source" alt="" coords="867,2827,1139,2891">
+<area shape="rect" id="node48" href="life_stage_with_ontology.html" target="_top" title="life_stage_with_ontology" alt="" coords="464,903,785,967">
+<area shape="rect" id="node49" href="mask_file.html" target="_top" title="mask_file" alt="" coords="1494,2289,1669,2377">
+<area shape="rect" id="node50" href="multiome.html" target="_top" title="multiome" alt="" coords="2000,4379,2176,4467">
+<area shape="rect" id="node51" href="read_file.html" target="_top" title="read_file" alt="" coords="1497,2184,1665,2272">
+<area shape="rect" id="node52" href="read_file_data_source.html" target="_top" title="read_file_data_source" alt="" coords="1435,2605,1727,2669">
+<area shape="rect" id="node53" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1447,1985,1715,2049">
+<area shape="rect" id="node54" href="replicate_data_source.html" target="_top" title="replicate_data_source" alt="" coords="1435,2067,1728,2131">
+<area shape="rect" id="node55" href="replicate_set_data_source.html" target="_top" title="replicate_set_data_source" alt="" coords="836,4449,1169,4513">
+<area shape="rect" id="node56" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="2009,4484,2167,4572">
+<area shape="rect" id="node57" href="run_accession.html" target="_top" title="run_accession" alt="" coords="1473,2804,1690,2868">
+<area shape="rect" id="node58" href="track.html" target="_top" title="track" alt="" coords="1515,3292,1648,3380">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/experiment_metadata.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">SELECT species.name AS species_name,&#10;    species.species_id,&#10;    epigenome_group.description AS epigenome_group_description,&#10;    epigenome_group.epigenome_group_id,&#10;    epigenome_data_source.epigenome_accession,&#10;    epigenome_data_source.name AS epigenome_name,&#10;    epigenome_data_source.description AS epigenome_description,&#10;    experiment_data_source.name,&#10;    experiment_data_source.experiment_type,&#10;    experiment_data_source.epigenome_id,&#10;    experiment_data_source.experiment_id,&#10;    experiment_data_source.data_source_id,&#10;    experiment_data_source.replicate_set_id,&#10;    experiment_data_source.replicate_set_type,&#10;    experiment_data_source.experiment_target_type,&#10;    experiment_data_source.experiment_target,&#10;    experiment_data_source.replicate_set_accession,&#10;    replicate_data_source.replicate_id,&#10;    replicate_data_source.replicate_accession,&#10;    replicate_data_source.biosample_set_id,&#10;    biosample_set_data_source.biosample_set_type,&#10;    biosample_set_data_source.accession,&#10;    biosample_data_source.biosample_id,&#10;    biosample_data_source.biosample_accession,&#10;    biosample_data_source.biosample_alternative_accession,&#10;    biosample_data_source.biomaterial_type,&#10;    biosample_data_source.term AS biosample_term,&#10;    biosample_data_source.ontology_id,&#10;    ontology.ontology_type,&#10;    ontology.curie,&#10;    biosample_data_source.organ_slims,&#10;    biosample_data_source.cell_slims,&#10;    biosample_data_source.developmental_slims,&#10;    biosample_data_source.system_slims,&#10;    biosample_data_source.synonyms,&#10;    life_stage_with_ontology.life_stage_id,&#10;    life_stage_with_ontology.life_stage_term,&#10;    life_stage_with_ontology.life_stage_ontology_relation,&#10;    life_stage_with_ontology.life_stage_ontology_id,&#10;    life_stage_with_ontology.life_stage_ontology_type,&#10;    life_stage_with_ontology.life_stage_ontology_curie,&#10;    biosample_data_source.age_at_collection,&#10;    biosample_data_source.age_at_collection_unit,&#10;    biosample_data_source.time_post_fertilisation,&#10;    biosample_data_source.time_post_fertilisation_unit,&#10;    biosample_data_source.thermal_time,&#10;    biosample_data_source.perturbed,&#10;    biosample_data_source.treatments,&#10;    biosample_data_source.health_status,&#10;    biosample_data_source.disease_term_id,&#10;    biosample_data_source.disease_term_name,&#10;    biosample_data_source.genetic_modifications,&#10;    biosource_data_source.biosource_accession,&#10;    biosource_data_source.biosource_alternative_accession,&#10;    biosource_data_source.age,&#10;    biosource_data_source.age_unit,&#10;    biosource_data_source.sex,&#10;    assembly.ensembl_accession AS assembly_name,&#10;    assembly.assembly_id&#10;   FROM ((((((((((((species&#10;     JOIN assembly ON ((species.species_id &#61; assembly.species_id)))&#10;     JOIN epigenome_data_source ON ((species.species_id &#61; epigenome_data_source.species_id)))&#10;     JOIN epigenome_group ON ((epigenome_data_source.epigenome_group_id &#61; epigenome_group.epigenome_group_id)))&#10;     JOIN experiment_data_source ON ((epigenome_data_source.epigenome_id &#61; experiment_data_source.epigenome_id)))&#10;     JOIN replicate_set ON ((experiment_data_source.replicate_set_id &#61; replicate_set.replicate_set_id)))&#10;     JOIN replicate_data_source ON ((replicate_set.replicate_set_id &#61; replicate_data_source.replicate_set_id)))&#10;     LEFT JOIN biosample_set_data_source ON ((replicate_data_source.biosample_set_id &#61; biosample_set_data_source.biosample_set_id)))&#10;     LEFT JOIN biosample_set_biosample ON ((biosample_set_data_source.biosample_set_id &#61; biosample_set_biosample.biosample_set_id)))&#10;     LEFT JOIN biosample_data_source ON ((biosample_set_biosample.biosample_id &#61; biosample_data_source.biosample_id)))&#10;     LEFT JOIN ontology ON ((biosample_data_source.ontology_id &#61; ontology.ontology_id)))&#10;     LEFT JOIN biosource_data_source ON ((biosample_data_source.biosource_id &#61; biosource_data_source.biosource_id)))&#10;     LEFT JOIN life_stage_with_ontology ON (((biosample_data_source.life_stage_id &#61; life_stage_with_ontology.life_stage_id) OR (biosource_data_source.life_stage_id &#61; life_stage_with_ontology.life_stage_id))));</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="species.html">species</a></li>
+                                        <li><a href="epigenome_group.html">epigenome_group</a></li>
+                                        <li><a href="epigenome_data_source.html">epigenome_data_source</a></li>
+                                        <li><a href="experiment_data_source.html">experiment_data_source</a></li>
+                                        <li><a href="replicate_data_source.html">replicate_data_source</a></li>
+                                        <li><a href="biosample_set_data_source.html">biosample_set_data_source</a></li>
+                                        <li><a href="biosample_data_source.html">biosample_data_source</a></li>
+                                        <li><a href="ontology.html">ontology</a></li>
+                                        <li><a href="life_stage_with_ontology.html">life_stage_with_ontology</a></li>
+                                        <li><a href="biosource_data_source.html">biosource_data_source</a></li>
+                                        <li><a href="assembly.html">assembly</a></li>
+                                        <li><a href="replicate_set.html">replicate_set</a></li>
+                                        <li><a href="biosample_set_biosample.html">biosample_set_biosample</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

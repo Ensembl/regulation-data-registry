@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>biosample_biological_group - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>biosample_biological_group</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="epigenome_id">epigenome_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="biosample_biological_group.epigenome_id&#39;s name implies that it&#39;s a child of epigenome.epigenome_id, but it doesn&#39;t reference that column."><a href='epigenome.html'>epigenome</a><span class='relatedKey'>.epigenome_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biological_group">biological_group</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="5,5,471,109">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/biosample_biological_group.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="359,5,824,109">
+<area shape="rect" id="node2" href="epigenome.html" target="_top" title="epigenome" alt="" coords="5,8,315,243">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/biosample_biological_group.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="977,1476,1343,1540">
+<area shape="rect" id="node2" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="251,1467,508,1555">
+<area shape="rect" id="node3" href="epigenome.html" target="_top" title="epigenome" alt="" coords="552,860,861,1095">
+<area shape="rect" id="node4" href="species.html" target="_top" title="species" alt="" coords="301,1360,457,1448">
+<area shape="rect" id="node13" href="data_source.html" target="_top" title="data_source" alt="" coords="5,944,207,1032">
+<area shape="rect" id="node5" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="973,1557,1347,1621">
+<area shape="rect" id="node6" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="985,785,1335,849">
+<area shape="rect" id="node7" href="base_epigenomes_replicates_and_files.html" target="_top" title="base_epigenomes_replicates_and_files" alt="" coords="933,867,1387,931">
+<area shape="rect" id="node8" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="927,948,1393,1052">
+<area shape="rect" id="node9" href="biosample_sample_type.html" target="_top" title="biosample_sample_type" alt="" coords="1004,517,1316,581">
+<area shape="rect" id="node10" href="biosample_term_group.html" target="_top" title="biosample_term_group" alt="" coords="1009,599,1311,663">
+<area shape="rect" id="node11" href="curated_experiment_metadata.html" target="_top" title="curated_experiment_metadata" alt="" coords="971,1151,1349,1215">
+<area shape="rect" id="node12" href="curated_open_chromatin_assay_metadata.html" target="_top" title="curated_open_chromatin_assay_metadata" alt="" coords="916,1232,1404,1296">
+<area shape="rect" id="node14" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1002,1639,1318,1703">
+<area shape="rect" id="node15" href="experiment.html" target="_top" title="experiment" alt="" coords="1062,5,1258,93">
+<area shape="rect" id="node16" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="961,111,1359,175">
+<area shape="rect" id="node17" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="967,192,1353,256">
+<area shape="rect" id="node18" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1001,273,1319,337">
+<area shape="rect" id="node19" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1013,1720,1307,1784">
+<area shape="rect" id="node20" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="905,1395,1415,1459">
+<area shape="rect" id="node21" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="967,355,1353,419">
+<area shape="rect" id="node22" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="972,436,1348,500">
+<area shape="rect" id="node23" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1005,1069,1315,1133">
+<area shape="rect" id="node24" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1026,1313,1294,1377">
+<area shape="rect" id="node25" href="track.html" target="_top" title="track" alt="" coords="1093,680,1227,768">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/biosample_biological_group.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">WITH classified AS (&#10;         SELECT metadata.epigenome_id,&#10;                CASE lower(metadata.material)&#10;                    WHEN &#39;cell line&#39;::text THEN&#10;                    CASE&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;K562&#39;::text, &#39;MEL&#39;::text])) THEN &#39;blood and myeloid&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;SK-N-SH&#39;::text) THEN &#39;brain and nervous system&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;Caco-2&#39;::text, &#39;HCT116&#39;::text])) THEN &#39;intestine&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;HEK293&#39;::text) THEN &#39;kidney&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;A549&#39;::text, &#39;PC-9&#39;::text])) THEN &#39;lung&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;CH12.LX&#39;::text, &#39;DND-41&#39;::text, &#39;DOHH2&#39;::text, &#39;GM06990&#39;::text, &#39;GM12878&#39;::text, &#39;KMS-11&#39;::text, &#39;KOPT-K1&#39;::text, &#39;Karpas-422&#39;::text, &#39;Loucy&#39;::text, &#39;MM.1S&#39;::text, &#39;NCI-H929&#39;::text, &#39;OCI-LY1&#39;::text, &#39;OCI-LY3&#39;::text, &#39;OCI-LY7&#39;::text, &#39;SU-DHL-6&#39;::text])) THEN &#39;lymphoid&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;MCF-7&#39;::text) THEN &#39;mammary gland&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;A673&#39;::text, &#39;AG04450&#39;::text, &#39;BJ&#39;::text, &#39;GM23248&#39;::text, &#39;IMR-90&#39;::text, &#39;SK-N-MC&#39;::text])) THEN &#39;mesenchymal and fibroblast&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;Panc1&#39;::text) THEN &#39;pancreas&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;ES-Bruce4&#39;::text, &#39;ES-E14&#39;::text, &#39;ES-I3&#39;::text, &#39;GM23338&#39;::text, &#39;H1&#39;::text, &#39;H7&#39;::text, &#39;H9&#39;::text, &#39;HUES48&#39;::text, &#39;HUES6&#39;::text, &#39;HUES64&#39;::text, &#39;NT2/D1&#39;::text, &#39;iPS DF 19.11&#39;::text, &#39;iPS DF 6.9&#39;::text, &#39;iPS-18a&#39;::text, &#39;iPS-20b&#39;::text])) THEN &#39;pluripotent cells and models&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;PC-3&#39;::text) THEN &#39;prostate gland&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;ACC112&#39;::text) THEN &#39;salivary gland&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;HeLa-S3&#39;::text) THEN &#39;uterus&#39;::text&#10;                        ELSE NULL::text&#10;                    END&#10;                    WHEN &#39;primary cell&#39;::text THEN&#10;                    CASE&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;CD14-positive monocyte&#39;::text, &#39;bone marrow macrophage&#39;::text, &#39;common myeloid progenitor, CD34-positive&#39;::text, &#39;mononuclear cell&#39;::text, &#39;neutrophil&#39;::text])) THEN &#39;blood and myeloid&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;astrocyte&#39;::text) THEN &#39;brain and nervous system&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;kidney epithelial cell&#39;::text) THEN &#39;kidney&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;bronchial epithelial cell&#39;::text) THEN &#39;lung&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;B cell&#39;::text, &#39;T-cell&#39;::text, &#39;natural killer cell&#39;::text])) THEN &#39;lymphoid&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;mammary epithelial cell&#39;::text) THEN &#39;mammary gland&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;embryonic fibroblast&#39;::text, &#39;fibroblast of dermis&#39;::text, &#39;fibroblast of lung&#39;::text, &#39;fibroblast of mammary gland&#39;::text, &#39;foreskin fibroblast&#39;::text, &#39;osteoblast&#39;::text])) THEN &#39;mesenchymal and fibroblast&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;skeletal muscle myoblast&#39;::text) THEN &#39;musculature&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;keratinocyte&#39;::text) THEN &#39;skin&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;endothelial cell of umbilical vein&#39;::text) THEN &#39;vasculature&#39;::text&#10;                        ELSE NULL::text&#10;                    END&#10;                    WHEN &#39;primary cell culture&#39;::text THEN&#10;                    CASE&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;neural cell&#39;::text, &#39;neural progenitor cell&#39;::text, &#39;neuron&#39;::text, &#39;neuronal stem cell&#39;::text])) THEN &#39;brain and nervous system&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;ectodermal cell&#39;::text, &#39;endodermal cell&#39;::text, &#39;mesendoderm&#39;::text, &#39;mesodermal cell&#39;::text])) THEN &#39;embryo&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;cardiac muscle cell&#39;::text) THEN &#39;heart&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;hepatocyte&#39;::text) THEN &#39;liver&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;mesenchymal stem cell&#39;::text) THEN &#39;mesenchymal and fibroblast&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;myotube&#39;::text, &#39;smooth muscle cell&#39;::text])) THEN &#39;musculature&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;trophoblast cell&#39;::text) THEN &#39;placenta&#39;::text&#10;                        ELSE NULL::text&#10;                    END&#10;                    WHEN &#39;primary tissue&#39;::text THEN&#10;                    CASE&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;adipose tissue&#39;::text, &#39;brown adipose tissue&#39;::text, &#39;subcutaneous adipose tissue&#39;::text])) THEN &#39;adipose tissue&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;adrenal gland&#39;::text) THEN &#39;adrenal gland&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;bone marrow&#39;::text) THEN &#39;blood and myeloid&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;brain&#39;::text, &#39;cerebellum&#39;::text, &#39;cortex&#39;::text, &#39;cortical plate&#39;::text, &#39;forebrain&#39;::text, &#39;frontal cortex&#39;::text, &#39;hindbrain&#39;::text, &#39;hypothalamus&#39;::text, &#39;midbrain&#39;::text, &#39;neural tube&#39;::text, &#39;olfactory bulb&#39;::text, &#39;tibial nerve&#39;::text])) THEN &#39;brain and nervous system&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;embryo&#39;::text, &#39;embryonic facial prominence&#39;::text, &#39;limb&#39;::text])) THEN &#39;embryo&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;esophagus muscularis mucosa&#39;::text, &#39;esophagus squamous epithelium&#39;::text])) THEN &#39;esophagus&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;gill filament&#39;::text) THEN &#39;gill&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;gonad&#39;::text, &#39;immature gonad&#39;::text, &#39;testis&#39;::text])) THEN &#39;gonad&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;heart&#39;::text, &#39;heart left ventricle&#39;::text, &#39;right atrium auricular region&#39;::text])) THEN &#39;heart&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;Peyer&#39;&#39;s patch&#39;::text, &#39;ileum&#39;::text, &#39;intestine&#39;::text, &#39;large intestine&#39;::text, &#39;sigmoid colon&#39;::text, &#39;small intestine&#39;::text, &#39;transverse colon&#39;::text])) THEN &#39;intestine&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;kidney&#39;::text, &#39;mesonephros&#39;::text])) THEN &#39;kidney&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;liver&#39;::text, &#39;lobe of liver&#39;::text, &#39;right lobe of liver&#39;::text])) THEN &#39;liver&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;left lung lobe&#39;::text, &#39;lung&#39;::text, &#39;upper lobe of left lung&#39;::text])) THEN &#39;lung&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;breast epithelium&#39;::text) THEN &#39;mammary gland&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;fast muscle tissue&#39;::text, &#39;gastrocnemius medialis&#39;::text, &#39;gluteus medius&#39;::text, &#39;hindlimb muscle&#39;::text, &#39;longissimus dorsi muscle&#39;::text, &#39;muscle of leg&#39;::text, &#39;muscle of trunk&#39;::text, &#39;psoas muscle&#39;::text, &#39;skeletal muscle tissue&#39;::text])) THEN &#39;musculature&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;body of pancreas&#39;::text) THEN &#39;pancreas&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;placenta&#39;::text) THEN &#39;placenta&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;prostate gland&#39;::text) THEN &#39;prostate gland&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;skin of back&#39;::text, &#39;skin of body&#39;::text])) THEN &#39;skin&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;spleen&#39;::text) THEN &#39;spleen&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;gastroesophageal sphincter&#39;::text, &#39;stomach&#39;::text])) THEN &#39;stomach&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;thymus&#39;::text) THEN &#39;thymus&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;thyroid gland&#39;::text) THEN &#39;thyroid gland&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;trachea&#39;::text) THEN &#39;trachea&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;uterus&#39;::text) THEN &#39;uterus&#39;::text&#10;                        WHEN (metadata.term &#61; &#39;vagina&#39;::text) THEN &#39;vagina&#39;::text&#10;                        WHEN (metadata.term &#61; ANY (ARRAY[&#39;ascending aorta&#39;::text, &#39;thoracic aorta&#39;::text, &#39;tibial artery&#39;::text])) THEN &#39;vasculature&#39;::text&#10;                        ELSE NULL::text&#10;                    END&#10;                    ELSE NULL::text&#10;                END AS biological_group&#10;           FROM curated_experiment_metadata metadata&#10;        )&#10; SELECT classified.epigenome_id,&#10;        CASE&#10;            WHEN (count(DISTINCT classified.biological_group) &#61; 1) THEN min(classified.biological_group)&#10;            ELSE NULL::text&#10;        END AS biological_group&#10;   FROM classified&#10;  GROUP BY classified.epigenome_id;</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="curated_experiment_metadata.html">curated_experiment_metadata</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

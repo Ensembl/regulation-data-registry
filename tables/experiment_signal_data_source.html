@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>experiment_signal_data_source - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>experiment_signal_data_source</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="name">name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_type">experiment_type</span></td>
+                                    <td>experiment_type</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="epigenome_id">epigenome_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_signal_data_source.epigenome_id&#39;s name implies that it&#39;s a child of epigenome.epigenome_id, but it doesn&#39;t reference that column."><a href='epigenome.html'>epigenome</a><span class='relatedKey'>.epigenome_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_id">experiment_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="data_source_id">data_source_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_signal_data_source.data_source_id&#39;s name implies that it&#39;s a child of data_source.data_source_id, but it doesn&#39;t reference that column."><a href='data_source.html'>data_source</a><span class='relatedKey'>.data_source_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="replicate_set_id">replicate_set_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="experiment_signal_data_source.replicate_set_id&#39;s name implies that it&#39;s a child of replicate_set.replicate_set_id, but it doesn&#39;t reference that column."><a href='replicate_set.html'>replicate_set</a><span class='relatedKey'>.replicate_set_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="replicate_set_type">replicate_set_type</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_target_type">experiment_target_type</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_target">experiment_target</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="replicate_set_accession">replicate_set_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="5,5,600,344">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/experiment_signal_data_source.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="epigenome.html" target="_top" title="epigenome" alt="" coords="268,5,577,240">
+<area shape="rect" id="node2" href="data_source.html" target="_top" title="data_source" alt="" coords="5,171,224,347">
+<area shape="rect" id="node3" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="621,97,1216,436">
+<area shape="rect" id="node4" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="318,293,527,416">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/experiment_signal_data_source.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="1255,1841,1622,1905">
+<area shape="rect" id="node2" href="replicate_set.html" target="_top" title="replicate_set" alt="" coords="473,1007,683,1095">
+<area shape="rect" id="node3" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="449,1851,707,1939">
+<area shape="rect" id="node4" href="epigenome.html" target="_top" title="epigenome" alt="" coords="828,1168,1020,1256">
+<area shape="rect" id="node5" href="species.html" target="_top" title="species" alt="" coords="500,1653,656,1741">
+<area shape="rect" id="node10" href="data_source.html" target="_top" title="data_source" alt="" coords="204,2448,405,2536">
+<area shape="rect" id="node6" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="1252,1923,1625,1987">
+<area shape="rect" id="node7" href="atac_seq.html" target="_top" title="atac_seq" alt="" coords="1789,620,1957,708">
+<area shape="rect" id="node8" href="experiment.html" target="_top" title="experiment" alt="" coords="1341,693,1537,781">
+<area shape="rect" id="node9" href="barcode_file.html" target="_top" title="barcode_file" alt="" coords="1337,3129,1540,3217">
+<area shape="rect" id="node11" href="file.html" target="_top" title="file" alt="" coords="867,3239,981,3327">
+<area shape="rect" id="node12" href="run.html" target="_top" title="run" alt="" coords="866,3061,982,3149">
+<area shape="rect" id="node27" href="archive.html" target="_top" title="archive" alt="" coords="5,2445,160,2533">
+<area shape="rect" id="node40" href="read_file_set.html" target="_top" title="read_file_set" alt="" coords="475,2916,681,3004">
+<area shape="rect" id="node13" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="1264,1353,1613,1417">
+<area shape="rect" id="node14" href="base_epigenomes_replicates_and_files.html" target="_top" title="base_epigenomes_replicates_and_files" alt="" coords="1211,1435,1666,1499">
+<area shape="rect" id="node15" href="biosample.html" target="_top" title="biosample" alt="" coords="832,2489,1016,2577">
+<area shape="rect" id="node16" href="biosource.html" target="_top" title="biosource" alt="" coords="489,2615,667,2703">
+<area shape="rect" id="node17" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="1263,1516,1614,1580">
+<area shape="rect" id="node18" href="biosample_data_source.html" target="_top" title="biosample_data_source" alt="" coords="1285,2733,1593,2797">
+<area shape="rect" id="node19" href="biosample_sample_type.html" target="_top" title="biosample_sample_type" alt="" coords="1283,1085,1595,1149">
+<area shape="rect" id="node20" href="biosample_set.html" target="_top" title="biosample_set" alt="" coords="467,2325,689,2413">
+<area shape="rect" id="node21" href="biosample_set_data_source.html" target="_top" title="biosample_set_data_source" alt="" coords="751,2408,1097,2472">
+<area shape="rect" id="node22" href="biosample_term_group.html" target="_top" title="biosample_term_group" alt="" coords="1287,1167,1590,1231">
+<area shape="rect" id="node23" href="biosource_data_source.html" target="_top" title="biosource_data_source" alt="" coords="773,2631,1075,2695">
+<area shape="rect" id="node24" href="chip_seq.html" target="_top" title="chip_seq" alt="" coords="1789,725,1957,813">
+<area shape="rect" id="node25" href="curated_experiment_metadata.html" target="_top" title="curated_experiment_metadata" alt="" coords="1249,1597,1628,1661">
+<area shape="rect" id="node26" href="curated_open_chromatin_assay_metadata.html" target="_top" title="curated_open_chromatin_assay_metadata" alt="" coords="1195,1679,1683,1743">
+<area shape="rect" id="node28" href="dnase_seq.html" target="_top" title="dnase_seq" alt="" coords="1780,831,1965,919">
+<area shape="rect" id="node29" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1281,2004,1597,2068">
+<area shape="rect" id="node30" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="1240,361,1637,425">
+<area shape="rect" id="node31" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="1245,443,1632,507">
+<area shape="rect" id="node32" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1279,576,1598,640">
+<area shape="rect" id="node33" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1291,2085,1586,2149">
+<area shape="rect" id="node34" href="replicate.html" target="_top" title="replicate" alt="" coords="839,2231,1009,2319">
+<area shape="rect" id="node35" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="1184,1760,1693,1824">
+<area shape="rect" id="node36" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="1141,5,1736,344">
+<area shape="rect" id="node37" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="1251,851,1627,915">
+<area shape="rect" id="node38" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1284,1004,1593,1068">
+<area shape="rect" id="node39" href="library_data_source.html" target="_top" title="library_data_source" alt="" coords="788,2836,1060,2900">
+<area shape="rect" id="node41" href="multiome.html" target="_top" title="multiome" alt="" coords="1785,495,1961,583">
+<area shape="rect" id="node42" href="read_file.html" target="_top" title="read_file" alt="" coords="1355,3332,1523,3420">
+<area shape="rect" id="node43" href="read_file_data_source.html" target="_top" title="read_file_data_source" alt="" coords="1293,3237,1585,3301">
+<area shape="rect" id="node44" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1305,2276,1573,2340">
+<area shape="rect" id="node45" href="replicate_data_source.html" target="_top" title="replicate_data_source" alt="" coords="1292,2357,1585,2421">
+<area shape="rect" id="node46" href="replicate_set_data_source.html" target="_top" title="replicate_set_data_source" alt="" coords="757,1501,1091,1565">
+<area shape="rect" id="node47" href="rna_seq.html" target="_top" title="rna_seq" alt="" coords="1793,936,1952,1024">
+<area shape="rect" id="node48" href="run_accession.html" target="_top" title="run_accession" alt="" coords="1330,2988,1547,3052">
+<area shape="rect" id="node49" href="track.html" target="_top" title="track" alt="" coords="1372,1248,1505,1336">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/experiment_signal_data_source.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">SELECT experiment_signal_target_info.name,&#10;    experiment_signal_target_info.experiment_type,&#10;    experiment_signal_target_info.epigenome_id,&#10;    experiment_signal_target_info.experiment_id,&#10;    experiment_signal_target_info.data_source_id,&#10;    experiment_signal_target_info.replicate_set_id,&#10;    experiment_signal_target_info.replicate_set_type,&#10;    experiment_signal_target_info.experiment_target_type,&#10;    experiment_signal_target_info.experiment_target,&#10;    replicate_set_data_source.replicate_set_accession&#10;   FROM (experiment_signal_target_info&#10;     LEFT JOIN replicate_set_data_source ON ((experiment_signal_target_info.replicate_set_id &#61; replicate_set_data_source.replicate_set_id)));</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="experiment_signal_target_info.html">experiment_signal_target_info</a></li>
+                                        <li><a href="replicate_set_data_source.html">replicate_set_data_source</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

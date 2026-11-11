@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>base_epigenome_replicates - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>base_epigenome_replicates</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="species_name">species_name</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="assembly_name">assembly_name</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="base_epigenome_id">base_epigenome_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="base_epigenome_replicates.base_epigenome_id&#39;s name implies that it&#39;s a child of epigenome.epigenome_id, but it doesn&#39;t reference that column."><a href='epigenome.html'>epigenome</a><span class='relatedKey'>.epigenome_id</span></td>
+                                                <td class="constraint detail">Implied Constraint</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="material">material</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="term">term</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="term_for_label">term_for_label</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="term_ontology">term_ontology</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="sex">sex</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="sex_for_label">sex_for_label</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage">life_stage</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="life_stage_for_label">life_stage_for_label</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_value">age_value</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_unit">age_unit</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="modified_age_unit">modified_age_unit</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="extended_age">extended_age</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="short_age">short_age</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="age_for_label">age_for_label</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_type">experiment_type</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="experiment_target">experiment_target</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="biosample_accession">biosample_accession</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="data_source">data_source</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="5,5,495,667">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/base_epigenome_replicates.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="359,5,848,667">
+<area shape="rect" id="node2" href="epigenome.html" target="_top" title="epigenome" alt="" coords="5,67,315,301">
+</map>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/base_epigenome_replicates.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="analysis_file_experiment_info.html" target="_top" title="analysis_file_experiment_info" alt="" coords="977,2033,1343,2097">
+<area shape="rect" id="node2" href="epigenome_group.html" target="_top" title="epigenome_group" alt="" coords="251,2024,508,2112">
+<area shape="rect" id="node3" href="epigenome.html" target="_top" title="epigenome" alt="" coords="552,1449,861,1684">
+<area shape="rect" id="node4" href="species.html" target="_top" title="species" alt="" coords="301,1917,457,2005">
+<area shape="rect" id="node13" href="data_source.html" target="_top" title="data_source" alt="" coords="5,1533,207,1621">
+<area shape="rect" id="node5" href="analysis_file_info_with_checks.html" target="_top" title="analysis_file_info_with_checks" alt="" coords="973,2115,1347,2179">
+<area shape="rect" id="node6" href="base_epigenome_replicates.html" target="_top" title="base_epigenome_replicates" alt="" coords="915,785,1405,1447">
+<area shape="rect" id="node7" href="base_epigenomes_replicates_and_files.html" target="_top" title="base_epigenomes_replicates_and_files" alt="" coords="933,1464,1387,1528">
+<area shape="rect" id="node8" href="biosample_biological_group.html" target="_top" title="biosample_biological_group" alt="" coords="985,1545,1335,1609">
+<area shape="rect" id="node9" href="biosample_sample_type.html" target="_top" title="biosample_sample_type" alt="" coords="1004,517,1316,581">
+<area shape="rect" id="node10" href="biosample_term_group.html" target="_top" title="biosample_term_group" alt="" coords="1009,599,1311,663">
+<area shape="rect" id="node11" href="curated_experiment_metadata.html" target="_top" title="curated_experiment_metadata" alt="" coords="971,1708,1349,1772">
+<area shape="rect" id="node12" href="curated_open_chromatin_assay_metadata.html" target="_top" title="curated_open_chromatin_assay_metadata" alt="" coords="916,1789,1404,1853">
+<area shape="rect" id="node14" href="epigenome_data_source.html" target="_top" title="epigenome_data_source" alt="" coords="1002,2196,1318,2260">
+<area shape="rect" id="node15" href="experiment.html" target="_top" title="experiment" alt="" coords="1062,5,1258,93">
+<area shape="rect" id="node16" href="experiment_control_data_source.html" target="_top" title="experiment_control_data_source" alt="" coords="961,111,1359,175">
+<area shape="rect" id="node17" href="experiment_control_target_info.html" target="_top" title="experiment_control_target_info" alt="" coords="967,192,1353,256">
+<area shape="rect" id="node18" href="experiment_data_source.html" target="_top" title="experiment_data_source" alt="" coords="1001,273,1319,337">
+<area shape="rect" id="node19" href="experiment_metadata.html" target="_top" title="experiment_metadata" alt="" coords="1013,2277,1307,2341">
+<area shape="rect" id="node20" href="experiment_signal_and_control_d_d519e7f1.html" target="_top" title="experiment_signal_and_control_data_source" alt="" coords="905,1952,1415,2016">
+<area shape="rect" id="node21" href="experiment_signal_data_source.html" target="_top" title="experiment_signal_data_source" alt="" coords="967,355,1353,419">
+<area shape="rect" id="node22" href="experiment_signal_target_info.html" target="_top" title="experiment_signal_target_info" alt="" coords="972,436,1348,500">
+<area shape="rect" id="node23" href="experiment_target_info.html" target="_top" title="experiment_target_info" alt="" coords="1005,1627,1315,1691">
+<area shape="rect" id="node24" href="read_file_metadata.html" target="_top" title="read_file_metadata" alt="" coords="1026,1871,1294,1935">
+<area shape="rect" id="node25" href="track.html" target="_top" title="track" alt="" coords="1093,680,1227,768">
+</map>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/base_epigenome_replicates.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">WITH metadata_epig_expr_with_ids AS (&#10;         SELECT DISTINCT me_1.epigenome_id,&#10;            me_1.experiment_type,&#10;            me_1.experiment_target,&#10;            me_1.data_source,&#10;            me_1.biosample_accession,&#10;            array_agg(DISTINCT me_1.material) AS material,&#10;            me_1.term,&#10;            me_1.term_ontology,&#10;            array_agg(DISTINCT me_1.sex) AS sex,&#10;            array_agg(DISTINCT me_1.life_stage) AS life_stage,&#10;            array_agg(DISTINCT me_1.age ORDER BY me_1.age) AS age,&#10;            array_agg(DISTINCT me_1.age_unit) AS age_unit,&#10;            me_1.species_name,&#10;            me_1.assembly_name&#10;           FROM curated_experiment_metadata me_1&#10;          WHERE (me_1.term &lt;&gt; &#39;iPS-18c&#39;::text)&#10;          GROUP BY me_1.epigenome_id, me_1.term, me_1.term_ontology, me_1.experiment_type, me_1.experiment_target, me_1.data_source, me_1.biosample_accession, me_1.species_name, me_1.assembly_name&#10;        ), age_n_sex_preprocessing AS (&#10;         SELECT metadata_epig_expr_with_ids.epigenome_id,&#10;            metadata_epig_expr_with_ids.experiment_type,&#10;            metadata_epig_expr_with_ids.experiment_target,&#10;            metadata_epig_expr_with_ids.data_source,&#10;            metadata_epig_expr_with_ids.biosample_accession,&#10;            metadata_epig_expr_with_ids.material,&#10;            metadata_epig_expr_with_ids.term,&#10;            metadata_epig_expr_with_ids.term_ontology,&#10;            metadata_epig_expr_with_ids.sex,&#10;            metadata_epig_expr_with_ids.life_stage,&#10;            metadata_epig_expr_with_ids.age,&#10;            metadata_epig_expr_with_ids.age_unit,&#10;            metadata_epig_expr_with_ids.species_name,&#10;            metadata_epig_expr_with_ids.assembly_name,&#10;            ARRAY( SELECT unnest(&#10;                        CASE&#10;                            WHEN (&#39;unknown&#39;::text &#61; ANY (metadata_epig_expr_with_ids.age)) THEN NULL::numeric[]&#10;                            ELSE (metadata_epig_expr_with_ids.age)::numeric[]&#10;                        END) AS unnest&#10;                  ORDER BY (unnest(&#10;                        CASE&#10;                            WHEN (&#39;unknown&#39;::text &#61; ANY (metadata_epig_expr_with_ids.age)) THEN NULL::numeric[]&#10;                            ELSE (metadata_epig_expr_with_ids.age)::numeric[]&#10;                        END))) AS age_sorted,&#10;                CASE&#10;                    WHEN (&#39;unknown&#39;::text &#61; ANY (metadata_epig_expr_with_ids.age)) THEN NULL::text&#10;                    WHEN (((&#39;embryo&#39;::text &#61; ANY (metadata_epig_expr_with_ids.life_stage)) OR (&#39;embryonic&#39;::text &#61; ANY (metadata_epig_expr_with_ids.life_stage))) AND (&#39;day&#39;::text &#61; ANY (metadata_epig_expr_with_ids.age_unit))) THEN &#39;days post fertilisation&#39;::text&#10;                    ELSE array_to_string(metadata_epig_expr_with_ids.age_unit, &#39;, &#39;::text)&#10;                END AS age_unit_processed,&#10;                CASE&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @&gt; ARRAY[&#39;unknown&#39;::text]) THEN NULL::text&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @&gt; ARRAY[&#39;mixed&#39;::text]) THEN NULL::text&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] @&gt; ARRAY[&#39;male&#39;::text, &#39;female&#39;::text]) THEN NULL::text&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] &#61; ARRAY[&#39;male&#39;::text]) THEN &#39;m&#39;::text&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] &#61; ARRAY[&#39;female&#39;::text]) THEN &#39;f&#39;::text&#10;                    WHEN ((metadata_epig_expr_with_ids.sex)::text[] &#61; ARRAY[&#39;phenotypic&#39;::text]) THEN NULL::text&#10;                    ELSE &#39;Err: not contemplated case&#39;::text&#10;                END AS sex_for_label&#10;           FROM metadata_epig_expr_with_ids&#10;        )&#10; SELECT asp.species_name,&#10;    asp.assembly_name,&#10;    asp.epigenome_id AS base_epigenome_id,&#10;    lower(array_to_string(asp.material, &#39;, &#39;::text)) AS material,&#10;    asp.term,&#10;        CASE&#10;            WHEN (asp.term &lt;&gt; &#39;embryo&#39;::text) THEN asp.term&#10;            ELSE NULL::text&#10;        END AS term_for_label,&#10;    asp.term_ontology,&#10;    array_to_string(asp.sex, &#39;, &#39;::text) AS sex,&#10;    asp.sex_for_label,&#10;    array_to_string(asp.life_stage, &#39;, &#39;::text) AS life_stage,&#10;        CASE&#10;            WHEN (((asp.sex)::text[] @&gt; ARRAY[&#39;phenotypic&#39;::text, &#39;unknown&#39;::text]) AND (asp.term &#61; &#39;embryo&#39;::text)) THEN array_to_string(asp.life_stage, &#39;, &#39;::text)&#10;            ELSE NULL::text&#10;        END AS life_stage_for_label,&#10;        CASE&#10;            WHEN (array_length(asp.age_sorted, 1) &#61; 1) THEN ((asp.age_sorted[1])::real)::text&#10;            ELSE NULL::text&#10;        END AS age_value,&#10;    array_to_string(asp.age_unit, &#39;, &#39;::text) AS age_unit,&#10;        CASE&#10;            WHEN ((asp.age_unit_processed &lt;&gt; ALL (ARRAY[&#39;days post fertilisation&#39;::text, &#39;thermal time&#39;::text])) AND (asp.age_sorted[1] &lt;&gt; (1)::numeric)) THEN concat(asp.age_unit_processed, &#39;s&#39;)&#10;            ELSE asp.age_unit_processed&#10;        END AS modified_age_unit,&#10;        CASE&#10;            WHEN (array_length(asp.age_sorted, 1) &#61; 1) THEN concat(((asp.age_sorted[1])::real)::text, &#39; &#39;,&#10;            CASE&#10;                WHEN ((asp.age_unit_processed &lt;&gt; ALL (ARRAY[&#39;days post fertilisation&#39;::text, &#39;thermal time&#39;::text])) AND (asp.age_sorted[1] &lt;&gt; (1)::numeric)) THEN concat(asp.age_unit_processed, &#39;s&#39;)&#10;                ELSE asp.age_unit_processed&#10;            END)&#10;            ELSE NULL::text&#10;        END AS extended_age,&#10;    ((&#10;        CASE&#10;            WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text&#10;            WHEN (array_length(asp.age_sorted, 1) &#61; 1) THEN ((asp.age_sorted[1])::real)::text&#10;            ELSE concat(((asp.age_sorted[1])::real)::text, &#39;-&#39;, ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)&#10;        END || &#39; &#39;::text) ||&#10;        CASE asp.age_unit_processed&#10;            WHEN &#39;days post fertilisation&#39;::text THEN &#39;dpf&#39;::text&#10;            WHEN &#39;month&#39;::text THEN &#39;mo&#39;::text&#10;            WHEN &#39;year&#39;::text THEN &#39;y&#39;::text&#10;            WHEN &#39;week&#39;::text THEN &#39;w&#39;::text&#10;            WHEN &#39;day&#39;::text THEN &#39;d&#39;::text&#10;            WHEN &#39;thermal time&#39;::text THEN &#39;tt&#39;::text&#10;            ELSE asp.age_unit_processed&#10;        END) AS short_age,&#10;        CASE&#10;            WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text&#10;            WHEN (((asp.assembly_name)::text &#61; &#39;GRCm39&#39;::text) AND (array_to_string(asp.life_stage, &#39;, &#39;::text) &#61; &#39;embryonic&#39;::text)) THEN concat(&#39;E&#39;,&#10;            CASE&#10;                WHEN (array_length(asp.age_sorted, 1) &#61; 1) THEN ((asp.age_sorted[1])::real)::text&#10;                ELSE concat(((asp.age_sorted[1])::real)::text, &#39;-&#39;, ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)&#10;            END)&#10;            ELSE ((&#10;            CASE&#10;                WHEN (array_length(asp.age_sorted, 1) IS NULL) THEN NULL::text&#10;                WHEN (array_length(asp.age_sorted, 1) &#61; 1) THEN ((asp.age_sorted[1])::real)::text&#10;                ELSE concat(((asp.age_sorted[1])::real)::text, &#39;-&#39;, ((asp.age_sorted[array_upper(asp.age_sorted, 1)])::real)::text)&#10;            END || &#39; &#39;::text) ||&#10;            CASE asp.age_unit_processed&#10;                WHEN &#39;days post fertilisation&#39;::text THEN &#39;dpf&#39;::text&#10;                WHEN &#39;month&#39;::text THEN &#39;mo&#39;::text&#10;                WHEN &#39;year&#39;::text THEN &#39;y&#39;::text&#10;                WHEN &#39;week&#39;::text THEN &#39;w&#39;::text&#10;                WHEN &#39;day&#39;::text THEN &#39;d&#39;::text&#10;                WHEN &#39;thermal time&#39;::text THEN &#39;tt&#39;::text&#10;                ELSE asp.age_unit_processed&#10;            END)&#10;        END AS age_for_label,&#10;    asp.experiment_type,&#10;    asp.experiment_target,&#10;    asp.biosample_accession,&#10;    asp.data_source&#10;   FROM age_n_sex_preprocessing asp;</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="life_stage.html">life_stage</a></li>
+                                        <li><a href="curated_experiment_metadata.html">curated_experiment_metadata</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

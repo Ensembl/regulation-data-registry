@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>metadata_dimensions - rdr.public</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>rdr</b></a><span class="navbar-brand" style="padding-left: 0">.public</span>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>metadata_dimensions</h1><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="standard_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="species_dimensions">species_dimensions</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="metadata_dimensions.html" target="_top" title="metadata_dimensions" alt="" coords="5,5,415,80">
+</map>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/metadata_dimensions.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">WITH base_epigenomes AS MATERIALIZED (&#10;         SELECT base_epigenomes.species_name,&#10;            base_epigenomes.assembly_name,&#10;            base_epigenomes.id,&#10;            base_epigenomes.material,&#10;            base_epigenomes.epigenome_name,&#10;            base_epigenomes.term,&#10;            base_epigenomes.term_for_label,&#10;            base_epigenomes.term_ontology,&#10;            base_epigenomes.sex,&#10;            base_epigenomes.sex_for_label,&#10;            base_epigenomes.life_stage,&#10;            base_epigenomes.life_stage_for_label,&#10;            base_epigenomes.extended_age,&#10;            base_epigenomes.age,&#10;            base_epigenomes.age_for_label,&#10;            base_epigenomes.organs,&#10;            base_epigenomes.systems,&#10;            base_epigenomes.tissue_group,&#10;            base_epigenomes.biological_group,&#10;            base_epigenomes.sample_type&#10;           FROM public.base_epigenomes&#10;        ), species AS (&#10;         SELECT DISTINCT base_epigenomes.species_name&#10;           FROM base_epigenomes&#10;        ), assemblies AS (&#10;         SELECT base_epigenomes.species_name,&#10;            array_agg(DISTINCT base_epigenomes.assembly_name) AS assemblies&#10;           FROM base_epigenomes&#10;          GROUP BY base_epigenomes.species_name&#10;        ), base_epigenome_terms AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            base_epigenomes.term,&#10;            base_epigenomes.term_ontology&#10;           FROM base_epigenomes&#10;        ), base_epigeome_age AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            base_epigenomes.age_for_label AS age,&#10;            base_epigenomes.extended_age&#10;           FROM base_epigenomes&#10;          WHERE (base_epigenomes.age IS NOT NULL)&#10;        ), base_epigenome_organ AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            unnest(base_epigenomes.organs) AS organ&#10;           FROM base_epigenomes&#10;        ), base_epigenome_system AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            unnest(base_epigenomes.systems) AS system&#10;           FROM base_epigenomes&#10;        ), base_epigenome_tissue_group AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            base_epigenomes.tissue_group&#10;           FROM base_epigenomes&#10;        ), base_epigenome_biological_group AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            base_epigenomes.biological_group&#10;           FROM base_epigenomes&#10;          WHERE (base_epigenomes.biological_group IS NOT NULL)&#10;        ), base_epigenome_sample_type AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            base_epigenomes.sample_type&#10;           FROM base_epigenomes&#10;          WHERE (base_epigenomes.sample_type IS NOT NULL)&#10;        ), filter_menu AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;                CASE&#10;                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(json_build_array(&#39;term&#39;), json_build_array(&#39;tissue_group&#39;), json_build_array(&#39;biological_group&#39;), json_build_array(&#39;sample_type&#39;), json_build_array(&#39;sex&#39;), json_build_array(&#39;life_stage&#39;), json_build_array(&#39;material&#39;)))::jsonb&#10;                    ELSE (json_build_array(json_build_array(&#39;term&#39;), json_build_array(&#39;tissue_group&#39;), json_build_array(&#39;biological_group&#39;), json_build_array(&#39;sample_type&#39;), json_build_array(&#39;organs&#39;), json_build_array(&#39;systems&#39;), json_build_array(&#39;sex&#39;), json_build_array(&#39;life_stage&#39;), json_build_array(&#39;material&#39;)))::jsonb&#10;                END AS filter_layout&#10;           FROM base_epigenomes&#10;        ), table_layout AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            (json_build_array(&#39;tissue_group&#39;, &#39;term&#39;, &#39;life_stage&#39;, &#39;age&#39;, &#39;sex&#39;, &#39;material&#39;))::jsonb AS layout&#10;           FROM base_epigenomes&#10;        ), optional AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;                CASE&#10;                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(&#39;biological_group&#39;, &#39;sample_type&#39;))::jsonb&#10;                    ELSE (json_build_array(&#39;organs&#39;, &#39;systems&#39;, &#39;biological_group&#39;, &#39;sample_type&#39;))::jsonb&#10;                END AS dimensions&#10;           FROM base_epigenomes&#10;        ), collapsible AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;            (json_build_array(&#39;sex&#39;, &#39;life_stage&#39;, &#39;age&#39;))::jsonb AS dimensions&#10;           FROM base_epigenomes&#10;        ), filterable AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;                CASE&#10;                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(&#39;material&#39;, &#39;tissue_group&#39;, &#39;biological_group&#39;, &#39;sample_type&#39;, &#39;sex&#39;, &#39;term&#39;, &#39;life_stage&#39;))::jsonb&#10;                    ELSE (json_build_array(&#39;material&#39;, &#39;tissue_group&#39;, &#39;biological_group&#39;, &#39;sample_type&#39;, &#39;sex&#39;, &#39;term&#39;, &#39;life_stage&#39;, &#39;organs&#39;, &#39;systems&#39;))::jsonb&#10;                END AS dimensions&#10;           FROM base_epigenomes&#10;        ), sortable AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;                CASE&#10;                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(&#39;term&#39;, &#39;tissue_group&#39;, &#39;biological_group&#39;, &#39;sample_type&#39;, &#39;life_stage&#39;, &#39;sex&#39;, &#39;material&#39;))::jsonb&#10;                    ELSE (json_build_array(&#39;tissue_group&#39;, &#39;biological_group&#39;, &#39;sample_type&#39;, &#39;organs&#39;, &#39;life_stage&#39;, &#39;sex&#39;, &#39;material&#39;, &#39;term&#39;, &#39;systems&#39;))::jsonb&#10;                END AS dimensions&#10;           FROM base_epigenomes&#10;        ), zero_counts_visible AS (&#10;         SELECT DISTINCT base_epigenomes.species_name,&#10;                CASE&#10;                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array(&#39;material&#39;))::jsonb&#10;                    ELSE (json_build_array(&#39;material&#39;, &#39;systems&#39;))::jsonb&#10;                END AS dimensions&#10;           FROM base_epigenomes&#10;        ), species_dimensions AS (&#10;         SELECT json_build_object(&#39;species_name&#39;, species.species_name, &#39;assemblies&#39;, ( SELECT assemblies.assemblies&#10;                   FROM assemblies&#10;                  WHERE (assemblies.species_name &#61; species.species_name)), &#39;ui_spec&#39;, json_build_object(&#39;filter_layout&#39;, ( SELECT filter_menu.filter_layout&#10;                   FROM filter_menu&#10;                  WHERE (filter_menu.species_name &#61; species.species_name)), &#39;table_layout&#39;, ( SELECT table_layout.layout&#10;                   FROM table_layout&#10;                  WHERE (table_layout.species_name &#61; species.species_name)), &#39;optional&#39;, ( SELECT optional.dimensions&#10;                   FROM optional&#10;                  WHERE (optional.species_name &#61; species.species_name)), &#39;collapsible&#39;, ( SELECT collapsible.dimensions&#10;                   FROM collapsible&#10;                  WHERE (collapsible.species_name &#61; species.species_name)), &#39;default_collapsed_by&#39;, json_build_array(&#39;age&#39;, &#39;sex&#39;), &#39;filterable&#39;, ( SELECT filterable.dimensions&#10;                   FROM filterable&#10;                  WHERE (filterable.species_name &#61; species.species_name)), &#39;sortable&#39;, ( SELECT sortable.dimensions&#10;                   FROM sortable&#10;                  WHERE (sortable.species_name &#61; species.species_name)), &#39;zero_counts_visible&#39;, ( SELECT zero_counts_visible.dimensions&#10;                   FROM zero_counts_visible&#10;                  WHERE (zero_counts_visible.species_name &#61; species.species_name))), &#39;dimensions&#39;, json_build_object(&#39;material&#39;, json_build_object(&#39;name&#39;, &#39;Biosample material&#39;, &#39;type&#39;, &#39;categorical&#39;, &#39;values&#39;, ( SELECT json_agg(DISTINCT b.material) AS json_agg&#10;                   FROM base_epigenomes b&#10;                  WHERE (b.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;,&#10;                CASE&#10;                    WHEN (species.species_name &#61; ANY (ARRAY[&#39;Homo sapiens&#39;::text, &#39;Mus musculus&#39;::text])) THEN json_build_array(&#39;cell line&#39;)&#10;                    ELSE json_build_array()&#10;                END)), &#39;sex&#39;, json_build_object(&#39;name&#39;, &#39;Sex&#39;, &#39;type&#39;, &#39;categorical&#39;, &#39;values&#39;, ( SELECT json_agg(DISTINCT b.sex) AS json_agg&#10;                   FROM base_epigenomes b&#10;                  WHERE (b.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;term&#39;, json_build_object(&#39;name&#39;, &#39;Biosample term&#39;, &#39;type&#39;, &#39;categorical_with_ontology&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, t.term, &#39;ontology&#39;, json_build_object(&#39;curie&#39;, replace(t.term_ontology, &#39;_&#39;::text, &#39;:&#39;::text), &#39;url&#39;, concat(&#39;https://purl.obolibrary.org/obo/&#39;, t.term_ontology)))) AS json_agg&#10;                   FROM base_epigenome_terms t&#10;                  WHERE (t.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;life_stage&#39;, json_build_object(&#39;name&#39;, &#39;Life stage&#39;, &#39;type&#39;, &#39;categorical&#39;, &#39;values&#39;, ( SELECT json_agg(DISTINCT b.life_stage) AS json_agg&#10;                   FROM base_epigenomes b&#10;                  WHERE (b.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;age&#39;, json_build_object(&#39;name&#39;, &#39;Age&#39;, &#39;type&#39;, &#39;categorical_with_description&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, a.age, &#39;description&#39;, a.extended_age)) AS json_agg&#10;                   FROM base_epigeome_age a&#10;                  WHERE (a.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;organs&#39;, json_build_object(&#39;name&#39;, &#39;Organ&#39;, &#39;type&#39;, &#39;categorical_with_ontology&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, o.organ, &#39;ontology&#39;, json_build_object(&#39;curie&#39;, NULL::unknown, &#39;url&#39;, NULL::unknown))) AS json_agg&#10;                   FROM base_epigenome_organ o&#10;                  WHERE (o.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;systems&#39;, json_build_object(&#39;name&#39;, &#39;System&#39;, &#39;type&#39;, &#39;categorical_with_ontology&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, s.system, &#39;ontology&#39;, json_build_object(&#39;curie&#39;, NULL::unknown, &#39;url&#39;, NULL::unknown))) AS json_agg&#10;                   FROM base_epigenome_system s&#10;                  WHERE (s.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;tissue_group&#39;, json_build_object(&#39;name&#39;, &#39;Tissue group&#39;, &#39;type&#39;, &#39;categorical_with_ontology&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, t.tissue_group, &#39;ontology&#39;, json_build_object(&#39;curie&#39;, NULL::unknown, &#39;url&#39;, NULL::unknown))) AS json_agg&#10;                   FROM base_epigenome_tissue_group t&#10;                  WHERE (t.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;biological_group&#39;, json_build_object(&#39;name&#39;, &#39;Biological group&#39;, &#39;type&#39;, &#39;categorical_with_ontology&#39;, &#39;values&#39;, ( SELECT json_agg(json_build_object(&#39;value&#39;, c.biological_group, &#39;ontology&#39;, json_build_object(&#39;curie&#39;, NULL::text, &#39;url&#39;, NULL::text)) ORDER BY c.biological_group) AS json_agg&#10;                   FROM base_epigenome_biological_group c&#10;                  WHERE (c.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())), &#39;sample_type&#39;, json_build_object(&#39;name&#39;, &#39;Sample type&#39;, &#39;type&#39;, &#39;categorical&#39;, &#39;values&#39;, ( SELECT json_agg(c.sample_type ORDER BY c.sample_type) AS json_agg&#10;                   FROM base_epigenome_sample_type c&#10;                  WHERE (c.species_name &#61; species.species_name)), &#39;default_set&#39;, json_build_object(&#39;type&#39;, &#39;exclude&#39;, &#39;values&#39;, json_build_array())))) AS payload&#10;           FROM species&#10;        )&#10; SELECT jsonb_pretty((json_agg(species_dimensions.payload))::jsonb) AS species_dimensions&#10;   FROM species_dimensions;</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="base_epigenomes.html">base_epigenomes</a></li>
+                                        <li><a href="species.html">species</a></li>
+                                        <li><a href="life_stage.html">life_stage</a></li>
+                                        <li><a href="ontology.html">ontology</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 7.0.2</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>
