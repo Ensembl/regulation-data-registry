@@ -25,7 +25,12 @@ The current snapshot contains the following experiment types:
 
 - ATAC-seq
 - DNase-seq
-- ChIP-seq
+- ChIP-seq (histone modifications and transcription factors)
+
+Additional experiment types under development:
+
+- RNA-seq
+- Multiome (paired single-nucleus ATAC-seq and RNA-seq)
 
 ## Schema overview
 
