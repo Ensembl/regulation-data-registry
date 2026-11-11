@@ -668,6 +668,30 @@ When switching an existing instance, run `make db-down` before changing revision
 
 ## Development
 
+### Repository layout
+
+```text
+.
+├── db/                    # Database snapshot
+│   ├── schema.sql         # Schema, tracked in Git
+│   ├── data.sql.dvc       # DVC pointer to the data snapshot
+│   └── data.sql           # Data fetched by DVC; excluded from Git
+├── containers/            # Compose configuration, database image and restore scripts
+│   └── dvc/               # DVC container and locked Python environment
+├── scripts/               # Container-engine, DVC and SchemaSpy command wrappers
+├── docs/
+│   └── schemaspy/         # Generated HTML schema documentation and diagrams
+├── tests/                 # Workflow tests for startup, export and documentation
+├── .dvc/                  # DVC configuration and local state
+│   ├── config             # Shared remote configuration, tracked in Git
+│   ├── config.local       # Optional local overrides and credentials; Git-ignored
+│   ├── cache/             # Downloaded and exported data objects; Git-ignored
+│   ├── tmp/               # DVC temporary files and state; Git-ignored
+│   └── .gitignore         # Keeps local DVC files out of Git
+├── .env.example           # Template for optional local database settings
+└── Makefile               # Entry points for database and documentation commands
+```
+
 ### Export and publish changes
 
 After editing the local database, export both schema and data:
