@@ -43,161 +43,188 @@ assembly and a registered file.
 ---
 config:
   theme: base
+  layout: dagre
+  er:
+    minEntityWidth: 80
+    minEntityHeight: 40
+    entityPadding: 8
+    nodeSpacing: 30
+    rankSpacing: 55
   themeCSS: |
-    .edgeLabel rect { opacity: 1; }
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
     .labelBkg { background-color: #f8fafc; }
   themeVariables:
     primaryTextColor: '#0f172a'
-    secondaryTextColor: '#0f172a'
-    tertiaryTextColor: '#0f172a'
     textColor: '#0f172a'
     lineColor: '#64748b'
     edgeLabelBackground: '#f8fafc'
     clusterBkg: '#f8fafc'
-    clusterBorder: '#64748b'
-    titleColor: '#0f172a'
-  flowchart:
-    htmlLabels: false
+    clusterBorder: '#94a3b8'
+    tertiaryColor: '#f8fafc'
+    tertiaryTextColor: '#0f172a'
 ---
-flowchart LR
-    subgraph core["Experiments and sequencing"]
-        direction LR
-        epigenome -->|"1 : N"| experiment
-        experiment -.->|"M : N via assay tables"| replicate_set
-        replicate_set -->|"1 : N"| replicate
-        replicate -->|"N : 1"| read_file_set
-        read_file_set -->|"0..1 : N"| run
-        run -->|"0..1 : N"| read_file
+erDiagram
+    direction TB
+    %% Declare side branches first to keep these tables left of the hierarchy.
+    species ||..o{ assembly : ""
+    experiment ||..o{ analysis_file : ""
+    read_file_set ||..o{ alignment_file : ""
+
+    assembly
+    analysis_file
+    alignment_file
+
+    subgraph samples ["Biological samples"]
+        biosource
+        biosample
+        biosample_set_biosample
+        biosample_set
+        biosource ||..o{ biosample : ""
+        biosample ||--o{ biosample_set_biosample : ""
+        biosample_set_biosample }o--|| biosample_set : ""
     end
 
-    subgraph biology["Biological context and samples"]
-        direction LR
-        species
-        epigenome_group
-        biosource -->|"1 : N"| biosample
-        biosample -->|"1 : N"| biosample_set_biosample
-        biosample_set -->|"1 : N"| biosample_set_biosample
+    subgraph hierarchy [" "]
+        subgraph hierarchy_epigenomes ["Base epigenomes"]
+            species
+            epigenome
+            species ||..o{ epigenome : ""
+        end
+
+        subgraph hierarchy_experiments ["Experiments"]
+            experiment
+            replicate_set
+            replicate
+            experiment }o..o{ replicate_set : "via assay tables"
+            replicate_set ||..o{ replicate : ""
+        end
+
+        subgraph hierarchy_sequencing ["Sequencing"]
+            read_file_set
+            run
+            read_file
+            read_file_set |o..o{ run : ""
+            run |o..o{ read_file : ""
+        end
+
+        epigenome ||..o{ experiment : ""
+        replicate }o..|| read_file_set : ""
     end
 
-    subgraph resources["References and registered files"]
-        direction LR
-        assembly -->|"1 : N"| analysis_file
-        file -->|"1 : N"| analysis_file
-    end
-
-    epigenome -->|"1 : N"| track
-    species -->|"1 : N"| epigenome
-    epigenome_group -->|"1 : N"| epigenome
-    biosample_set -->|"0..1 : N"| replicate
-    species -->|"1 : N"| assembly
-    experiment -->|"1 : N"| analysis_file
-    file -->|"1 : N"| read_file
-    read_file_set -->|"0..1 : N"| read_file
+    replicate }o..o| biosample_set : ""
+    assembly ||..o{ analysis_file : ""
+    assembly ||..o{ alignment_file : ""
 
     classDef context fill:#dbeafe,stroke:#1d4ed8,color:#172554
     classDef assays fill:#ede9fe,stroke:#6d28d9,color:#2e1065
     classDef samples fill:#dcfce7,stroke:#15803d,color:#14532d
     classDef sequencing fill:#cffafe,stroke:#0e7490,color:#164e63
     classDef resources fill:#fef3c7,stroke:#b45309,color:#451a03
-    class species,epigenome_group,epigenome,track context
+    class species,epigenome,assembly context
     class experiment,replicate_set,replicate assays
     class biosource,biosample,biosample_set,biosample_set_biosample samples
     class read_file_set,run,read_file sequencing
-    class assembly,analysis_file,file resources
+    class alignment_file,analysis_file resources
+
+    overview_key["|| one<br/>o| zero or one<br/>o{ zero or many<br/>— FK in PK<br/>┄ other link"]
+    classDef key fill:#f1f5f9,stroke:#475569,color:#0f172a
+    class overview_key key
 ```
 
-Follow the main chain from left to right: biological context → experiment →
-replicates → read-file set → sequencing run → read file. Blue marks biological
-context, purple experiments and replicates, green samples, cyan sequencing, and
-amber references and files.
+Read the main column from top to bottom: species → epigenome → experiment →
+replicate set → replicate → read-file set → run → read file.
 
-Each label gives the cardinality at the source and destination: `1 : N` means
-one-to-many, `N : 1` means many-to-one, and `M : N` means many-to-many. Here,
-`N` and `M` allow zero or more rows; `0..1` marks an optional parent. For example,
-each replicate references exactly one read-file set, but a read file can have no
-run assigned. The sample-set membership table implements the many-to-many
-relationship between `biosample_set` and `biosample`.
-
-The overview above shows the main path through the schema. Together with the
-four expandable sections below, it covers all 41 tables. Select a section title
-to see its detailed diagram. Repeated boxes refer to the same table.
-
-Solid arrows show foreign-key relationships, oriented for reading rather than
-foreign-key direction. The dotted arrow in the overview summarizes the link
-through the assay tables; it is not a direct foreign key. Cardinalities follow
-each arrow from tail to head, including arrows pointing left. Columns and views
-are omitted.
+The overview above shows the main path through the schema. The four expandable
+sections below provide more detail about assays, samples, files, and provenance.
+Select a section title to see its detailed diagrams. Repeated boxes refer to the same table. Most
+boxes show table names only; the provenance section also includes column
+definitions. Views are omitted throughout.
 
 <details>
 <summary><strong>Assay types and replicate sets</strong></summary>
 
-Each assay has its own row, with `experiment` on the left and replicate sets
+Each assay has its own group, with `experiment` on the left and replicate sets
 and targets on the right. Repeated boxes refer to the same tables, drawn
-separately to avoid crossing arrows. Labels use
-the same cardinality notation as the other diagrams; signal/control and ATAC/RNA
-distinguish the roles of replicate sets. Cardinalities follow the arrow from
-tail to head, including arrows pointing left.
+separately to avoid crossing lines. The signal/control and ATAC/RNA labels
+distinguish the roles of replicate sets.
 
 ```mermaid
 ---
 config:
   theme: base
+  layout: dagre
+  er:
+    rankSpacing: 90
+    nodeSpacing: 40
   themeCSS: |
-    .edgeLabel rect { opacity: 1; }
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
     .labelBkg { background-color: #f8fafc; }
   themeVariables:
     primaryTextColor: '#0f172a'
-    secondaryTextColor: '#0f172a'
-    tertiaryTextColor: '#0f172a'
     textColor: '#0f172a'
     lineColor: '#64748b'
     edgeLabelBackground: '#f8fafc'
     clusterBkg: '#f8fafc'
-    clusterBorder: '#64748b'
-    titleColor: '#0f172a'
-  flowchart:
-    htmlLabels: false
+    clusterBorder: '#94a3b8'
+    tertiaryColor: '#f8fafc'
+    tertiaryTextColor: '#0f172a'
 ---
-flowchart TB
-    subgraph atac_panel["ATAC-seq"]
+erDiagram
+    direction LR
+    %% Reverse declaration order gives ATAC, DNase, ChIP, RNA, Multiome top to bottom.
+    subgraph assay_multiome ["Multiome"]
         direction LR
-        atac_experiment["experiment"] -->|"1 : 0..1"| atac_seq
-        atac_seq <-->|"1 : 0..1"| atac_replicates["replicate_set"]
+        multiome_experiment["experiment"]
+        multiome
+        multiome_atac["replicate_set"]
+        multiome_rna["replicate_set"]
+        multiome_experiment ||--o| multiome : ""
+        multiome |o..|| multiome_atac : "ATAC"
+        multiome |o..o| multiome_rna : "RNA"
     end
 
-    subgraph dnase_panel["DNase-seq"]
+    subgraph assay_rna ["RNA-seq"]
         direction LR
-        dnase_experiment["experiment"] -->|"1 : 0..1"| dnase_seq
-        dnase_seq <-->|"1 : 0..1"| dnase_replicates["replicate_set"]
+        rna_experiment["experiment"]
+        rna_seq
+        rna_replicates["replicate_set"]
+        rna_experiment ||--o| rna_seq : ""
+        rna_seq |o..|| rna_replicates : ""
     end
 
-    subgraph rna_panel["RNA-seq"]
+    subgraph assay_chip ["ChIP-seq"]
         direction LR
-        rna_experiment["experiment"] -->|"1 : 0..1"| rna_seq
-        rna_seq <-->|"1 : 0..1"| rna_replicates["replicate_set"]
+        chip_experiment["experiment"]
+        chip_seq
+        chip_signal["replicate_set"]
+        chip_control["replicate_set"]
+        chip_histone["histone_target"]
+        chip_tf["tf_target"]
+        chip_experiment ||--o| chip_seq : ""
+        chip_seq |o..|| chip_signal : "signal"
+        chip_seq }o..o| chip_control : "control"
+        chip_seq }o..o| chip_histone : ""
+        chip_seq }o..o| chip_tf : ""
     end
 
-    subgraph chip_panel["ChIP-seq"]
+    subgraph assay_dnase ["DNase-seq"]
         direction LR
-        chip_experiment["experiment"] -->|"1 : 0..1"| chip_seq
-        chip_seq <-->|"1 : 0..1 signal"| chip_signal["replicate_set"]
-        chip_seq <-->|"0..1 : N control"| chip_control["replicate_set"]
-        chip_seq <-->|"0..1 : N"| chip_histone["histone_target"]
-        chip_seq <-->|"0..1 : N"| chip_tf["tf_target"]
+        dnase_experiment["experiment"]
+        dnase_seq
+        dnase_replicates["replicate_set"]
+        dnase_experiment ||--o| dnase_seq : ""
+        dnase_seq |o..|| dnase_replicates : ""
     end
 
-    subgraph multiome_panel["Multiome"]
+    subgraph assay_atac ["ATAC-seq"]
         direction LR
-        multiome_experiment["experiment"] -->|"1 : 0..1"| multiome
-        multiome <-->|"1 : 0..1 ATAC"| multiome_atac["replicate_set"]
-        multiome <-->|"0..1 : 0..1 RNA"| multiome_rna["replicate_set"]
+        atac_experiment["experiment"]
+        atac_seq
+        atac_replicates["replicate_set"]
+        atac_experiment ||--o| atac_seq : ""
+        atac_seq |o..|| atac_replicates : ""
     end
 
-    %% Keep right-hand nodes on the right, with arrowheads only at the assay.
-    linkStyle 1,3,5,7,8,9,10,12,13 marker-end:none
-
-    %% Invisible links keep the independent assay rows stacked vertically.
-    atac_panel ~~~ dnase_panel ~~~ rna_panel ~~~ chip_panel ~~~ multiome_panel
 
     classDef assays fill:#ede9fe,stroke:#6d28d9,color:#2e1065
     class atac_experiment,atac_replicates,atac_seq,dnase_experiment,dnase_replicates,dnase_seq,rna_experiment,rna_replicates,rna_seq,chip_experiment,chip_signal,chip_control,chip_histone,chip_tf,chip_seq,multiome_experiment,multiome_atac,multiome_rna,multiome assays
@@ -216,31 +243,56 @@ to replicates.
 ---
 config:
   theme: base
+  layout: dagre
+  er:
+    rankSpacing: 90
+    nodeSpacing: 40
   themeCSS: |
-    .edgeLabel rect { opacity: 1; }
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
     .labelBkg { background-color: #f8fafc; }
   themeVariables:
     primaryTextColor: '#0f172a'
-    secondaryTextColor: '#0f172a'
-    tertiaryTextColor: '#0f172a'
     textColor: '#0f172a'
     lineColor: '#64748b'
     edgeLabelBackground: '#f8fafc'
     clusterBkg: '#f8fafc'
-    clusterBorder: '#64748b'
-    titleColor: '#0f172a'
-  flowchart:
-    htmlLabels: false
+    clusterBorder: '#94a3b8'
+    tertiaryColor: '#f8fafc'
+    tertiaryTextColor: '#0f172a'
 ---
-flowchart LR
-    biosource -->|"1 : N"| biosample
-    life_stage -->|"0..1 : N"| biosample
-    ontology -->|"0..1 : N"| biosample
-    biosample -->|"1 : N"| biosample_set_biosample
-    biosample_set -->|"1 : N"| biosample_set_biosample
-    life_stage -->|"0..1 : N"| biosource
-    ontology -->|"1 : N"| life_stage
-    biosample_set -->|"0..1 : N"| replicate
+erDiagram
+    direction LR
+    subgraph sample_annotations ["Biological annotations"]
+        direction LR
+        ontology
+        life_stage
+        ontology ||..o{ life_stage : ""
+    end
+
+    subgraph sample_material ["Biological material"]
+        direction LR
+        biosource
+        biosample
+        biosource ||..o{ biosample : ""
+    end
+
+    subgraph sample_membership ["Sample-set membership"]
+        direction LR
+        biosample_set
+        biosample_set_biosample
+        biosample_set ||--o{ biosample_set_biosample : ""
+    end
+
+    subgraph sample_replicates ["Replicates"]
+        direction LR
+        replicate
+    end
+
+    life_stage |o..o{ biosample : ""
+    ontology |o..o{ biosample : ""
+    biosample ||--o{ biosample_set_biosample : ""
+    life_stage |o..o{ biosource : ""
+    biosample_set |o..o{ replicate : ""
 
     classDef assays fill:#ede9fe,stroke:#6d28d9,color:#2e1065
     class replicate assays
@@ -256,109 +308,111 @@ flowchart LR
 File-role tables share the generic `file` registry. Locations are recorded
 separately. The `run_alignment_task` membership table connects runs and alignment
 tasks; an alignment file can optionally identify its task. Shared tables are
-repeated across rows to keep the relationships separate.
+repeated inside labeled compartments to keep the relationships separate.
 
 ```mermaid
 ---
 config:
   theme: base
+  layout: dagre
+  er:
+    rankSpacing: 90
+    nodeSpacing: 40
   themeCSS: |
-    .edgeLabel rect { opacity: 1; }
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
     .labelBkg { background-color: #f8fafc; }
   themeVariables:
     primaryTextColor: '#0f172a'
-    secondaryTextColor: '#0f172a'
-    tertiaryTextColor: '#0f172a'
     textColor: '#0f172a'
     lineColor: '#64748b'
     edgeLabelBackground: '#f8fafc'
     clusterBkg: '#f8fafc'
-    clusterBorder: '#64748b'
-    titleColor: '#0f172a'
-  flowchart:
-    htmlLabels: false
+    clusterBorder: '#94a3b8'
+    tertiaryColor: '#f8fafc'
+    tertiaryTextColor: '#0f172a'
 ---
-flowchart TB
-    subgraph reference["Reference assemblies"]
+erDiagram
+    direction LR
+    subgraph files_reference ["Reference assemblies"]
         direction LR
-        reference_assembly["assembly"]
         reference_left_0["species"]
+        reference_assembly["assembly"]
         reference_right_0["file"]
-        reference_left_0 -->|"1 : N"| reference_assembly
-        reference_assembly <-->|"1 : N"| reference_right_0
+        reference_left_0 ||..o{ reference_assembly : ""
+        reference_assembly }o..|| reference_right_0 : ""
     end
 
-    subgraph aligned["Alignment files"]
+    subgraph files_alignment ["Alignment files"]
         direction LR
-        aligned_alignment_file["alignment_file"]
         aligned_left_0["read_file_set"]
         aligned_left_1["assembly"]
         aligned_left_2["alignment_task"]
+        aligned_alignment_file["alignment_file"]
         aligned_right_0["file"]
-        aligned_left_0 -->|"1 : N"| aligned_alignment_file
-        aligned_left_1 -->|"1 : N"| aligned_alignment_file
-        aligned_left_2 -->|"0..1 : N"| aligned_alignment_file
-        aligned_alignment_file <-->|"1 : N"| aligned_right_0
+        aligned_left_0 ||..o{ aligned_alignment_file : ""
+        aligned_left_1 ||..o{ aligned_alignment_file : ""
+        aligned_left_2 |o..o{ aligned_alignment_file : ""
+        aligned_alignment_file }o..|| aligned_right_0 : ""
     end
 
-    subgraph analysis["Analysis files"]
+    subgraph files_analysis ["Analysis files"]
         direction LR
-        analysis_analysis_file["analysis_file"]
         analysis_left_0["experiment"]
         analysis_left_1["assembly"]
+        analysis_analysis_file["analysis_file"]
         analysis_right_0["file"]
-        analysis_left_0 -->|"1 : N"| analysis_analysis_file
-        analysis_left_1 -->|"1 : N"| analysis_analysis_file
-        analysis_analysis_file <-->|"1 : N"| analysis_right_0
+        analysis_left_0 ||..o{ analysis_analysis_file : ""
+        analysis_left_1 ||..o{ analysis_analysis_file : ""
+        analysis_analysis_file }o..|| analysis_right_0 : ""
     end
 
-    subgraph masks["Mask files"]
+    subgraph files_masks ["Mask files"]
         direction LR
-        masks_mask_file["mask_file"]
         masks_left_0["assembly"]
+        masks_mask_file["mask_file"]
         masks_right_0["file"]
-        masks_left_0 -->|"1 : N"| masks_mask_file
-        masks_mask_file <-->|"1 : N"| masks_right_0
+        masks_left_0 ||..o{ masks_mask_file : ""
+        masks_mask_file }o..|| masks_right_0 : ""
     end
 
-    subgraph barcodes["Barcode files"]
+    subgraph files_barcodes ["Barcode files"]
         direction LR
-        barcodes_barcode_file["barcode_file"]
         barcodes_left_0["run"]
+        barcodes_barcode_file["barcode_file"]
         barcodes_right_0["file"]
-        barcodes_left_0 -->|"1 : N"| barcodes_barcode_file
-        barcodes_barcode_file <-->|"1 : N"| barcodes_right_0
+        barcodes_left_0 ||..o{ barcodes_barcode_file : ""
+        barcodes_barcode_file }o..|| barcodes_right_0 : ""
     end
 
-    subgraph storage["File locations and inclusion lists"]
+    subgraph files_inclusion ["Inclusion lists"]
+        direction LR
+        inclusion_file["file"]
+        inclusion_list["inclusion_list"]
+        inclusion_file ||..o{ inclusion_list : ""
+    end
+
+    subgraph files_storage ["File locations"]
         direction LR
         storage_file["file"]
         storage_s3["s3_object"]
         storage_bucket["bucket"]
         storage_posix["posix_file"]
         storage_url["public_url"]
-        storage_inclusion["inclusion_list"]
-        storage_file -->|"1 : N"| storage_s3
-        storage_s3 <-->|"1 : N"| storage_bucket
-        storage_file -->|"1 : N"| storage_posix
-        storage_file -->|"1 : N"| storage_url
-        storage_file -->|"1 : N"| storage_inclusion
+        storage_file ||..o{ storage_s3 : ""
+        storage_s3 }o..|| storage_bucket : ""
+        storage_file ||..o{ storage_posix : ""
+        storage_file ||..o{ storage_url : ""
     end
 
-    subgraph tasks["Run and alignment-task membership"]
+    subgraph files_tasks ["Run and alignment-task membership"]
         direction LR
-        tasks_run_alignment_task["run_alignment_task"]
         tasks_left_0["run"]
+        tasks_run_alignment_task["run_alignment_task"]
         tasks_right_0["alignment_task"]
-        tasks_left_0 -->|"1 : N"| tasks_run_alignment_task
-        tasks_run_alignment_task <-->|"1 : N"| tasks_right_0
+        tasks_left_0 ||--o{ tasks_run_alignment_task : ""
+        tasks_run_alignment_task }o--|| tasks_right_0 : ""
     end
 
-    %% Right-hand parents point back into the central table.
-    linkStyle 1,5,8,10,12,14,19 marker-end:none
-
-    %% Layout-only links stack the groups vertically.
-    reference ~~~ aligned ~~~ analysis ~~~ masks ~~~ barcodes ~~~ storage ~~~ tasks
 
     classDef context fill:#dbeafe,stroke:#1d4ed8,color:#172554
     class reference_left_0 context
@@ -367,7 +421,7 @@ flowchart TB
     classDef sequencing fill:#cffafe,stroke:#0e7490,color:#164e63
     class aligned_left_0,aligned_left_2,barcodes_left_0,tasks_run_alignment_task,tasks_left_0,tasks_right_0 sequencing
     classDef resources fill:#fef3c7,stroke:#b45309,color:#451a03
-    class reference_assembly,reference_right_0,aligned_alignment_file,aligned_left_1,aligned_right_0,analysis_analysis_file,analysis_left_1,analysis_right_0,masks_mask_file,masks_left_0,masks_right_0,barcodes_barcode_file,barcodes_right_0,storage_file,storage_s3,storage_bucket,storage_posix,storage_url,storage_inclusion resources
+    class reference_assembly,reference_right_0,aligned_alignment_file,aligned_left_1,aligned_right_0,analysis_analysis_file,analysis_left_1,analysis_right_0,masks_mask_file,masks_left_0,masks_right_0,barcodes_barcode_file,barcodes_right_0,inclusion_file,inclusion_list,storage_file,storage_s3,storage_bucket,storage_posix,storage_url resources
 ```
 
 </details>
@@ -375,99 +429,126 @@ flowchart TB
 <details>
 <summary><strong>Provenance, curation, and schema version</strong></summary>
 
-Archive accessions are recorded in `data_source` and referenced by the tables
-shown below. Pink marks provenance. The gray tables have no foreign keys:
-`metadata_override` and `quality_annotation` identify records by accession,
-while `alembic_version` stores the schema migration version.
+Archive accessions are recorded in `data_source`. The native entity-relationship
+boxes show column names, SQL types, and primary/foreign keys (`PK` / `FK`);
+`enum` denotes a PostgreSQL enumeration.
+
+**Archive accessions**
 
 ```mermaid
 ---
 config:
   theme: base
   themeCSS: |
-    .edgeLabel rect { opacity: 1; }
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
+    .labelBkg { background-color: #f8fafc; }
+  themeVariables:
+    primaryColor: '#ffe4e6'
+    primaryBorderColor: '#be123c'
+    primaryTextColor: '#4c0519'
+    textColor: '#4c0519'
+    lineColor: '#64748b'
+    edgeLabelBackground: '#f8fafc'
+    attributeBackgroundColorOdd: '#fff1f2'
+    attributeBackgroundColorEven: '#ffe4e6'
+    labelBoxBkgColor: '#f8fafc'
+    labelBoxTextColor: '#0f172a'
+---
+erDiagram
+    direction LR
+    archive ||..o{ data_source : registers
+    archive {
+        varchar name
+        varchar website
+        uuid archive_id PK
+        varchar abbreviation
+    }
+    data_source {
+        uuid data_source_id PK
+        text accession
+        date first_public
+        date last_updated
+        uuid archive_id FK
+        jsonb request_payload
+        enum data_source_type
+        date registration_date
+    }
+```
+
+**Record provenance**
+
+The compact map repeats `data_source` without its columns to keep relationships
+readable.
+
+```mermaid
+---
+config:
+  theme: base
+  layout: dagre
+  er:
+    rankSpacing: 90
+    nodeSpacing: 40
+  themeCSS: |
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
     .labelBkg { background-color: #f8fafc; }
   themeVariables:
     primaryTextColor: '#0f172a'
-    secondaryTextColor: '#0f172a'
-    tertiaryTextColor: '#0f172a'
     textColor: '#0f172a'
     lineColor: '#64748b'
     edgeLabelBackground: '#f8fafc'
     clusterBkg: '#f8fafc'
-    clusterBorder: '#64748b'
-    titleColor: '#0f172a'
-  flowchart:
-    htmlLabels: false
+    clusterBorder: '#94a3b8'
+    tertiaryColor: '#f8fafc'
+    tertiaryTextColor: '#0f172a'
 ---
-flowchart TB
-    subgraph archives["Archive accessions"]
-        direction LR
-        prov_archive["archive"]
-        prov_source["data_source"]
-        prov_archive -->|"1 : N"| prov_source
-    end
-
-    subgraph sample_sources["Biological samples"]
+erDiagram
+    direction LR
+    subgraph provenance_samples ["Biological samples"]
         direction LR
         sample_source["data_source"]
         sample_biosource["biosource"]
         sample_biosample["biosample"]
         sample_set["biosample_set"]
         sample_alternative["data_source"]
-        sample_source -->|"0..1 : N"| sample_biosource
-        sample_source -->|"1 : N"| sample_biosample
-        sample_source -->|"0..1 : N"| sample_set
-        sample_biosource <-->|"0..1 : N alternative"| sample_alternative
-        sample_biosample <-->|"0..1 : N alternative"| sample_alternative
+        sample_source |o..o{ sample_biosource : ""
+        sample_source ||..o{ sample_biosample : ""
+        sample_source |o..o{ sample_set : ""
+        sample_biosource }o..o| sample_alternative : "alternative"
+        sample_biosample }o..o| sample_alternative : "alternative"
     end
 
-    subgraph experiment_sources["Epigenomes and experiments"]
+    subgraph provenance_experiments ["Epigenomes and experiments"]
         direction LR
         exp_source["data_source"]
         exp_epigenome["epigenome"]
         exp_group["epigenome_group"]
         exp_experiment["experiment"]
         exp_alternative["data_source"]
-        exp_source -->|"0..1 : N"| exp_epigenome
-        exp_source -->|"0..1 : N"| exp_group
-        exp_source -->|"0..1 : N"| exp_experiment
-        exp_epigenome <-->|"0..1 : N alternative"| exp_alternative
+        exp_source |o..o{ exp_epigenome : ""
+        exp_source |o..o{ exp_group : ""
+        exp_source |o..o{ exp_experiment : ""
+        exp_epigenome }o..o| exp_alternative : "alternative"
     end
 
-    subgraph sequence_sources["Replicates, sequencing, and files"]
+    subgraph provenance_sequencing ["Replicates, sequencing, and files"]
         direction LR
-        seq_source["data_source"]
         seq_replicate["replicate"]
         seq_replicate_set["replicate_set"]
         seq_read_set["read_file_set"]
+        seq_source["data_source"]
         seq_run["run"]
         seq_read["read_file"]
         seq_barcode["barcode_file"]
         seq_file["file"]
-        seq_replicate <-->|"0..1 : N"| seq_source
-        seq_replicate_set <-->|"0..1 : N"| seq_source
-        seq_read_set <-->|"0..1 : N"| seq_source
-        seq_source -->|"0..1 : N"| seq_run
-        seq_source -->|"0..1 : N"| seq_read
-        seq_source -->|"0..1 : N"| seq_barcode
-        seq_source -->|"0..1 : N"| seq_file
+        seq_replicate }o..o| seq_source : ""
+        seq_replicate_set }o..o| seq_source : ""
+        seq_read_set }o..o| seq_source : ""
+        seq_source |o..o{ seq_run : ""
+        seq_source |o..o{ seq_read : ""
+        seq_source |o..o{ seq_barcode : ""
+        seq_source |o..o{ seq_file : ""
     end
 
-    subgraph curation["Curation and schema version - no foreign keys"]
-        direction LR
-        curation_metadata["metadata_override"]
-        curation_quality["quality_annotation"]
-        curation_version["alembic_version"]
-        curation_metadata ~~~ curation_quality
-        curation_quality ~~~ curation_version
-    end
-
-    %% Right-hand parents point back into the central table.
-    linkStyle 4,5,9,10,11,12 marker-end:none
-
-    %% Layout-only links stack the groups vertically.
-    archives ~~~ sample_sources ~~~ experiment_sources ~~~ sequence_sources ~~~ curation
 
     classDef context fill:#dbeafe,stroke:#1d4ed8,color:#172554
     class exp_epigenome,exp_group context
@@ -480,9 +561,50 @@ flowchart TB
     classDef resources fill:#fef3c7,stroke:#b45309,color:#451a03
     class seq_barcode,seq_file resources
     classDef provenance fill:#ffe4e6,stroke:#be123c,color:#4c0519
-    class prov_archive,prov_source,sample_source,sample_alternative,exp_source,exp_alternative,seq_source provenance
-    classDef curation fill:#f1f5f9,stroke:#475569,color:#0f172a
-    class curation_metadata,curation_quality,curation_version curation
+    class sample_source,sample_alternative,exp_source,exp_alternative,seq_source provenance
+```
+
+**Curation and schema version**
+
+These tables have no foreign keys. `metadata_override` and `quality_annotation`
+identify records by accession; `alembic_version` stores the schema migration
+version. Their separate boxes do not imply relationships.
+
+```mermaid
+---
+config:
+  theme: base
+  themeCSS: |
+    .relationshipLabelBox, .relationshipLabelBox rect { opacity: 1; fill: #f8fafc; }
+    .labelBkg { background-color: #f8fafc; }
+  themeVariables:
+    primaryColor: '#f1f5f9'
+    primaryBorderColor: '#475569'
+    primaryTextColor: '#0f172a'
+    textColor: '#0f172a'
+    lineColor: '#64748b'
+    edgeLabelBackground: '#f8fafc'
+    attributeBackgroundColorOdd: '#f8fafc'
+    attributeBackgroundColorEven: '#f1f5f9'
+    labelBoxBkgColor: '#f8fafc'
+    labelBoxTextColor: '#0f172a'
+---
+erDiagram
+    direction TB
+    metadata_override {
+        uuid metadata_override_id PK
+        text accession
+        jsonb original_values
+        jsonb edited_values
+    }
+    quality_annotation {
+        uuid quality_annotation_id PK
+        text accession
+        date date
+        enum quality_annotation_type
+        jsonb details
+    }
+    alembic_version
 ```
 
 </details>
