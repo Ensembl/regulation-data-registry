@@ -756,46 +756,28 @@ be pulled from the remote.
 
 ### Update schema documentation
 
-With the local database running, regenerate the HTML and relationship diagrams:
+Generate documentation from the local database using the SchemaSpy container:
 
 ```bash
 make db-up           # If the database is not already running
 make schemaspy-docs
 ```
 
-This uses the pinned SchemaSpy 7.0.2 container with its bundled PostgreSQL driver
-and Graphviz; no local Java installation is needed. It reads the `public` schema
-from the current local database, including any schema changes you have applied.
-It uses the same engine, `DB_PROJECT`, and `.env` connection settings as the
-database commands. It waits for PostgreSQL without restarting the database.
-
-Generation replaces `docs/schemaspy/` only after succeeding, removing obsolete
-pages for dropped tables. Failed generation preserves the existing docs. Row
-counts are omitted so the documentation focuses on the schema. The container
-runs with your user ID so generated files remain editable.
-
-Preview locally:
+Preview at <http://localhost:8000/schemaspy/>:
 
 ```bash
 python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
 ```
 
-Open <http://localhost:8000/schemaspy/>. Generated files stay out of `main` and
-are published separately on `gh-pages`. After reviewing the preview:
+After reviewing, publish to the `gh-pages` branch:
 
 ```bash
 make docs-publish
 git push origin gh-pages
 ```
 
-`docs-publish` updates only the local `gh-pages` branch with the generated site
-at its root. It preserves that branch's history and leaves the current checkout
-and staged changes untouched. The push is a separate, manual step.
-
-For GitHub Pages, select **Settings → Pages → Deploy from a branch → gh-pages →
-/(root)**. The publishing command adds `.nojekyll` so GitHub serves the generated
-HTML directly. Continue committing schema changes to `main`; regenerate and
-publish the documentation when those changes are ready.
+Generated files are Git-ignored on `main`. GitHub Pages serves the `gh-pages`
+branch root.
 
 ### Tooling
 
