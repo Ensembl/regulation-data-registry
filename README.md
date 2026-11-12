@@ -612,7 +612,7 @@ erDiagram
 You need Git, Make, a POSIX shell, and either:
 
 - [Podman](https://podman.io/docs/installation) 6+ with [podman-compose](https://github.com/containers/podman-compose) 1.6+; or
-- Docker with Compose v2.
+- [Docker with Compose v2](https://docs.docker.com/compose/install/).
 
 Start your container engine first. On macOS, Podman needs a VM:
 
@@ -620,6 +620,19 @@ Start your container engine first. On macOS, Podman needs a VM:
 podman machine init     # Once, after installing Podman
 podman machine start
 ```
+
+For Docker, start Docker Desktop, or ensure the Docker Engine service is running
+on Linux. Docker Desktop includes Compose; Engine-only installations need the
+[Compose plugin](https://docs.docker.com/compose/install/linux/).
+Check Compose and select Docker for the commands below:
+
+```bash
+docker compose version
+export CONTAINER_ENGINE=docker
+```
+
+The export applies to the current shell. Without it, commands prefer Podman when
+both engines are installed.
 
 Then clone and start RDR:
 
@@ -649,9 +662,8 @@ Or open `psql` using the container, with the default credentials:
 ./scripts/container.sh compose -p rdr exec db psql -U ensreg-usr -d rdr
 ```
 
-Copy `.env.example` to `.env` to override settings. Commands prefer Podman when
-installed; use `CONTAINER_ENGINE=docker make db-up` to select Docker explicitly.
-Use the same engine for subsequent commands.
+Copy `.env.example` to `.env` to override settings. Use the same container engine
+for subsequent commands.
 
 When finished:
 
