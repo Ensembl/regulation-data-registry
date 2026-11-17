@@ -668,9 +668,9 @@ When switching an existing instance, run `make db-down` before changing revision
 ```text
 .
 ├── db/                    # Database snapshot
-│   ├── schema.sql         # Schema, tracked in Git
-│   ├── data.sql.dvc       # DVC pointer to the data snapshot
-│   └── data.sql           # Data fetched by DVC; excluded from Git
+│   ├── schema.sql         # Generated review schema, tracked in Git
+│   ├── snapshot.dump.dvc  # DVC pointer to the full snapshot
+│   └── snapshot.dump      # Full compressed archive fetched by DVC; excluded from Git
 ├── containers/            # Compose configuration, database image and restore scripts
 │   └── dvc/               # DVC container and locked Python environment
 ├── scripts/               # Docker Compose, DVC and SchemaSpy command wrappers
@@ -695,20 +695,24 @@ After editing the local database, export both schema and data:
 make db-dump
 ```
 
-`db/schema.sql` contains the schema and is tracked in Git. `db/data.sql` contains
-only table data and sequence values and is tracked by DVC. The export creates one
-temporary archive and extracts both SQL files from the same database snapshot.
-Initialization loads the schema first, followed by the data in PostgreSQL's
-dependency-safe dump order. Use the matching PostgreSQL 14 client and server
-images supplied by the container setup.
+`db/snapshot.dump` is a full PostgreSQL custom-format archive containing schema
+and data, compressed by default and tracked by DVC. It is the authoritative input
+for startup and validation. `db/schema.sql` is extracted from that same archive
+and tracked in Git for reviewing schema changes. It is generated: apply schema
+and data changes to the working database, then run `make db-dump`; do not edit
+`schema.sql` directly.
 
-Export does not run a second database. Before publishing, validate the SQL files:
+Restoration uses `pg_restore` to load tables, data, and constraints in dependency
+order. Use the matching PostgreSQL 14 client and server images supplied by the
+container setup.
+
+Export does not run a second database. Before publishing, validate the full archive:
 
 ```bash
 make db-validate
 ```
 
-Validation restores the SQL files into a disposable database without publishing a
+Validation restores the full archive into a disposable database without publishing a
 port. After reviewing the schema and validation result, update the single pointer:
 
 ```bash
@@ -730,21 +734,20 @@ chmod 600 .dvc/config.local
 make db-data-push
 ```
 
-Commit `db/schema.sql` and `db/data.sql.dvc` together. Exporting, validating,
+Commit `db/schema.sql` and `db/snapshot.dump.dvc` together. Exporting, validating,
 and uploading data do not create Git commits. Exports are staged before replacing
 the previous files. An export may produce a new dump hash even when rows have
 not changed: PostgreSQL includes random restriction keys and version comments,
 and row order can change. Restriction protection is retained; byte-for-byte
 reproducibility is not promised.
 
-Use `make db-dump` to keep the schema and data together.
+Use `make db-dump` to keep the archive and review schema together.
 Apply changes to the local database and export them. The next fresh instance
-loads the Git-versioned schema and DVC-versioned data.
+restores the full DVC-versioned archive; `schema.sql` is for review only.
 
 Upload new data objects before sharing Git commits that reference them. This
-format starts a fresh DVC baseline: obsolete snapshot objects have been purged.
-Earlier Git revisions retain their pointers, but their snapshots can no longer
-be pulled from the remote.
+format uses `snapshot.dump.dvc` in place of the earlier `data.sql.dvc` pointer.
+The new archive must be uploaded before a clean checkout can pull it.
 
 ### Update schema documentation
 
