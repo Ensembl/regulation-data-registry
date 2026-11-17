@@ -1,4 +1,6 @@
-# Keep the schema in Git; data.sql is tracked only by DVC.
+# Keep the generated review schema in Git; the full snapshot is tracked by DVC.
 *.sql
 !/schema.sql
 .dump-*/
+
+/snapshot.dump

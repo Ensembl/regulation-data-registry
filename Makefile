@@ -46,16 +46,15 @@ db-info:
 db-down:
 	$(DB_COMPOSE) down --volumes --remove-orphans
 
-# Export once, then extract matching schema and data SQL files.
+# Export one full archive and extract its schema for review.
 db-dump:
 	@$(DB_COMPOSE) --profile tools run --rm --no-deps -T --entrypoint sh db-dump -ec '\
 		stage=$$(mktemp -d "$(DB_DUMP_DIR)/.dump-XXXXXX"); \
 		trap "rm -rf \"$$stage\"" EXIT; \
 		pg_dump --format=custom --file="$$stage/snapshot.dump"; \
 		pg_restore --schema-only --file="$$stage/schema.sql" "$$stage/snapshot.dump"; \
-		pg_restore --data-only --file="$$stage/data.sql" "$$stage/snapshot.dump"; \
-		mv "$$stage/schema.sql" "$$stage/data.sql" "$(DB_DUMP_DIR)/"; \
-		printf "Schema and data exported to %s\n" "$(DB_DUMP_DIR)"'
+		mv "$$stage/schema.sql" "$$stage/snapshot.dump" "$(DB_DUMP_DIR)/"; \
+		printf "Snapshot and review schema exported to %s\n" "$(DB_DUMP_DIR)"'
 
 dvc:
 	./scripts/dvc.sh $(DVC_ARGS)
@@ -86,4 +85,4 @@ db-validate:
 	$(DB_COMPOSE) --profile tools run --build --rm --no-deps -T db-validate
 
 db-data-track:
-	./scripts/dvc.sh add db/data.sql
+	./scripts/dvc.sh add db/snapshot.dump
