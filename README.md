@@ -609,30 +609,10 @@ erDiagram
 
 ## Run a local database
 
-You need Git, Make, a POSIX shell, and either:
-
-- [Podman](https://podman.io/docs/installation) 6+ with [podman-compose](https://github.com/containers/podman-compose) 1.6+; or
-- [Docker with Compose v2](https://docs.docker.com/compose/install/).
-
-Start your container engine first. On macOS, Podman needs a VM:
-
-```bash
-podman machine init     # Once, after installing Podman
-podman machine start
-```
-
-For Docker, start Docker Desktop, or ensure the Docker Engine service is running
-on Linux. Docker Desktop includes Compose; Engine-only installations need the
-[Compose plugin](https://docs.docker.com/compose/install/linux/).
-Check Compose and select Docker for the commands below:
-
-```bash
-docker compose version
-export CONTAINER_ENGINE=docker
-```
-
-The export applies to the current shell. Without it, commands prefer Podman when
-both engines are installed.
+You need Git, Make, a POSIX shell, and [Docker](https://docs.docker.com/engine/install/)
+with Compose v2 or later and Buildx. Start your Docker engine and confirm
+`docker info` works before running RDR. Commands use your configured Docker
+context; keep the same context throughout a workflow.
 
 Then clone and start RDR:
 
@@ -662,7 +642,7 @@ Or open `psql` using the container, with the default credentials:
 ./scripts/container.sh compose -p rdr exec db psql -U ensreg-usr -d rdr
 ```
 
-Copy `.env.example` to `.env` to override settings. Use the same container engine
+Copy `.env.example` to `.env` to override settings. Use the same Docker context
 for subsequent commands.
 
 When finished:
@@ -693,7 +673,7 @@ When switching an existing instance, run `make db-down` before changing revision
 │   └── data.sql           # Data fetched by DVC; excluded from Git
 ├── containers/            # Compose configuration, database image and restore scripts
 │   └── dvc/               # DVC container and locked Python environment
-├── scripts/               # Container-engine, DVC and SchemaSpy command wrappers
+├── scripts/               # Docker Compose, DVC and SchemaSpy command wrappers
 ├── docs/
 │   └── schemaspy/         # Local generated docs; Git-ignored, published on gh-pages
 ├── tests/                 # Workflow tests for startup, export and documentation

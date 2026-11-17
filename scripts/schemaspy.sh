@@ -6,11 +6,7 @@ cd "$repo_root"
 
 SCHEMASPY_UID=$(id -u)
 SCHEMASPY_GID=$(id -g)
-case "$(./scripts/container.sh engine)" in
-    podman) SCHEMASPY_USERNS="keep-id:uid=$SCHEMASPY_UID,gid=$SCHEMASPY_GID" ;;
-    docker) SCHEMASPY_USERNS=host ;;
-esac
-export SCHEMASPY_UID SCHEMASPY_GID SCHEMASPY_USERNS
+export SCHEMASPY_UID SCHEMASPY_GID
 
 # Generate from scratch so dropped tables do not leave stale HTML or diagrams.
 mkdir -p docs

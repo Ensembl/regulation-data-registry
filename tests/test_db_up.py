@@ -26,9 +26,7 @@ args=sys.argv[1:]
 with Path(os.environ['TEST_CALLS']).open('a') as log:
     log.write(json.dumps([Path(sys.argv[0]).name, *args])+'\\n')
 mode=os.environ.get('TEST_MODE','success')
-if args == ['engine']:
-    print('docker')
-elif Path(sys.argv[0]).name == 'dvc.sh' and mode == 'fetch-failure':
+if Path(sys.argv[0]).name == 'dvc.sh' and mode == 'fetch-failure':
     sys.exit(17)
 elif 'up' in args and mode == 'start-failure':
     sys.exit(18)
@@ -76,7 +74,7 @@ elif 'port' in args:
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(any('up' in call for call in self.calls()))
 
-    def test_normalizes_podman_port_output(self):
+    def test_normalizes_bare_port_output(self):
         result = self.start('bare-port')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('Address: 127.0.0.1:2345', result.stdout)

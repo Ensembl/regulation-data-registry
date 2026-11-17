@@ -64,8 +64,7 @@ services:
     profiles: [tools]
     image: docker.io/schemaspy/schemaspy:7.0.2
     user: "${SCHEMASPY_UID:-1000}:${SCHEMASPY_GID:-1000}"
-    # The wrapper selects keep-id for rootless Podman and host for Docker.
-    userns_mode: "${SCHEMASPY_USERNS:-host}"
+    userns_mode: host
     volumes:
       - type: bind
         source: ${SCHEMASPY_OUTPUT_DIR:-../docs/schemaspy}

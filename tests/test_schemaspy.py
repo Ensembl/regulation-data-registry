@@ -22,7 +22,6 @@ class SchemaDocumentation(unittest.TestCase):
         mock = self.root / 'scripts/container.sh'
         mock.write_text('''#!/bin/sh
 set -eu
-if [ "$1" = engine ]; then echo docker; exit; fi
 printf 'new documentation' > "$SCHEMASPY_OUTPUT_DIR/index.html"
 case "$TEST_MODE" in
     fail) exit 42 ;;

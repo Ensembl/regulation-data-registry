@@ -1,6 +1,7 @@
-"""Exercise engine selection and argument forwarding without starting containers."""
+"""Check Compose configuration, environment isolation, and argument forwarding."""
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -12,114 +13,68 @@ class ContainerCommands(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.bin = Path(self.temp.name)
-        (self.bin / 'sh').symlink_to('/bin/sh')
-        (self.bin / 'cat').symlink_to('/bin/cat')
-        for name in ('dirname', 'id'):
-            (self.bin / name).symlink_to('/usr/bin/' + name)
-        self.env = dict(os.environ, PATH=str(self.bin), CONTAINER_ENGINE='auto')
-        self.env.pop('PODMAN_COMPOSE_PROVIDER', None)
+        self.root = Path(self.temp.name)
+        shutil.copytree(ROOT / 'scripts', self.root / 'scripts')
+        self.bin = self.root / 'bin'
+        self.bin.mkdir()
+        docker = self.bin / 'docker'
+        docker.write_text('''#!/bin/sh
+printf '%s\\n' "$DOCKER_CONTEXT" "${DVC_UID:-}" "${DVC_GID:-}" "$@"
+exit "${TEST_EXIT:-0}"
+''')
+        docker.chmod(0o755)
+        self.env = dict(os.environ, PATH=str(self.bin) + os.pathsep + os.environ['PATH'],
+                        DOCKER_CONTEXT='user-selected-context')
 
-    def install(self, name, status=0):
-        path = self.bin / name
-        path.write_text('#!/bin/sh\nprintf "%s\\n" "$0" "${PODMAN_COMPOSE_PROVIDER:-}" "$@"\nexit ' + str(status) + '\n')
-        path.chmod(0o755)
-
-    def run_command(self, *args, engine='auto', script='container.sh'):
-        return subprocess.run([str(ROOT / 'scripts' / script), *args],
-                              env=dict(self.env, CONTAINER_ENGINE=engine),
+    def run_command(self, *args, script='container.sh'):
+        return subprocess.run([str(self.root / 'scripts' / script), *args],
+                              cwd=self.temp.name, env=self.env,
                               text=True, capture_output=True)
 
-    def test_prefers_podman_and_sets_provider(self):
-        for name in ('podman', 'docker', 'podman-compose'):
-            self.install(name)
-        result = self.run_command('compose', 'version')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.splitlines()[:2],
-                         [str(self.bin / 'podman'), str(self.bin / 'podman-compose')])
-
-    def test_help_does_not_require_an_engine(self):
-        result = self.run_command('-h')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('Usage:', result.stdout)
-        self.assertIn('dvc-compose', result.stdout)
-
-    def test_option_errors_and_missing_command(self):
-        for args in [(), ('-e',), ('-x',)]:
-            with self.subTest(args=args):
-                result = self.run_command(*args)
-                self.assertEqual(result.returncode, 2)
-                self.assertIn('Usage:', result.stderr)
-
-    def test_engine_option_overrides_environment(self):
-        self.install('docker')
-        result = self.run_command('-e', 'docker', 'engine', engine='podman')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), 'docker')
-
-    def test_command_options_are_forwarded(self):
-        self.install('docker')
-        result = self.run_command('compose', '-h', engine='docker')
-        self.assertEqual(result.stdout.splitlines()[-1], '-h')
-        self.assertIn('containers/compose.yml', result.stdout.splitlines())
-        result = self.run_command('--', '--version', engine='docker')
-        self.assertEqual(result.stdout.splitlines()[2:], ['--version'])
-
-    def test_docker_fallback_and_explicit_override(self):
-        self.install('docker')
-        self.assertIn(str(self.bin / 'docker'), self.run_command('info').stdout)
-        self.install('podman')
-        result = self.run_command('compose', 'version', engine='docker')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.splitlines()[0], str(self.bin / 'docker'))
-
-    def test_missing_engine_or_provider_is_actionable(self):
-        self.assertIn('Install Podman', self.run_command('info').stderr)
-        self.install('podman')
-        result = self.run_command('compose', 'version')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('Install podman-compose', result.stderr)
-        self.assertNotEqual(self.run_command('info', engine='invalid').returncode, 0)
-
-    def test_engine_failure_is_propagated(self):
-        self.install('podman', status=42)
-        self.install('docker')
-        self.assertEqual(self.run_command('info').returncode, 42)
-
-    def test_dvc_overlay_and_quoted_arguments(self):
-        for name in ('podman', 'podman-compose', 'docker'):
-            self.install(name)
-        for engine in ('podman', 'docker'):
-            result = self.run_command('status', 'path with spaces', engine=engine, script='dvc.sh')
-            self.assertEqual(result.returncode, 0, result.stderr)
-            args = result.stdout.splitlines()[2:]
-            self.assertEqual(args[-2:], ['status', 'path with spaces'])
-            self.assertIn('containers/compose.dvc.yml', args)
-            self.assertEqual('containers/compose.dvc.podman.yml' in args, engine == 'podman')
-            self.assertEqual('containers/compose.dvc.docker.yml' in args, engine == 'docker')
-            self.assertIn('/dev/null', args)
-
-    def test_dvc_help_and_option_errors(self):
-        result = self.run_command('-h', script='dvc.sh')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('Usage: dvc.sh', result.stdout)
-        for args in [(), ('-e',), ('-x',)]:
-            with self.subTest(args=args):
-                result = self.run_command(*args, script='dvc.sh')
-                self.assertEqual(result.returncode, 2)
-                self.assertIn('Usage:', result.stderr)
-
-    def test_dvc_engine_override_and_option_forwarding(self):
-        self.install('docker')
-        for command in [('status', '-h'), ('--', '--version'), ('--', '--help')]:
-            with self.subTest(command=command):
-                result = self.run_command('-e', 'docker', *command,
-                                          engine='podman', script='dvc.sh')
+    def test_database_env_file_is_explicit(self):
+        for exists in (False, True):
+            with self.subTest(env_file=exists):
+                if exists:
+                    (self.root / '.env').write_text('DB_NAME=custom\n')
+                result = self.run_command('compose', '-p', 'custom', 'up', '-d')
                 self.assertEqual(result.returncode, 0, result.stderr)
-                args = result.stdout.splitlines()[2:]
-                forwarded = list(command[1:] if command[0] == '--' else command)
-                self.assertEqual(args[-len(forwarded):], forwarded)
-                self.assertIn('containers/compose.dvc.docker.yml', args)
+                self.assertEqual(result.stdout.splitlines()[3:], [
+                    'compose', '--env-file', '.env' if exists else '/dev/null',
+                    '--file', 'containers/compose.yml', '-p', 'custom', 'up', '-d'])
+                self.assertEqual(result.stdout.splitlines()[0], 'user-selected-context')
+
+    def test_dvc_isolates_project_and_passes_host_user_and_arguments(self):
+        (self.root / '.env').write_text('DB_NAME=custom\n')
+        result = self.run_command('status', 'path with spaces', script='dvc.sh')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines()[:3],
+                         ['user-selected-context', str(os.getuid()), str(os.getgid())])
+        self.assertEqual(result.stdout.splitlines()[3:], [
+            'compose', '--env-file', '/dev/null', '--project-name', 'rdr-dvc',
+            '--file', 'containers/compose.dvc.yml', 'run', '--build', '--rm',
+            '--no-deps', '-T', 'dvc', 'status', 'path with spaces'])
+
+    def test_help_and_invalid_usage(self):
+        for script in ('container.sh', 'dvc.sh'):
+            with self.subTest(script=script):
+                self.assertEqual(self.run_command('-h', script=script).returncode, 0)
+                for args in ((), ('-x',)):
+                    result = self.run_command(*args, script=script)
+                    self.assertEqual(result.returncode, 2)
+                    self.assertIn('Usage:', result.stderr)
+
+    def test_dvc_global_options_and_compose_options_are_forwarded(self):
+        for args in (('--', '--version'), ('--', '--help'), ('status', '-h')):
+            result = self.run_command(*args, script='dvc.sh')
+            expected = list(args[1:] if args[0] == '--' else args)
+            self.assertEqual(result.stdout.splitlines()[-len(expected):], expected)
+        result = self.run_command('compose', '-h')
+        self.assertEqual(result.stdout.splitlines()[-1], '-h')
+
+    def test_docker_failure_is_propagated(self):
+        self.env['TEST_EXIT'] = '42'
+        self.assertEqual(self.run_command('compose', 'up').returncode, 42)
+        self.assertEqual(self.run_command('pull', script='dvc.sh').returncode, 42)
 
 
 if __name__ == '__main__':

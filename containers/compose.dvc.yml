@@ -1,7 +1,8 @@
-# Shared DVC configuration; engine-specific settings live in the overrides.
 services:
   dvc:
     init: true
+    # The entrypoint creates account records, then drops to the host UID/GID.
+    user: "0:0"
     build:
       context: ./dvc
       dockerfile: Containerfile
