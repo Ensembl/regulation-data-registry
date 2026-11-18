@@ -712,15 +712,21 @@ Export does not run a second database. Before publishing, validate the full arch
 make db-validate
 ```
 
-Validation restores the full archive into a disposable database without publishing a
-port. After reviewing the schema and validation result, update the single pointer:
+Validation restores the full archive into a disposable database without publishing
+a port. To validate, register the snapshot with DVC, and commit its pointer and
+review schema together:
 
 ```bash
-make db-data-track
-./scripts/dvc.sh status
+make db-commit MSG="Describe the database changes"
 ```
 
-To upload data, configure your bucket write credentials in Git-ignored
+The message is required. This command rejects unrelated staged files, validates
+before updating DVC tracking, and commits only `db/schema.sql` and
+`db/snapshot.dump.dvc`. A failed commit leaves the snapshot files staged so you
+can review and retry. The Git commit message also serves as the snapshot's DVC
+history; inspect it with `git log -- db/snapshot.dump.dvc`.
+
+To publish, configure your bucket write credentials in Git-ignored
 `.dvc/config.local`:
 
 ```ini
@@ -731,23 +737,42 @@ To upload data, configure your bucket write credentials in Git-ignored
 
 ```bash
 chmod 600 .dvc/config.local
-make db-data-push
+make db-push
 ```
 
-Commit `db/schema.sql` and `db/snapshot.dump.dvc` together. Exporting, validating,
-and uploading data do not create Git commits. Exports are staged before replacing
-the previous files. An export may produce a new dump hash even when rows have
-not changed: PostgreSQL includes random restriction keys and version comments,
-and row order can change. Restriction protection is retained; byte-for-byte
-reproducibility is not promised.
+`db-push` requires a configured Git upstream and no uncommitted snapshot changes.
+It uploads the snapshots referenced by outgoing commits (and the current commit)
+to S3 before pushing the current branch to its configured upstream. This includes
+intermediate snapshots if several database commits are waiting to be pushed.
+Keep those objects in your local DVC cache until publication. If any upload fails,
+Git is not pushed. If Git push fails after upload, resolve the Git issue and retry;
+the already uploaded objects can be reused. Git push publishes all outgoing
+commits on the branch, including changes unrelated to the database.
 
-Use `make db-dump` to keep the archive and review schema together.
-Apply changes to the local database and export them. The next fresh instance
-restores the full DVC-versioned archive; `schema.sql` is for review only.
+The normal editing cycle is:
 
-Upload new data objects before sharing Git commits that reference them. This
-format uses `snapshot.dump.dvc` in place of the earlier `data.sql.dvc` pointer.
-The new archive must be uploaded before a clean checkout can pull it.
+```bash
+make db-dump
+make db-commit MSG="Describe the database changes"
+make db-push
+```
+
+You can repeat `db-dump` and `db-validate` for local review before committing.
+Exporting and validating do not commit or upload anything. To register or upload
+only through DVC, the lower-level `db-data-track` and `db-data-push` targets remain
+available; they do not run Git commands.
+
+Exports are staged in a temporary directory before replacing the previous files.
+An export may produce a new dump hash even when rows have not changed: PostgreSQL
+includes random restriction keys and version comments, and row order can change.
+Restriction protection is retained; byte-for-byte reproducibility is not promised.
+Use `make db-dump` to keep the archive and review schema together. Apply changes
+to the local database and export them. The next fresh instance restores the full
+DVC-versioned archive; `schema.sql` is for review only.
+
+The full archive uses `snapshot.dump.dvc` in place of the earlier `data.sql.dvc`
+pointer. Upload new snapshot objects before sharing Git commits that reference
+them; `db-push` performs these operations in that order.
 
 ### Update schema documentation
 
