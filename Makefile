@@ -86,3 +86,13 @@ db-validate:
 
 db-data-track:
 	./scripts/dvc.sh add db/snapshot.dump
+
+.PHONY: db-commit db-push
+# Pass the message through the environment, never interpolate it into shell code.
+override MSG := $(value MSG)
+export MSG
+db-commit:
+	python3 ./scripts/db-workflow.py commit
+
+db-push:
+	python3 ./scripts/db-workflow.py push
