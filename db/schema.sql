@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Yxk1dwfZE7JNSvn8hvvsJs6Pj7BXUa7jxCIxuBCzZxW4iWKsArQjChPSBSWoije
+\restrict CGyL6wnJlInziqaDQqCwFubt0otkkEKFb0HWLRJW2sSFI9vB89TBrLpfkEpyjj2
 
 -- Dumped from database version 14.25 (Debian 14.25-1.pgdg13+1)
 -- Dumped by pg_dump version 14.25 (Debian 14.25-1.pgdg13+1)
@@ -2517,11 +2517,7 @@ CREATE VIEW public.metadata_dimensions AS
                    FROM zero_counts_visible
                   WHERE (zero_counts_visible.species_name = species.species_name))), 'dimensions', json_build_object('material', json_build_object('name', 'Biosample material', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.material) AS json_agg
                    FROM base_epigenomes b
-                  WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values',
-                CASE
-                    WHEN (species.species_name = ANY (ARRAY['Homo sapiens'::text, 'Mus musculus'::text])) THEN json_build_array('cell line')
-                    ELSE json_build_array()
-                END)), 'sex', json_build_object('name', 'Sex', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.sex) AS json_agg
+                  WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'sex', json_build_object('name', 'Sex', 'type', 'categorical', 'values', ( SELECT json_agg(DISTINCT b.sex) AS json_agg
                    FROM base_epigenomes b
                   WHERE (b.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'term', json_build_object('name', 'Biosample term', 'type', 'categorical_with_ontology', 'values', ( SELECT json_agg(json_build_object('value', t.term, 'ontology', json_build_object('curie', replace(t.term_ontology, '_'::text, ':'::text), 'url', concat('https://purl.obolibrary.org/obo/', t.term_ontology)))) AS json_agg
                    FROM base_epigenome_terms t
@@ -2539,7 +2535,13 @@ CREATE VIEW public.metadata_dimensions AS
                    FROM base_epigenome_biological_group c
                   WHERE (c.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())), 'sample_type', json_build_object('name', 'Sample type', 'type', 'categorical', 'values', ( SELECT json_agg(c.sample_type ORDER BY c.sample_type) AS json_agg
                    FROM base_epigenome_sample_type c
-                  WHERE (c.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values', json_build_array())))) AS payload
+                  WHERE (c.species_name = species.species_name)), 'default_set', json_build_object('type', 'exclude', 'values',
+                CASE
+                    WHEN (EXISTS ( SELECT 1
+                       FROM base_epigenome_sample_type c
+                      WHERE ((c.species_name = species.species_name) AND (c.sample_type = 'Cancer cell line'::text)))) THEN json_build_array('Cancer cell line')
+                    ELSE json_build_array()
+                END)))) AS payload
            FROM species
         )
  SELECT jsonb_pretty((json_agg(species_dimensions.payload))::jsonb) AS species_dimensions
@@ -4441,5 +4443,5 @@ ALTER TABLE ONLY public.track
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Yxk1dwfZE7JNSvn8hvvsJs6Pj7BXUa7jxCIxuBCzZxW4iWKsArQjChPSBSWoije
+\unrestrict CGyL6wnJlInziqaDQqCwFubt0otkkEKFb0HWLRJW2sSFI9vB89TBrLpfkEpyjj2
 
