@@ -96,3 +96,29 @@ db-commit:
 
 db-push:
 	python3 ./scripts/db-workflow.py push
+
+.PHONY: image-build image-test image-push image-release
+IMAGE_REPOSITORY = dockerhub.ebi.ac.uk/ensreg/rdr/rdr-manual
+
+image-build:
+	@tag=$$(git describe --tags --exact-match HEAD) && \
+	docker buildx build --platform linux/amd64 --load \
+		--file containers/db.Containerfile --tag "$(IMAGE_REPOSITORY):$$tag" .
+
+image-test:
+	@tag=$$(git describe --tags --exact-match HEAD) && \
+	docker run --rm --platform linux/amd64 \
+		--tmpfs /var/lib/postgresql/data \
+		-e POSTGRES_USER=ensreg-usr -e POSTGRES_DB=rdr \
+		-e POSTGRES_PASSWORD=rdr-image-validation \
+		--entrypoint /usr/local/bin/validate-db "$(IMAGE_REPOSITORY):$$tag"
+
+image-push:
+	@tag=$$(git describe --tags --exact-match HEAD) && \
+	docker push "$(IMAGE_REPOSITORY):$$tag"
+
+# Recursive calls preserve ordering even with make -j.
+image-release:
+	@$(MAKE) --no-print-directory image-build
+	@$(MAKE) --no-print-directory image-test
+	@$(MAKE) --no-print-directory image-push

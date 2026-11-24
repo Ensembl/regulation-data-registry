@@ -774,6 +774,41 @@ The full archive uses `snapshot.dump.dvc` in place of the earlier `data.sql.dvc`
 pointer. Upload new snapshot objects before sharing Git commits that reference
 them; `db-push` performs these operations in that order.
 
+### Manual AMD64 image releases
+
+Images are published as
+`dockerhub.ebi.ac.uk/ensreg/rdr/rdr-manual:<exact-git-tag>`.
+Check out the desired Git tag and ensure `db/snapshot.dump` is the corresponding
+snapshot (`make db-data-pull` fetches it if needed). To build, test, and publish
+in one command:
+
+```bash
+docker login dockerhub.ebi.ac.uk
+make image-release
+```
+
+The steps run sequentially, even with `make -j`, and stop on any failure.
+Individual steps are also available:
+
+```bash
+make image-build     # Build linux/amd64 and load into the local Docker engine
+make image-test      # Test restoring the snapshot from the image
+
+docker login dockerhub.ebi.ac.uk
+make image-push      # Push the local image to the registry
+```
+
+These targets run Docker commands directly and require an exact Git tag at `HEAD`.
+Use container-compatible Git tags, such as `v1.0.0`. Building packages the current
+local snapshot; it does not pull, dump, or validate it automatically. Testing and
+pushing can be run separately or together with `image-release`. On ARM workstations,
+the Docker engine needs
+AMD64 emulation to run the test image.
+
+Deployment is managed outside this repository. The image contains PostgreSQL and
+the snapshot, restored on first startup into an empty data directory. Supply
+`POSTGRES_USER=ensreg-usr`, `POSTGRES_DB=rdr`, and a `POSTGRES_PASSWORD` at runtime.
+
 ### Update schema documentation
 
 Generate documentation from the local database using the SchemaSpy container:

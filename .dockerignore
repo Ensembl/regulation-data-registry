@@ -1,0 +1,8 @@
+# Send only the inputs needed by containers/db.Containerfile.
+**
+!containers/
+!containers/db.Containerfile
+!containers/init-db.sh
+!containers/validate-db.sh
+!db/
+!db/snapshot.dump
