@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict wKvjxNAqFQsVV6evGiE6UxzYX0eynhJ7N33QRy1eFD0RSLF9XyBTkMfBleb4ZWo
+\restrict Yxk1dwfZE7JNSvn8hvvsJs6Pj7BXUa7jxCIxuBCzZxW4iWKsArQjChPSBSWoije
 
 -- Dumped from database version 14.25 (Debian 14.25-1.pgdg13+1)
 -- Dumped by pg_dump version 14.25 (Debian 14.25-1.pgdg13+1)
@@ -2420,8 +2420,10 @@ CREATE VIEW public.metadata_dimensions AS
             base_epigenomes.sample_type
            FROM public.base_epigenomes
         ), species AS (
-         SELECT DISTINCT base_epigenomes.species_name
+         SELECT base_epigenomes.species_name,
+            bool_or(((COALESCE(cardinality(base_epigenomes.organs), 0) > 0) OR (COALESCE(cardinality(base_epigenomes.systems), 0) > 0))) AS has_organs_or_systems
            FROM base_epigenomes
+          GROUP BY base_epigenomes.species_name
         ), assemblies AS (
          SELECT base_epigenomes.species_name,
             array_agg(DISTINCT base_epigenomes.assembly_name) AS assemblies
@@ -2467,17 +2469,6 @@ CREATE VIEW public.metadata_dimensions AS
                     ELSE (json_build_array(json_build_array('term'), json_build_array('tissue_group'), json_build_array('biological_group'), json_build_array('sample_type'), json_build_array('organs'), json_build_array('systems'), json_build_array('sex'), json_build_array('life_stage'), json_build_array('material')))::jsonb
                 END AS filter_layout
            FROM base_epigenomes
-        ), table_layout AS (
-         SELECT DISTINCT base_epigenomes.species_name,
-            (json_build_array('tissue_group', 'term', 'life_stage', 'age', 'sex', 'material'))::jsonb AS layout
-           FROM base_epigenomes
-        ), optional AS (
-         SELECT DISTINCT base_epigenomes.species_name,
-                CASE
-                    WHEN ((base_epigenomes.organs IS NULL) AND (base_epigenomes.systems IS NULL)) THEN (json_build_array('biological_group', 'sample_type'))::jsonb
-                    ELSE (json_build_array('organs', 'systems', 'biological_group', 'sample_type'))::jsonb
-                END AS dimensions
-           FROM base_epigenomes
         ), collapsible AS (
          SELECT DISTINCT base_epigenomes.species_name,
             (json_build_array('sex', 'life_stage', 'age'))::jsonb AS dimensions
@@ -2508,11 +2499,15 @@ CREATE VIEW public.metadata_dimensions AS
                    FROM assemblies
                   WHERE (assemblies.species_name = species.species_name)), 'ui_spec', json_build_object('filter_layout', ( SELECT filter_menu.filter_layout
                    FROM filter_menu
-                  WHERE (filter_menu.species_name = species.species_name)), 'table_layout', ( SELECT table_layout.layout
-                   FROM table_layout
-                  WHERE (table_layout.species_name = species.species_name)), 'optional', ( SELECT optional.dimensions
-                   FROM optional
-                  WHERE (optional.species_name = species.species_name)), 'collapsible', ( SELECT collapsible.dimensions
+                  WHERE (filter_menu.species_name = species.species_name)), 'table_layout',
+                CASE
+                    WHEN species.has_organs_or_systems THEN json_build_array('biological_group', 'tissue_group', 'systems', 'organs', 'term', 'life_stage', 'age', 'sex', 'sample_type', 'material')
+                    ELSE json_build_array('biological_group', 'tissue_group', 'term', 'life_stage', 'age', 'sex', 'sample_type', 'material')
+                END, 'optional',
+                CASE
+                    WHEN species.has_organs_or_systems THEN json_build_array('organs', 'systems', 'tissue_group', 'material')
+                    ELSE json_build_array('tissue_group', 'material')
+                END, 'deprecated', json_build_array('tissue_group'), 'collapsible', ( SELECT collapsible.dimensions
                    FROM collapsible
                   WHERE (collapsible.species_name = species.species_name)), 'default_collapsed_by', json_build_array('age', 'sex'), 'filterable', ( SELECT filterable.dimensions
                    FROM filterable
@@ -4446,5 +4441,5 @@ ALTER TABLE ONLY public.track
 -- PostgreSQL database dump complete
 --
 
-\unrestrict wKvjxNAqFQsVV6evGiE6UxzYX0eynhJ7N33QRy1eFD0RSLF9XyBTkMfBleb4ZWo
+\unrestrict Yxk1dwfZE7JNSvn8hvvsJs6Pj7BXUa7jxCIxuBCzZxW4iWKsArQjChPSBSWoije
 
