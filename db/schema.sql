@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict CGyL6wnJlInziqaDQqCwFubt0otkkEKFb0HWLRJW2sSFI9vB89TBrLpfkEpyjj2
+\restrict FicXfbxDOhHgTRCmlZPM4jmPrTEWzCiNo54uvnx0KkbOcgcb3m2pBjxL3zBDxZP
 
 -- Dumped from database version 14.25 (Debian 14.25-1.pgdg13+1)
 -- Dumped by pg_dump version 14.25 (Debian 14.25-1.pgdg13+1)
@@ -1785,26 +1785,26 @@ CREATE VIEW public.biosample_sample_type AS
                 CASE lower(metadata.material)
                     WHEN 'cell line'::text THEN
                     CASE
-                        WHEN (metadata.term = ANY (ARRAY['A549'::text, 'A673'::text, 'CH12.LX'::text, 'Caco-2'::text, 'DND-41'::text, 'DOHH2'::text, 'HCT116'::text, 'HeLa-S3'::text, 'K562'::text, 'KMS-11'::text, 'KOPT-K1'::text, 'Karpas-422'::text, 'Loucy'::text, 'MCF-7'::text, 'MEL'::text, 'MM.1S'::text, 'NCI-H929'::text, 'NT2/D1'::text, 'OCI-LY1'::text, 'OCI-LY3'::text, 'OCI-LY7'::text, 'PC-3'::text, 'PC-9'::text, 'Panc1'::text, 'SK-N-MC'::text, 'SK-N-SH'::text, 'SU-DHL-6'::text])) THEN 'Cancer cell line'::text
-                        WHEN (metadata.term = ANY (ARRAY['ES-Bruce4'::text, 'ES-E14'::text, 'ES-I3'::text, 'H1'::text, 'H7'::text, 'H9'::text, 'HUES48'::text, 'HUES6'::text, 'HUES64'::text])) THEN 'Embryonic stem cell line'::text
-                        WHEN (metadata.term = ANY (ARRAY['AG04450'::text, 'BJ'::text, 'GM23248'::text, 'IMR-90'::text])) THEN 'Finite cell line'::text
-                        WHEN (metadata.term = ANY (ARRAY['GM23338'::text, 'iPS DF 19.11'::text, 'iPS DF 6.9'::text, 'iPS-18a'::text, 'iPS-20b'::text])) THEN 'Induced pluripotent stem cell line'::text
-                        WHEN (metadata.term = ANY (ARRAY['ACC112'::text, 'GM06990'::text, 'GM12878'::text, 'HEK293'::text])) THEN 'Transformed cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['A549'::text, 'A673'::text, 'CH12.LX'::text, 'Caco-2'::text, 'DND-41'::text, 'DOHH2'::text, 'HCT116'::text, 'HeLa-S3'::text, 'K562'::text, 'KMS-11'::text, 'KOPT-K1'::text, 'Karpas-422'::text, 'Loucy'::text, 'MCF-7'::text, 'MEL'::text, 'MM.1S'::text, 'NCI-H929'::text, 'NT2/D1'::text, 'OCI-LY1'::text, 'OCI-LY3'::text, 'OCI-LY7'::text, 'PC-3'::text, 'PC-9'::text, 'Panc1'::text, 'SK-N-MC'::text, 'SK-N-SH'::text, 'SU-DHL-6'::text])) THEN 'cancer cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['ES-Bruce4'::text, 'ES-E14'::text, 'ES-I3'::text, 'H1'::text, 'H7'::text, 'H9'::text, 'HUES48'::text, 'HUES6'::text, 'HUES64'::text])) THEN 'embryonic stem cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['AG04450'::text, 'BJ'::text, 'GM23248'::text, 'IMR-90'::text])) THEN 'finite cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['GM23338'::text, 'iPS DF 19.11'::text, 'iPS DF 6.9'::text, 'iPS-18a'::text, 'iPS-20b'::text])) THEN 'induced pluripotent stem cell line'::text
+                        WHEN (metadata.term = ANY (ARRAY['ACC112'::text, 'GM06990'::text, 'GM12878'::text, 'HEK293'::text])) THEN 'transformed cell line'::text
                         ELSE NULL::text
                     END
                     WHEN 'primary cell'::text THEN
                     CASE
-                        WHEN (metadata.term = ANY (ARRAY['B cell'::text, 'CD14-positive monocyte'::text, 'T-cell'::text, 'astrocyte'::text, 'bone marrow macrophage'::text, 'bronchial epithelial cell'::text, 'common myeloid progenitor, CD34-positive'::text, 'embryonic fibroblast'::text, 'endothelial cell of umbilical vein'::text, 'fibroblast of dermis'::text, 'fibroblast of lung'::text, 'fibroblast of mammary gland'::text, 'foreskin fibroblast'::text, 'keratinocyte'::text, 'kidney epithelial cell'::text, 'mammary epithelial cell'::text, 'mononuclear cell'::text, 'natural killer cell'::text, 'neutrophil'::text, 'osteoblast'::text, 'skeletal muscle myoblast'::text])) THEN 'Primary cells'::text
+                        WHEN (metadata.term = ANY (ARRAY['B cell'::text, 'CD14-positive monocyte'::text, 'T-cell'::text, 'astrocyte'::text, 'bone marrow macrophage'::text, 'bronchial epithelial cell'::text, 'common myeloid progenitor, CD34-positive'::text, 'embryonic fibroblast'::text, 'endothelial cell of umbilical vein'::text, 'fibroblast of dermis'::text, 'fibroblast of lung'::text, 'fibroblast of mammary gland'::text, 'foreskin fibroblast'::text, 'keratinocyte'::text, 'kidney epithelial cell'::text, 'mammary epithelial cell'::text, 'mononuclear cell'::text, 'natural killer cell'::text, 'neutrophil'::text, 'osteoblast'::text, 'skeletal muscle myoblast'::text])) THEN 'primary cells'::text
                         ELSE NULL::text
                     END
                     WHEN 'primary cell culture'::text THEN
                     CASE
-                        WHEN (metadata.term = ANY (ARRAY['cardiac muscle cell'::text, 'ectodermal cell'::text, 'endodermal cell'::text, 'hepatocyte'::text, 'mesenchymal stem cell'::text, 'mesendoderm'::text, 'mesodermal cell'::text, 'myotube'::text, 'neural cell'::text, 'neural progenitor cell'::text, 'neuron'::text, 'neuronal stem cell'::text, 'smooth muscle cell'::text, 'trophoblast cell'::text])) THEN 'In vitro differentiated cells'::text
+                        WHEN (metadata.term = ANY (ARRAY['cardiac muscle cell'::text, 'ectodermal cell'::text, 'endodermal cell'::text, 'hepatocyte'::text, 'mesenchymal stem cell'::text, 'mesendoderm'::text, 'mesodermal cell'::text, 'myotube'::text, 'neural cell'::text, 'neural progenitor cell'::text, 'neuron'::text, 'neuronal stem cell'::text, 'smooth muscle cell'::text, 'trophoblast cell'::text])) THEN 'in vitro differentiated cells'::text
                         ELSE NULL::text
                     END
                     WHEN 'primary tissue'::text THEN
                     CASE
-                        WHEN (metadata.term = ANY (ARRAY['Peyer''s patch'::text, 'adipose tissue'::text, 'adrenal gland'::text, 'ascending aorta'::text, 'body of pancreas'::text, 'bone marrow'::text, 'brain'::text, 'breast epithelium'::text, 'brown adipose tissue'::text, 'cerebellum'::text, 'cortex'::text, 'cortical plate'::text, 'embryo'::text, 'embryonic facial prominence'::text, 'esophagus muscularis mucosa'::text, 'esophagus squamous epithelium'::text, 'fast muscle tissue'::text, 'forebrain'::text, 'frontal cortex'::text, 'gastrocnemius medialis'::text, 'gastroesophageal sphincter'::text, 'gill filament'::text, 'gluteus medius'::text, 'gonad'::text, 'heart'::text, 'heart left ventricle'::text, 'hindbrain'::text, 'hindlimb muscle'::text, 'hypothalamus'::text, 'ileum'::text, 'immature gonad'::text, 'intestine'::text, 'kidney'::text, 'large intestine'::text, 'left lung lobe'::text, 'limb'::text, 'liver'::text, 'lobe of liver'::text, 'longissimus dorsi muscle'::text, 'lung'::text, 'mesonephros'::text, 'midbrain'::text, 'muscle of leg'::text, 'muscle of trunk'::text, 'neural tube'::text, 'olfactory bulb'::text, 'placenta'::text, 'prostate gland'::text, 'psoas muscle'::text, 'right atrium auricular region'::text, 'right lobe of liver'::text, 'sigmoid colon'::text, 'skeletal muscle tissue'::text, 'skin of back'::text, 'skin of body'::text, 'small intestine'::text, 'spleen'::text, 'stomach'::text, 'subcutaneous adipose tissue'::text, 'testis'::text, 'thoracic aorta'::text, 'thymus'::text, 'thyroid gland'::text, 'tibial artery'::text, 'tibial nerve'::text, 'trachea'::text, 'transverse colon'::text, 'upper lobe of left lung'::text, 'uterus'::text, 'vagina'::text])) THEN 'Primary tissue'::text
+                        WHEN (metadata.term = ANY (ARRAY['Peyer''s patch'::text, 'adipose tissue'::text, 'adrenal gland'::text, 'ascending aorta'::text, 'body of pancreas'::text, 'bone marrow'::text, 'brain'::text, 'breast epithelium'::text, 'brown adipose tissue'::text, 'cerebellum'::text, 'cortex'::text, 'cortical plate'::text, 'embryo'::text, 'embryonic facial prominence'::text, 'esophagus muscularis mucosa'::text, 'esophagus squamous epithelium'::text, 'fast muscle tissue'::text, 'forebrain'::text, 'frontal cortex'::text, 'gastrocnemius medialis'::text, 'gastroesophageal sphincter'::text, 'gill filament'::text, 'gluteus medius'::text, 'gonad'::text, 'heart'::text, 'heart left ventricle'::text, 'hindbrain'::text, 'hindlimb muscle'::text, 'hypothalamus'::text, 'ileum'::text, 'immature gonad'::text, 'intestine'::text, 'kidney'::text, 'large intestine'::text, 'left lung lobe'::text, 'limb'::text, 'liver'::text, 'lobe of liver'::text, 'longissimus dorsi muscle'::text, 'lung'::text, 'mesonephros'::text, 'midbrain'::text, 'muscle of leg'::text, 'muscle of trunk'::text, 'neural tube'::text, 'olfactory bulb'::text, 'placenta'::text, 'prostate gland'::text, 'psoas muscle'::text, 'right atrium auricular region'::text, 'right lobe of liver'::text, 'sigmoid colon'::text, 'skeletal muscle tissue'::text, 'skin of back'::text, 'skin of body'::text, 'small intestine'::text, 'spleen'::text, 'stomach'::text, 'subcutaneous adipose tissue'::text, 'testis'::text, 'thoracic aorta'::text, 'thymus'::text, 'thyroid gland'::text, 'tibial artery'::text, 'tibial nerve'::text, 'trachea'::text, 'transverse colon'::text, 'upper lobe of left lung'::text, 'uterus'::text, 'vagina'::text])) THEN 'primary tissue'::text
                         ELSE NULL::text
                     END
                     ELSE NULL::text
@@ -2539,7 +2539,7 @@ CREATE VIEW public.metadata_dimensions AS
                 CASE
                     WHEN (EXISTS ( SELECT 1
                        FROM base_epigenome_sample_type c
-                      WHERE ((c.species_name = species.species_name) AND (c.sample_type = 'Cancer cell line'::text)))) THEN json_build_array('Cancer cell line')
+                      WHERE ((c.species_name = species.species_name) AND (c.sample_type = 'cancer cell line'::text)))) THEN json_build_array('cancer cell line')
                     ELSE json_build_array()
                 END)))) AS payload
            FROM species
@@ -4443,5 +4443,5 @@ ALTER TABLE ONLY public.track
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CGyL6wnJlInziqaDQqCwFubt0otkkEKFb0HWLRJW2sSFI9vB89TBrLpfkEpyjj2
+\unrestrict FicXfbxDOhHgTRCmlZPM4jmPrTEWzCiNo54uvnx0KkbOcgcb3m2pBjxL3zBDxZP
 
